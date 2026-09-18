@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140" role="img" aria-label="Class Clown yearbook badge">
+  <defs>
+    <linearGradient id="cc-felt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffc2d6"/>
+      <stop offset="55%" stop-color="#f78fb3"/>
+      <stop offset="100%" stop-color="#e85a8c"/>
+    </linearGradient>
+    <filter id="cc-stitch" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="1.2" dy="1.8" stdDeviation="1.2" flood-color="#7a2048" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <!-- embroidered patch scallop — no white plate -->
+  <path filter="url(#cc-stitch)" fill="url(#cc-felt)" stroke="#fff5f9" stroke-width="3.5"
+    d="M70 8
+       C82 10 92 6 100 12 C110 10 118 16 122 26 C132 30 134 42 132 52
+       C138 62 136 74 130 82 C134 94 128 104 118 110 C112 122 98 128 86 126
+       C76 134 62 134 52 126 C40 128 28 122 22 110 C12 104 6 94 10 82
+       C4 74 2 62 8 52 C6 42 8 30 18 26 C22 16 30 10 40 12 C48 6 58 10 70 8 Z"/>
+  <path fill="none" stroke="#fff5f9" stroke-width="1.6" stroke-dasharray="3 2.5" opacity="0.85"
+    d="M70 16
+       C81 18 90 15 97 20 C106 18 113 24 116 32 C124 36 126 46 124 54
+       C129 62 127 72 122 78 C125 88 120 96 112 100 C107 110 96 114 86 112
+       C78 118 66 118 58 112 C48 114 38 110 34 100 C26 96 22 88 26 78
+       C21 72 19 62 24 54 C22 46 24 36 32 32 C35 24 42 18 52 20 C59 15 66 18 70 16 Z"/>
+  <!-- smile / clown nose -->
+  <circle cx="70" cy="58" r="10" fill="#ff6b7a" stroke="#fff5f9" stroke-width="2"/>
+  <path d="M48 72 Q70 92 92 72" fill="none" stroke="#fff5f9" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="52" cy="52" r="3.2" fill="#5c1a33"/>
+  <circle cx="88" cy="52" r="3.2" fill="#5c1a33"/>
+  <text x="70" y="118" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="9.5" font-weight="700" fill="#fff5f9" letter-spacing="0.6">CLASS CLOWN</text>
+</svg>

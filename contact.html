@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta
+    name="description"
+    content="Contact COGNATION — send a message via mailto or update the placeholder fields."
+    data-brand-meta="Contact {brand} — send a message via mailto or update the placeholder fields."
+  >
+  <title data-brand-page="Contact">COGNATION — Contact</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html">
+        <!-- LOGO: replace assets/logo.svg to swap organization mark site-wide -->
+        
+        <span data-brand>COGNATION</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main">
+    <header class="page-banner">
+      <div class="container">
+        <p class="eyebrow">Contact</p>
+        <h1>Get in touch</h1>
+        <p>
+          This form has no server backend. Submitting opens your email client with a prefilled message (mailto). Replace the address below when you go live.
+        </p>
+      </div>
+    </header>
+
+    <section class="section" aria-labelledby="form-heading">
+      <div class="container">
+        <h2 id="form-heading" class="visually-hidden" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Contact form</h2>
+
+        <div class="form-panel">
+          <p class="form-note" role="note">
+            <strong>No backend.</strong> The form uses <code>mailto:</code> to open your default mail app.
+            Placeholder recipient: <code>hello@cognation.example</code> — change this in the form’s <code>action</code> attribute before production.
+          </p>
+
+          <form
+            action="mailto:hello@cognation.example"
+            method="post"
+            enctype="text/plain"
+            aria-describedby="form-help"
+          >
+            <p id="form-help" class="form-hint" style="margin-bottom:1rem;">
+              Fields marked with <span class="required" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span> are required.
+            </p>
+
+            <div class="form-group">
+              <label for="name">Name <span class="required" aria-hidden="true">*</span></label>
+              <input
+                type="text"
+                id="name"
+                name="Name"
+                required
+                autocomplete="name"
+                placeholder="Your name"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email <span class="required" aria-hidden="true">*</span></label>
+              <input
+                type="email"
+                id="email"
+                name="Email"
+                required
+                autocomplete="email"
+                placeholder="you@example.com"
+              >
+              <span class="form-hint" id="email-hint">We’ll only use this to reply.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <input
+                type="text"
+                id="subject"
+                name="Subject"
+                placeholder="How can we help?"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="message">Message <span class="required" aria-hidden="true">*</span></label>
+              <textarea
+                id="message"
+                name="Message"
+                required
+                placeholder="Write your message…"
+              ></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Send via email</button>
+              <a class="btn btn-secondary" href="https://x.ai/bot" rel="noopener noreferrer">Talk to Grok Bot</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; <span id="year">2026</span> <span data-brand>COGNATION</span>. Starter site — rename via <code>js/brand.js</code>.</p>
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="https://x.ai/bot" rel="noopener noreferrer">Grok Bot</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="js/brand.js"></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>

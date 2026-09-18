@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 150" width="140" height="150" role="img" aria-label="Most Likely to Succeed yearbook badge">
+  <defs>
+    <linearGradient id="mls-seal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd6e6"/>
+      <stop offset="100%" stop-color="#e85a8c"/>
+    </linearGradient>
+    <linearGradient id="mls-ribbon" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7a8c4"/>
+      <stop offset="100%" stop-color="#c93d6e"/>
+    </linearGradient>
+    <filter id="mls-pop" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="1.5" dy="2" stdDeviation="1.4" flood-color="#5c1a33" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- classic yearbook seal + ribbon tails -->
+  <g filter="url(#mls-pop)">
+    <path d="M48 88 L40 142 L58 128 L70 146 L82 128 L100 142 L92 88 Z" fill="url(#mls-ribbon)" stroke="#fff5f9" stroke-width="2"/>
+    <circle cx="70" cy="62" r="52" fill="url(#mls-seal)" stroke="#fff5f9" stroke-width="4"/>
+    <circle cx="70" cy="62" r="44" fill="none" stroke="rgba(255,245,249,0.55)" stroke-width="2"/>
+    <circle cx="70" cy="62" r="38" fill="none" stroke="#fff5f9" stroke-width="1.2" stroke-dasharray="2.5 2"/>
+    <!-- star -->
+    <path d="M70 36 L75.5 50 L90 52 L79 62 L82 76 L70 68 L58 76 L61 62 L50 52 L64.5 50 Z" fill="#fff5f9" stroke="#ffd6e6" stroke-width="1"/>
+    <text x="70" y="94" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="7" font-weight="700" fill="#fff5f9" letter-spacing="0.4">MOST LIKELY</text>
+    <text x="70" y="104" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="7" font-weight="700" fill="#fff5f9" letter-spacing="0.8">TO SUCCEED</text>
+  </g>
+</svg>

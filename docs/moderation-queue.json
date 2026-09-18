@@ -1,0 +1,7 @@
+{
+  "updatedAt": "2026-09-17T19:20:00-05:00",
+  "investigatorAgentId": 3949519,
+  "newsModerationPath": "/workspace/news-moderation/queue/pending/",
+  "reports": [],
+  "note": "Runtime queue: localStorage cognation.moderation.queue.v1. Mirror pending files with CognationModeration.downloadLastPendingFile() or scripts/mirror-moderation-pending.mjs"
+}

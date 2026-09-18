@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140" role="img" aria-label="Best Smile yearbook badge">
+  <defs>
+    <linearGradient id="bs-patch" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffe0ec"/>
+      <stop offset="50%" stop-color="#f9a8c4"/>
+      <stop offset="100%" stop-color="#ef6d9a"/>
+    </linearGradient>
+    <filter id="bs-emb" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="1" dy="1.5" stdDeviation="1.1" flood-color="#7a2048" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <!-- rounded embroidered patch -->
+  <rect x="14" y="18" width="112" height="104" rx="28" ry="28" fill="url(#bs-patch)" stroke="#fff5f9" stroke-width="4" filter="url(#bs-emb)"/>
+  <rect x="22" y="26" width="96" height="88" rx="22" ry="22" fill="none" stroke="#fff5f9" stroke-width="1.5" stroke-dasharray="3 2.2" opacity="0.8"/>
+  <!-- smiling face -->
+  <circle cx="70" cy="62" r="28" fill="#fff5f9" opacity="0.92"/>
+  <circle cx="58" cy="56" r="3.5" fill="#c93d6e"/>
+  <circle cx="82" cy="56" r="3.5" fill="#c93d6e"/>
+  <path d="M54 68 Q70 84 86 68" fill="none" stroke="#c93d6e" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M56 70 Q70 80 84 70" fill="#ffc2d6" opacity="0.7"/>
+  <text x="70" y="112" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="10" font-weight="700" fill="#fff5f9" letter-spacing="0.7">BEST SMILE</text>
+</svg>

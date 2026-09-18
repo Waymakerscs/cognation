@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta
+    name="description"
+    content="COGNATION — a renameable starter site for your team. Clear, accessible, and ready to deploy."
+    data-brand-meta="{brand} — a renameable starter site for your team. Clear, accessible, and ready to deploy."
+  >
+  <title data-brand-page="Home">COGNATION — Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Rozha+One&family=IM+Fell+English:ital@0;1&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+
+  <!-- Startup / screensaver splash + demo login gate (no backend / no real auth).
+       Logo swap: replace assets/logo.svg (single file) — see README. -->
+  <div
+    id="login-gate"
+    class="login-gate login-gate--splash"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="login-gate-title"
+    aria-describedby="login-gate-desc"
+    hidden
+  >
+    <div class="login-gate-backdrop" tabindex="-1" aria-hidden="true"></div>
+    <div class="login-gate-panel">
+      <div class="login-gate-brand login-gate-brand--splash">
+        <span class="login-gate-brand-name" data-brand>COGNATION</span>
+        <p class="login-gate-tagline" id="login-gate-tagline">“a social wellness concierge”</p>
+      </div>
+      <p class="login-gate-eyebrow">Welcome</p>
+      <h2 id="login-gate-title">Sign in</h2>
+      <p id="login-gate-desc" class="login-gate-desc">
+        Welcome to <span data-brand>COGNATION</span>. Sign in with your account to continue.
+      </p>
+
+      <div id="login-credentials-step" data-login-credentials-step data-login-mode="signin">
+      <form id="login-form" class="login-form" action="#" method="post" novalidate data-login-form>
+        <div class="form-group">
+          <label for="login-username">Username</label>
+          <input
+            type="text"
+            id="login-username"
+            name="username"
+            autocomplete="username"
+            required
+            autocapitalize="none"
+            spellcheck="false"
+            placeholder="alexa"
+          >
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input
+            type="password"
+            id="login-password"
+            name="password"
+            autocomplete="current-password"
+            required
+            placeholder="••••••••"
+          >
+        </div>
+
+        <!-- Signup-only fields (shown when data-login-mode="signup") -->
+        <div class="login-signup-fields" data-login-signup-fields hidden>
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input
+              type="number"
+              id="age"
+              name="age"
+              min="13"
+              max="120"
+              inputmode="numeric"
+              autocomplete="bday-year"
+              required
+              aria-describedby="age-hint"
+              aria-invalid="false"
+            >
+            <span class="form-hint" id="age-hint">Must be 13 or older.</span>
+          </div>
+          <div class="form-group">
+            <label for="country">Country</label>
+            <select id="country" name="country" required aria-invalid="false" data-login-signup-country-select disabled>
+              <option value="United States" selected>United States</option>
+              <option value="Canada">Canada</option>
+              <option value="United Kingdom">United Kingdom</option>
+              <option value="Mexico">Mexico</option>
+              <option value="India">India</option>
+              <option value="Australia">Australia</option>
+              <option value="Germany">Germany</option>
+              <option value="France">France</option>
+              <option value="Brazil">Brazil</option>
+              <option value="Japan">Japan</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group" data-login-state-group>
+            <label for="state">State / region</label>
+            <select id="state" name="state" aria-describedby="state-hint" aria-invalid="false">
+              <option value="">Select state (US)</option>
+              <option value="AL">Alabama</option>
+              <option value="AK">Alaska</option>
+              <option value="AZ">Arizona</option>
+              <option value="AR">Arkansas</option>
+              <option value="CA">California</option>
+              <option value="CO">Colorado</option>
+              <option value="CT">Connecticut</option>
+              <option value="DE">Delaware</option>
+              <option value="DC">District of Columbia</option>
+              <option value="FL">Florida</option>
+              <option value="GA">Georgia</option>
+              <option value="HI">Hawaii</option>
+              <option value="ID">Idaho</option>
+              <option value="IL">Illinois</option>
+              <option value="IN">Indiana</option>
+              <option value="IA">Iowa</option>
+              <option value="KS">Kansas</option>
+              <option value="KY">Kentucky</option>
+              <option value="LA">Louisiana</option>
+              <option value="ME">Maine</option>
+              <option value="MD">Maryland</option>
+              <option value="MA">Massachusetts</option>
+              <option value="MI">Michigan</option>
+              <option value="MN">Minnesota</option>
+              <option value="MS">Mississippi</option>
+              <option value="MO">Missouri</option>
+              <option value="MT">Montana</option>
+              <option value="NE">Nebraska</option>
+              <option value="NV">Nevada</option>
+              <option value="NH">New Hampshire</option>
+              <option value="NJ">New Jersey</option>
+              <option value="NM">New Mexico</option>
+              <option value="NY">New York</option>
+              <option value="NC">North Carolina</option>
+              <option value="ND">North Dakota</option>
+              <option value="OH">Ohio</option>
+              <option value="OK">Oklahoma</option>
+              <option value="OR">Oregon</option>
+              <option value="PA">Pennsylvania</option>
+              <option value="RI">Rhode Island</option>
+              <option value="SC">South Carolina</option>
+              <option value="SD">South Dakota</option>
+              <option value="TN">Tennessee</option>
+              <option value="TX">Texas</option>
+              <option value="UT">Utah</option>
+              <option value="VT">Vermont</option>
+              <option value="VA">Virginia</option>
+              <option value="WA">Washington</option>
+              <option value="WV">West Virginia</option>
+              <option value="WI">Wisconsin</option>
+              <option value="WY">Wyoming</option>
+            </select>
+            <input
+              type="text"
+              id="state-text"
+              name="state-text"
+              maxlength="80"
+              autocomplete="address-level1"
+              placeholder="State / province / region"
+              hidden
+              data-login-state-text
+              aria-describedby="state-hint"
+              aria-invalid="false"
+            >
+            <span class="form-hint" id="state-hint">US: pick a state. Other countries: enter your region.</span>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              autocomplete="tel"
+              inputmode="tel"
+              required
+              placeholder="+1 555 0100"
+              aria-describedby="phone-hint"
+              aria-invalid="false"
+            >
+            <span class="form-hint" id="phone-hint">Include country code when possible.</span>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              autocomplete="email"
+              inputmode="email"
+              required
+              placeholder="you@example.com"
+              aria-describedby="email-hint"
+              aria-invalid="false"
+            >
+            <span class="form-hint" id="email-hint">We will never share your email in this demo.</span>
+          </div>
+        </div>
+
+        <!-- Sign-in country (kept for existing login.js country persist) -->
+        <div class="form-group" data-login-signin-country>
+          <label for="login-country">Country</label>
+          <select id="login-country" name="country" required data-login-signin-country-select>
+            <option value="United States" selected>United States</option>
+            <option value="Canada">Canada</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="Mexico">Mexico</option>
+            <option value="India">India</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <p id="login-status" class="login-status" hidden role="status" aria-live="polite"></p>
+
+        <div class="form-actions login-form-actions">
+          <button type="submit" class="btn btn-primary login-submit-btn" data-login-submit>Sign in</button>
+        </div>
+        <p class="login-mode-toggle">
+          <button type="button" class="login-mode-link" data-login-mode-toggle>
+            Need an account? Sign up
+          </button>
+        </p>
+        <p class="form-hint login-demo-hint" data-login-demo-hint>Demo: username <code>alexa</code> · password <code>TowerCommune26</code></p>
+        <p class="form-hint login-demo-storage-hint">Demo storage is in this browser only — not production identity.</p>
+      </form>
+      </div>
+
+      <div id="login-profile-picker" class="login-profile-picker" hidden data-login-profile-picker>
+        <h3 class="login-profile-picker-title">Choose profile</h3>
+        <p class="login-profile-picker-desc">This account has two Tower pages. Pick which one to enter.</p>
+        <div id="login-profile-picker-list" class="login-profile-picker-list" role="radiogroup" aria-label="Tower profiles"></div>
+        <div class="form-actions login-form-actions login-profile-picker-actions">
+          <button type="button" class="btn btn-secondary" id="login-profile-back">Back</button>
+          <button type="button" class="btn btn-primary" id="login-profile-continue">Continue</button>
+        </div>
+        <p class="form-hint login-demo-storage-hint">Up to 2 profiles per phone · demo registry in localStorage.</p>
+      </div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="logo" href="index.html">
+        <span data-brand>COGNATION</span>
+      </a>
+      <div class="people-search" data-people-search>
+        <label class="visually-hidden" for="people-search-input">Search people</label>
+        <input
+          id="people-search-input"
+          type="search"
+          name="people"
+          placeholder="Search people…"
+          autocomplete="off"
+          spellcheck="false"
+          data-people-search-input
+        >
+        <div class="people-search-results" data-people-search-results hidden role="listbox" aria-label="People results"></div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Tab order (L→R): TOWER · NEWS · COMMUNE · PAGES (WELL hidden from public chrome) -->
+    <section class="section tabs-section" aria-label="COGNATION">
+      <div class="container">
+        <div class="tabs tabs--chrome" data-tabs>
+          <div class="app-topbar">
+            <div role="tablist" aria-label="COGNATION topics" class="tablist">
+              <button type="button" role="tab" id="tab-tower" aria-controls="panel-tower" aria-selected="true" tabindex="0">TOWER</button>
+              <button type="button" role="tab" id="tab-news" aria-controls="panel-news" aria-selected="false" tabindex="-1">NEWS</button>
+              <button type="button" role="tab" id="tab-commune" aria-controls="panel-commune" aria-selected="false" tabindex="-1">COMMUNE</button>
+              <button type="button" role="tab" id="tab-pages" aria-controls="panel-pages" aria-selected="false" tabindex="-1">PAGES</button>
+            </div>
+            <div class="app-topbar-actions">
+              <a class="grok-whisper" href="https://x.ai/bot" rel="noopener noreferrer">talk to grok bot</a>
+              <button type="button" class="app-logout-btn" data-cognation-logout>Log out</button>
+            </div>
+          </div>
+
+          <div class="tab-panels">
+            <div role="tabpanel" id="panel-tower" class="tower-tab-panel" data-tower-tab-panel aria-labelledby="tab-tower">
+              <div class="tower-app" data-tower-app data-tower-side="private" data-tower-is-owner="true">
+                <div class="tower-side-toggle" data-tower-side-toggle role="tablist" aria-label="Tower side">
+                  <button type="button" class="tower-side-btn" role="tab" data-tower-side-btn="private" aria-selected="true" id="tower-side-private">My feed</button>
+                  <button type="button" class="tower-side-btn" role="tab" data-tower-side-btn="public" aria-selected="false" id="tower-side-public">Public profile</button>
+                </div>
+
+                <!-- PRIVATE: owner newsfeed backend (compose + friends feed) -->
+                <div class="tower-private-side" data-tower-private-side>
+                  <div class="tower-main">
+                    <header class="tower-header">
+                      <h3 class="tower-title">TOWER</h3>
+                    </header>
+
+                    
+                    <details class="tower-private-theme" data-tower-private-theme>
+                      <summary class="tower-private-theme-summary">My feed look · private only</summary>
+                      <div class="tower-private-theme-body">
+                        <p class="form-hint">Styles your newsfeed backside — separate from the public scrapbook.</p>
+                        <div class="form-group tower-private-theme-fields">
+                          <label for="tower-private-bg">Newsfeed background</label>
+                          <input id="tower-private-bg" type="color" value="#fff5f9" data-tower-private-bg>
+                          <label for="tower-private-font" class="tower-music-url-label">Font family</label>
+                          <select id="tower-private-font" data-tower-private-font>
+                            <option value="georgia">Georgia (serif)</option>
+                            <option value="chomsky">Chomsky (display)</option>
+                            <option value="system">system-ui (sans)</option>
+                            <option value="serif">Classic serif</option>
+                            <option value="sans">Clean sans</option>
+                            <option value="scrapbook">Comic-ish scrapbook</option>
+                          </select>
+                          <label for="tower-private-font-size" class="tower-music-url-label">Font size</label>
+                          <select id="tower-private-font-size" data-tower-private-font-size>
+                            <option value="14">14px · compact</option>
+                            <option value="16" selected>16px · default</option>
+                            <option value="18">18px · comfortable</option>
+                            <option value="20">20px · large</option>
+                          </select>
+                          <label for="tower-private-text" class="tower-music-url-label">Text color</label>
+                          <input id="tower-private-text" type="color" value="#4a2c3a" data-tower-private-text>
+                          <label for="tower-private-btn" class="tower-music-url-label">Button color</label>
+                          <input id="tower-private-btn" type="color" value="#f4a4c4" data-tower-private-btn>
+                          <label class="tower-private-check">
+                            <input type="checkbox" data-tower-private-author-see-through checked>
+                            <span>See-through names on posts</span>
+                          </label>
+                          <label class="tower-private-check">
+                            <input type="checkbox" data-tower-private-messages-see-through checked>
+                            <span>See-through messages panel (bubbles &amp; chrome)</span>
+                          </label>
+                        </div>
+                        <div class="form-actions">
+                          <button type="button" class="btn btn-primary tower-btn-compact" data-tower-private-theme-save>Save</button>
+                        </div>
+                        <p class="commune-status" data-tower-private-theme-status hidden role="status" aria-live="polite"></p>
+                      </div>
+                    </details>
+
+                    <details class="tower-private-theme tower-private-friends tower-compact-block" data-tower-private-friends data-tower-top-friends>
+                      <summary class="tower-private-theme-summary">Top friends</summary>
+                      <div class="tower-private-theme-body">
+                        <p class="form-hint">Feature pins on Public · drag to place</p>
+                        <div class="form-group tower-friends-display">
+                          <label for="tower-friends-count">Public friends to display</label>
+                          <select id="tower-friends-count" name="friendsDisplayCount" data-tower-friends-count>
+                            <option value="3">Top 3</option>
+                            <option value="6">Top 6</option>
+                            <option value="8">Top 8</option>
+                          </select>
+                          <fieldset class="tower-friends-pick" data-tower-friends-pick>
+                            <legend class="visually-hidden">Pick friends to feature</legend>
+                            <p class="form-hint">Tap to feature (demo neighbors). Drag selected chips to set rank 1…n:</p>
+                            <div class="tower-friends-chips" data-tower-friends-chips></div>
+                            <div class="tower-friends-save-row" style="margin-top:0.5rem;display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem;">
+                              <button type="button" class="btn btn-primary tower-btn-compact" data-tower-save-friends>Save</button>
+                              <span class="form-hint" data-tower-friends-status role="status" aria-live="polite"></span>
+                            </div>
+                          </fieldset>
+                        </div>
+                      </div>
+                    </details>
+
+                    <details class="tower-private-theme tower-private-badges tower-compact-block" data-tower-private-badges data-tower-badges>
+                      <summary class="tower-private-theme-summary">Badges</summary>
+                      <div class="tower-private-theme-body">
+                        <p class="form-hint">Show as pins on Public</p>
+                        <div class="tower-badge-visibility" data-tower-badge-visibility></div>
+                        <div class="tower-friends-save-row" style="margin-top:0.65rem;display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem;">
+                          <button type="button" class="btn btn-primary tower-btn-compact" data-tower-save-badges>Save</button>
+                          <span class="form-hint" data-tower-badges-status role="status" aria-live="polite"></span>
+                        </div>
+                      </div>
+                    </details>
+
+                    <details class="tower-private-theme tower-private-calendar tower-compact-block" data-tower-private-calendar data-tower-calendar>
+                      <summary class="tower-private-theme-summary">Calendar</summary>
+                      <div class="tower-private-theme-body">
+                        <div class="tower-cal tower-cal--private tower-cal--compact" data-tower-cal-private></div>
+                        <div class="tower-cal-google" data-tower-cal-google>
+                          <div class="tower-cal-google-actions">
+                            <button type="button" class="btn btn-secondary" data-tower-cal-google-connect>Connect Google</button>
+                            <span class="form-hint" data-tower-cal-google-status role="status" aria-live="polite"></span>
+                          </div>
+                        </div>
+                      </div>
+                    </details>
+
+                    <form class="tower-compose tower-compose--compact" data-tower-compose action="#" method="post">
+                      <h4 class="tower-block-heading" data-tower-block-heading>On the block</h4>
+                      <div class="form-group">
+                        <label class="visually-hidden" for="tower-body">Update</label>
+                        <textarea id="tower-body" name="body" rows="2" maxlength="2000" placeholder="Share something…"></textarea>
+                      </div>
+                      <div class="tower-upload-row">
+                        <div class="form-group">
+                          <label for="tower-attach-kind">Type</label>
+                          <select id="tower-attach-kind" name="attachKind">
+                            <option value="photo">Picture</option>
+                            <option value="note">Notes</option>
+                            <option value="video">Video</option>
+                            <option value="art">Creative</option>
+                            <option value="document">Document</option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label for="tower-files">Files</label>
+                          <input id="tower-files" name="files" type="file" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,.gif,.webp,.mp4,.mov">
+                        </div>
+                      </div>
+                      <p class="commune-status" data-tower-status hidden role="status" aria-live="polite"></p>
+                      <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Post</button>
+                      </div>
+                    </form>
+
+                    <div class="paper-rule-block" aria-hidden="true"></div>
+                    <div class="tower-private-main-grid tower-private-workspace" data-tower-workspace>
+
+                    <!-- Left rail: friends circles + personal calendar -->
+                    <aside class="tower-left-rail" data-tower-calendar aria-label="Friends and calendar">
+                      <div class="tower-friends-browse" data-tower-friends-browse data-tower-friends aria-label="Friends">
+                        <h4 class="tower-friends-browse-heading">Friends</h4>
+                        <ul class="tower-friends-browse-list" data-tower-friends-browse-list role="list"></ul>
+                      </div>
+                      <div class="tower-personal-calendar" data-tower-calendar-personal>
+                        <h4 class="tower-personal-calendar-heading">Personal calendar</h4>
+                        <div class="tower-cal tower-cal--mini" data-tower-cal-personal-mini aria-label="Personal calendar mini">
+                          <div class="tower-cal-mini-stub">
+                            <span class="tower-cal-mini-month">Sep 2026</span>
+                            <div class="tower-cal-mini-grid" aria-hidden="true">
+                              <span></span><span></span><span></span><span></span><span></span><span></span><span class="is-today">17</span>
+                              <span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </aside>
+
+                    <!-- Center: wider feed -->
+                    <div class="tower-feed" data-tower-feed role="feed" aria-label="Tower posts"></div>
+
+                    <!-- Right rail: messages closed by default -->
+                    <aside
+                      class="tower-private-messages"
+                      data-tower-private-messages
+                      data-tower-messages
+                      data-tower-messages-closed
+                      aria-label="Messages"
+                    >
+                      <details class="tower-messages-shell" data-tower-messages-shell>
+                        <summary class="tower-messages-heading">Messages</summary>
+                        <div class="tower-messages" data-commune-messaging data-tower-messages>
+                          <ul
+                            class="commune-conv-list tower-conv-list"
+                            data-commune-list
+                            data-tower-thread-list
+                            role="listbox"
+                            aria-label="Conversations"
+                          ></ul>
+                          <div class="commune-thread tower-thread" data-tower-thread data-tower-thread-open aria-label="Message thread" hidden>
+                            <header class="commune-thread-header">
+                              <h5 class="commune-thread-title" data-commune-thread-title>Select a conversation</h5>
+                            </header>
+                            <p class="commune-empty" data-commune-empty hidden>Select a conversation.</p>
+                            <div
+                              class="commune-messages"
+                              data-commune-messages
+                              role="log"
+                              aria-live="polite"
+                              aria-relevant="additions"
+                              tabindex="0"
+                            ></div>
+                            <p class="commune-status" data-commune-status hidden role="status" aria-live="polite"></p>
+                            <form class="commune-compose" data-commune-compose action="#" method="post">
+                              <label class="visually-hidden" for="commune-compose-input">Write a message</label>
+                              <textarea
+                                id="commune-compose-input"
+                                name="message"
+                                rows="2"
+                                maxlength="2000"
+                                placeholder="Message…"
+                                autocomplete="off"
+                                required
+                              ></textarea>
+                              <button type="submit" class="btn btn-primary">Send</button>
+                            </form>
+                          </div>
+                        </div>
+                      </details>
+                    </aside>
+
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- PUBLIC: scrapbook face visitors see -->
+                <div class="tower-public-side" data-tower-public-side hidden>
+                  <div class="tower-profile-kind-toggle" data-tower-profile-kind-toggle role="tablist" aria-label="Public profile page" hidden>
+                    <button type="button" class="tower-kind-btn" role="tab" data-tower-profile-kind="personal" aria-selected="true" id="tower-kind-personal">Personal page</button>
+                    <button type="button" class="tower-kind-btn" role="tab" data-tower-profile-kind="professional" aria-selected="false" id="tower-kind-professional">Professional page</button>
+                  </div>
+                  <!-- CGN-007 Follow shell: Engineer wires follow graph. Hook: data-tower-follow + data-profile-id -->
+                  <div class="tower-follow-row" data-tower-follow-row>
+                    <button
+                      type="button"
+                      class="tower-follow-btn"
+                      data-tower-follow
+                      data-profile-id=""
+                      aria-pressed="false"
+                      aria-label="Follow this profile"
+                    >Follow</button>
+                  </div>
+                  <div class="tower-scrapbook-bar" data-tower-scrapbook-bar>
+                  <button type="button" class="btn btn-secondary" data-tower-add-widget title="Add a quote or text sticker">Add content</button>
+                  <button type="button" class="btn btn-secondary" data-tower-reset-layout>Reset layout</button>
+                  <button type="button" class="btn btn-secondary" data-tower-undo-widget disabled title="Restore last removed widget">Undo</button>
+                  <div class="tower-rotate-toolbar" data-tower-rotate-toolbar hidden>
+                    <span class="tower-rotate-label">Rotate</span>
+                    <button type="button" class="btn btn-secondary tower-rotate-btn" data-tower-rotate="straighten" title="Straighten (0°)">Straighten</button>
+                    <button type="button" class="btn btn-secondary tower-rotate-btn" data-tower-rotate="-90" title="Rotate 90° counter-clockwise">↺ 90°</button>
+                    <button type="button" class="btn btn-secondary tower-rotate-btn" data-tower-rotate="90" title="Rotate 90° clockwise">↻ 90°</button>
+                    <button type="button" class="btn btn-secondary tower-rotate-btn" data-tower-rotate="180" title="Upside down (180°)">180°</button>
+                    <button type="button" class="btn btn-secondary tower-rotate-btn" data-tower-rotate="-15" title="Nudge −15° ([)">−15°</button>
+                    <button type="button" class="btn btn-secondary tower-rotate-btn" data-tower-rotate="15" title="Nudge +15° (])">+15°</button>
+                  </div>
+                  <span class="form-hint tower-scrapbook-hint">Drag ⋮⋮ to move · click to select · Add content for quotes · Backspace removes · Undo restores</span>
+                  <div class="tower-public-url-chip" data-tower-public-url-chip>
+                    <label class="visually-hidden" for="tower-public-url-preview">Public profile link</label>
+                    <input id="tower-public-url-preview" type="text" readonly data-tower-public-url-preview spellcheck="false">
+                    <button type="button" class="btn btn-secondary" data-tower-copy-public-url>Copy link</button>
+                  </div>
+                </div>
+
+                  <details class="tower-private-theme tower-public-look-panel" data-tower-collage-panel data-tower-public-look>
+                    <summary class="tower-private-theme-summary">Public profile look</summary>
+                    <div class="tower-private-theme-body">
+                      <p class="form-hint">Styles the public scrapbook visitors see — separate from My feed look (private).</p>
+                      <div class="form-group tower-private-theme-fields">
+                        <label for="tower-font">Font family</label>
+                        <select id="tower-font" name="towerFont" data-tower-font>
+                          <option value="georgia">Georgia (serif)</option>
+                          <option value="chomsky">Chomsky (display)</option>
+                          <option value="system">system-ui (sans)</option>
+                          <option value="serif">Classic serif</option>
+                          <option value="sans">Clean sans</option>
+                          <option value="scrapbook">Comic-ish scrapbook</option>
+                        </select>
+                        <label for="tower-feed-bg" class="tower-music-url-label">Page background color</label>
+                        <input id="tower-feed-bg" name="feedBackgroundColor" type="color" value="#fff5f9" data-tower-feed-bg>
+                        <label for="tower-public-text" class="tower-music-url-label">Text color</label>
+                        <input id="tower-public-text" type="color" value="#4a2c3a" data-tower-public-text>
+                        <label for="tower-public-btn" class="tower-music-url-label">Button / accent color</label>
+                        <input id="tower-public-btn" type="color" value="#f4a4c4" data-tower-public-btn>
+                        <label for="tower-bg-mode" class="tower-music-url-label">Background type</label>
+                        <select id="tower-bg-mode" data-tower-bg-mode>
+                          <option value="solid">Solid color</option>
+                          <option value="collage">Collage</option>
+                          <option value="html">Custom HTML</option>
+                        </select>
+                        <p class="form-hint tower-public-look-edit-bg-row">
+                          <button type="button" class="btn btn-secondary" data-tower-public-look-edit-bg hidden>Change background</button>
+                        </p>
+                        <div class="tower-bg-options" data-tower-bg-options>
+                          <div class="tower-bg-mode-panel" data-tower-bg-mode-panel="solid">
+                            <p class="form-hint">Uses the page background color above. Tap a swatch to set it:</p>
+                            <div class="tower-bg-swatches" data-tower-bg-swatches role="group" aria-label="Background color presets">
+                              <button type="button" class="tower-bg-swatch" data-tower-bg-swatch="#fff5f9" style="background:#fff5f9" title="Baby pink" aria-label="Baby pink"></button>
+                              <button type="button" class="tower-bg-swatch" data-tower-bg-swatch="#ffffff" style="background:#ffffff" title="White" aria-label="White"></button>
+                              <button type="button" class="tower-bg-swatch" data-tower-bg-swatch="#fef3c7" style="background:#fef3c7" title="Cream" aria-label="Cream"></button>
+                              <button type="button" class="tower-bg-swatch" data-tower-bg-swatch="#e8f4f8" style="background:#e8f4f8" title="Sky" aria-label="Sky"></button>
+                              <button type="button" class="tower-bg-swatch" data-tower-bg-swatch="#ecfdf5" style="background:#ecfdf5" title="Mint" aria-label="Mint"></button>
+                              <button type="button" class="tower-bg-swatch" data-tower-bg-swatch="#f3e8ff" style="background:#f3e8ff" title="Lavender" aria-label="Lavender"></button>
+                              <button type="button" class="tower-bg-swatch" data-tower-bg-swatch="#1a1a2e" style="background:#1a1a2e" title="Night" aria-label="Night"></button>
+                              <button type="button" class="tower-bg-swatch" data-tower-bg-swatch="#4a2c3a" style="background:#4a2c3a" title="Plum" aria-label="Plum"></button>
+                            </div>
+                          </div>
+                          <div class="tower-bg-mode-panel" data-tower-bg-mode-panel="collage" hidden>
+                            <p class="form-hint">Collage sits behind your stickers. Pick a layout, then drop in image URLs or keep the baby-pink demo tiles.</p>
+                            <div class="form-group">
+                              <label for="tower-collage-layout">Layout</label>
+                              <select id="tower-collage-layout" data-tower-collage-layout>
+                                <option value="grid-3x3">3 × 3 grid</option>
+                                <option value="grid-2x3">2 × 3 grid</option>
+                                <option value="masonry">Masonry / brick</option>
+                                <option value="hero-smalls">One large + smalls</option>
+                                <option value="polaroid-scatter">Polaroid scatter</option>
+                                <option value="none">None (plain pink)</option>
+                              </select>
+                            </div>
+                            <div class="tower-collage-cells" data-tower-collage-cells></div>
+                            <div class="form-actions tower-collage-actions">
+                              <button type="button" class="btn btn-secondary" data-tower-collage-demo>Fill demo tiles</button>
+                              <button type="button" class="btn btn-primary" data-tower-collage-apply>Apply collage</button>
+                            </div>
+                          </div>
+                          <div class="tower-bg-mode-panel" data-tower-bg-mode-panel="html" hidden>
+                            <p class="form-hint">Paste sanitized HTML for a full-bleed background behind stickers (no scripts). Or upload a .html / .txt file.</p>
+                            <label for="tower-bg-html">Background HTML</label>
+                            <textarea
+                              id="tower-bg-html"
+                              rows="6"
+                              maxlength="8000"
+                              spellcheck="false"
+                              placeholder="Optional HTML background (no scripts)."
+                              data-tower-bg-html
+                            ></textarea>
+                            <label for="tower-bg-html-file" class="tower-music-url-label">Upload .html / .txt</label>
+                            <input id="tower-bg-html-file" type="file" accept=".html,.htm,.txt,text/html,text/plain" data-tower-bg-html-file>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" data-tower-public-look-preview>Preview</button>
+                        <button type="button" class="btn btn-primary" data-tower-public-look-save>Save public look</button>
+                      </div>
+                      <p class="commune-status" data-tower-public-look-status hidden role="status" aria-live="polite"></p>
+                    </div>
+                  </details>
+
+                  <div class="tower-layout tower-layout--scrapbook" data-tower-scrapbook>
+                    <div class="tower-collage-stage" data-tower-collage-stage aria-hidden="true"></div>
+                    <div class="tower-bg-html-stage" data-tower-bg-html-stage aria-hidden="true"></div>
+                  <!-- Far left: profile + messages -->
+                  <aside class="tower-rail" aria-label="Your Tower profile and messages">
+                    <div class="tower-profile" data-tower-profile>
+                      <div class="tower-sticker tower-sticker--avatar" data-tower-widget="avatar" data-sticker-label="Avatar"><button type="button" class="tower-sticker-handle" data-tower-sticker-handle aria-label="Move Avatar sticker" tabindex="-1" hidden>⋮⋮</button><div class="tower-avatar-stack" data-tower-avatar-ornament="none" data-tower-avatar-ornament-pos="above">
+                        <img class="tower-avatar-ornament" data-tower-ornament-img src="" alt="" aria-hidden="true" hidden>
+                        <div class="tower-avatar-wrap" data-tower-avatar-frame="none">
+                        <div class="tower-avatar-mat">
+                          <div class="tower-avatar" data-tower-avatar aria-hidden="true">?</div>
+                        </div>
+                        <img class="tower-avatar-frame-overlay" data-tower-frame-overlay src="" alt="" aria-hidden="true" hidden>
+                        <button type="button" class="tower-avatar-resize" data-tower-avatar-resize aria-label="Drag to resize frame" title="Drag to resize frame"></button>
+                        <label class="tower-avatar-upload" title="Upload profile photo">
+                          <span class="tower-avatar-upload-hint" aria-hidden="true">📷</span>
+                          <span class="visually-hidden">Upload profile picture</span>
+                          <input type="file" accept="image/*" data-tower-avatar-file>
+                        </label>
+                        <!-- CGN-010: Go Live from profile pic -->
+                        <button type="button" class="tower-go-live-btn" data-go-live aria-label="Go live">Go live</button>
+                      </div>
+                      </div>
+                      <!-- CGN-010 Live stage shell (demo stubs) -->
+                      <section class="tower-live-panel" data-live-stage hidden>
+                        <header class="tower-live-panel-head">
+                          <h4 class="tower-live-panel-title">Live</h4>
+                          <div class="tower-live-share" role="group" aria-label="Share live">
+                            <button type="button" class="btn btn-secondary" data-live-share-commune>Share to COMMUNE</button>
+                            <button type="button" class="btn btn-secondary" data-live-share-tower>Share to Tower</button>
+                          </div>
+                        </header>
+                        <div class="tower-live-multicam" data-live-cam-count="6" aria-label="Multi-cam grid">
+                          <div class="tower-live-cam" data-live-cam="1">Cam 1</div>
+                          <div class="tower-live-cam" data-live-cam="2">Cam 2</div>
+                          <div class="tower-live-cam" data-live-cam="3">Cam 3</div>
+                          <div class="tower-live-cam" data-live-cam="4">Cam 4</div>
+                          <div class="tower-live-cam" data-live-cam="5">Cam 5</div>
+                          <div class="tower-live-cam" data-live-cam="6">Cam 6</div>
+                        </div>
+                        <div class="tower-live-join" data-live-join-request>
+                          <p class="form-hint">Join request (demo)</p>
+                          <button type="button" class="btn btn-secondary" data-live-approve-join>Approve join</button>
+                        </div>
+                        <div class="tower-live-sales" role="group" aria-label="Pro sales">
+                          <button type="button" class="btn btn-primary" data-live-sales>Buy / tip</button>
+                          <button type="button" class="btn btn-secondary" data-live-class>Join class</button>
+                        </div>
+                        <div class="tower-live-comments" data-live-comments>
+                          <ul class="tower-live-comment-list" data-live-comment-list>
+                            <li>Demo: “Love this stream!”</li>
+                          </ul>
+                          <form class="tower-live-comment-form" data-live-comment-form action="#" method="post">
+                            <label class="visually-hidden" for="tower-live-comment-input">Comment</label>
+                            <input id="tower-live-comment-input" type="text" maxlength="280" placeholder="Say something…" autocomplete="off">
+                            <button type="submit" class="btn btn-primary">Send</button>
+                          </form>
+                        </div>
+                        <p class="commune-status" data-live-status hidden role="status" aria-live="polite"></p>
+                      </section>
+                      <div class="tower-profile-edit" data-tower-profile-edit>
+                        <button type="button" class="btn btn-secondary tower-edit-profile-btn" data-tower-edit-profile aria-expanded="false" aria-haspopup="true" aria-controls="tower-profile-edit-panel">
+                          Edit profile
+                          <span class="tower-edit-profile-chevron" aria-hidden="true">▾</span>
+                        </button>
+                        <div class="tower-profile-edit-dropdown" id="tower-profile-edit-panel" data-tower-profile-edit-panel hidden>
+                          <form class="tower-profile-form" data-tower-profile-form action="#" method="post">
+                        <div class="form-group">
+                          <label for="tower-display-name">Display name</label>
+                          <input id="tower-display-name" name="displayName" type="text" maxlength="80" placeholder="Your name" autocomplete="nickname">
+                          <label for="tower-name-size" class="tower-music-url-label">Name size (px)</label>
+                          <input id="tower-name-size" type="range" min="14" max="200" value="28" data-tower-name-size>
+                          <span class="form-hint">Drag the corner on the name sticker, or use this slider · up to 200px · live on Public</span>
+                        </div>
+                        <div class="form-group tower-photo-upload-fields">
+                          <label for="tower-profile-photo">Profile photo</label>
+                          <div class="tower-photo-choose-row">
+                            <input id="tower-profile-photo" type="file" accept="image/*" data-tower-avatar-file-panel>
+                            <button type="button" class="btn btn-secondary" data-tower-choose-avatar>Choose photo</button>
+                          </div>
+                          <span class="form-hint">Upload a picture for your public profile. You can also tap the camera on the photo itself.</span>
+                          <button type="button" class="btn btn-secondary" data-tower-clear-avatar style="margin-top:0.35rem;">Remove photo</button>
+                        </div>
+                        <div class="form-group tower-frame-fields">
+                          <p class="tower-frame-fields-label" id="tower-frame-label">Picture frame</p>
+                          <span class="form-hint">Photography-style frames around your profile photo</span>
+                          <div class="tower-frame-chips tower-frame-lx-clear" role="group" aria-labelledby="tower-frame-label" data-tower-frame-chips>
+                            <button type="button" class="tower-frame-chip is-selected" data-frame-id="none" aria-pressed="true" title="None" aria-label="None"><span class="tower-frame-chip-swatch tower-frame-lx-clear tower-frame-chip-swatch--none" aria-hidden="true"></span></button>
+                            <button type="button" class="tower-frame-chip" data-frame-id="ornate-gold" aria-pressed="false" title="Ornate gold oval" aria-label="Ornate gold oval"><span class="tower-frame-chip-swatch tower-frame-lx-clear tower-frame-chip-swatch--ornate-gold" aria-hidden="true"></span></button>
+                            <button type="button" class="tower-frame-chip" data-frame-id="baroque-magenta" aria-pressed="false" title="Magenta baroque" aria-label="Magenta baroque"><span class="tower-frame-chip-swatch tower-frame-lx-clear tower-frame-chip-swatch--baroque-magenta" aria-hidden="true"></span></button>
+                            <button type="button" class="tower-frame-chip" data-frame-id="squiggly" aria-pressed="false" title="Squiggly" aria-label="Squiggly"><span class="tower-frame-chip-swatch tower-frame-lx-clear tower-frame-chip-swatch--squiggly" aria-hidden="true"></span></button>
+                            <button type="button" class="tower-frame-chip" data-frame-id="gallery-gold" aria-pressed="false" title="Gallery gold" aria-label="Gallery gold"><span class="tower-frame-chip-swatch tower-frame-lx-clear tower-frame-chip-swatch--gallery-gold" aria-hidden="true"></span></button>
+                            <button type="button" class="tower-frame-chip" data-frame-id="walnut" aria-pressed="false" title="Walnut" aria-label="Walnut"><span class="tower-frame-chip-swatch tower-frame-lx-clear tower-frame-chip-swatch--walnut" aria-hidden="true"></span></button>
+                            <button type="button" class="tower-frame-chip" data-frame-id="polaroid" aria-pressed="false" title="Polaroid" aria-label="Polaroid"><span class="tower-frame-chip-swatch tower-frame-lx-clear tower-frame-chip-swatch--polaroid" aria-hidden="true"></span></button>
+                            <button type="button" class="tower-frame-chip" data-frame-id="matte-black" aria-pressed="false" title="Matte black" aria-label="Matte black"><span class="tower-frame-chip-swatch tower-frame-lx-clear tower-frame-chip-swatch--matte-black" aria-hidden="true"></span></button>
+                            <button type="button" class="tower-frame-chip" data-frame-id="cowboy-hat" aria-pressed="false" title="Cowboy hat" aria-label="Cowboy hat"><span class="tower-frame-chip-swatch tower-frame-lx-clear tower-frame-chip-swatch--cowboy-hat" aria-hidden="true"></span></button>
+                          </div>
+                          <input type="hidden" name="avatarFrame" value="none" data-tower-avatar-frame-input>
+                          <div class="tower-cowboy-color-fields" data-tower-cowboy-color-fields hidden>
+                            <p class="tower-frame-fields-label" id="tower-cowboy-color-label">Cowboy hat color</p>
+                            <span class="form-hint">Recolor the hat — Save frame to keep</span>
+                            <div class="tower-frame-chips tower-cowboy-color-chips" role="group" aria-labelledby="tower-cowboy-color-label" data-tower-cowboy-color-chips>
+                              <button type="button" class="tower-frame-chip is-selected" data-cowboy-color="tan" aria-pressed="true" title="Tan" aria-label="Tan"><span class="tower-cowboy-swatch tower-cowboy-swatch--tan" aria-hidden="true"></span></button>
+                              <button type="button" class="tower-frame-chip" data-cowboy-color="black" aria-pressed="false" title="Black" aria-label="Black"><span class="tower-cowboy-swatch tower-cowboy-swatch--black" aria-hidden="true"></span></button>
+                              <button type="button" class="tower-frame-chip" data-cowboy-color="white" aria-pressed="false" title="White" aria-label="White"><span class="tower-cowboy-swatch tower-cowboy-swatch--white" aria-hidden="true"></span></button>
+                              <button type="button" class="tower-frame-chip" data-cowboy-color="pink" aria-pressed="false" title="Pink" aria-label="Pink"><span class="tower-cowboy-swatch tower-cowboy-swatch--pink" aria-hidden="true"></span></button>
+                              <button type="button" class="tower-frame-chip" data-cowboy-color="red" aria-pressed="false" title="Red" aria-label="Red"><span class="tower-cowboy-swatch tower-cowboy-swatch--red" aria-hidden="true"></span></button>
+                              <button type="button" class="tower-frame-chip" data-cowboy-color="blue" aria-pressed="false" title="Blue" aria-label="Blue"><span class="tower-cowboy-swatch tower-cowboy-swatch--blue" aria-hidden="true"></span></button>
+                              <button type="button" class="tower-frame-chip" data-cowboy-color="green" aria-pressed="false" title="Green" aria-label="Green"><span class="tower-cowboy-swatch tower-cowboy-swatch--green" aria-hidden="true"></span></button>
+                              <button type="button" class="tower-frame-chip" data-cowboy-color="purple" aria-pressed="false" title="Purple" aria-label="Purple"><span class="tower-cowboy-swatch tower-cowboy-swatch--purple" aria-hidden="true"></span></button>
+                              <button type="button" class="tower-frame-chip" data-cowboy-color="gold" aria-pressed="false" title="Gold" aria-label="Gold"><span class="tower-cowboy-swatch tower-cowboy-swatch--gold" aria-hidden="true"></span></button>
+                            </div>
+                            <input type="hidden" name="cowboyHatColor" value="tan" data-tower-cowboy-color-input>
+                          </div>
+                          <div class="form-actions tower-frame-actions">
+                            <button type="button" class="btn btn-primary" data-tower-save-frame>Save frame</button>
+                            <span class="form-hint">Pick an image, then Save frame</span>
+                          </div>
+                        </div>
+                        <div class="form-group tower-ornament-fields">
+                          <p class="tower-frame-fields-label" id="tower-ornament-label">Photo ornament</p>
+                          <span class="form-hint">Elegant bow or bowtie stacked above or below your profile photo</span>
+                          <div class="tower-frame-chips tower-frame-lx-clear" role="group" aria-labelledby="tower-ornament-label" data-tower-ornament-chips>
+                            <button type="button" class="tower-frame-chip is-selected" data-ornament-id="none" aria-pressed="true" title="None"><span class="tower-frame-chip-swatch tower-frame-lx-clear tower-frame-chip-swatch--none" aria-hidden="true"></span><span>None</span></button>
+                            <button type="button" class="tower-frame-chip" data-ornament-id="elegant-bow" aria-pressed="false" title="Elegant bow"><span class="tower-frame-chip-swatch tower-frame-lx-clear tower-frame-chip-swatch--elegant-bow" aria-hidden="true"></span><span>Elegant bow</span></button>
+                            <button type="button" class="tower-frame-chip" data-ornament-id="bowtie" aria-pressed="false" title="Bowtie"><span class="tower-frame-chip-swatch tower-frame-lx-clear tower-frame-chip-swatch--bowtie" aria-hidden="true"></span><span>Bowtie</span></button>
+                          </div>
+                          <input type="hidden" name="avatarOrnament" value="none" data-tower-avatar-ornament-input>
+                          <p class="tower-frame-fields-label tower-ornament-pos-label" id="tower-ornament-pos-label">Ornament position</p>
+                          <div class="tower-frame-chips tower-frame-lx-clear" role="group" aria-labelledby="tower-ornament-pos-label" data-tower-ornament-pos-chips>
+                            <button type="button" class="tower-frame-chip is-selected" data-ornament-pos="above" aria-pressed="true" title="Above" disabled><span>Above</span></button>
+                            <button type="button" class="tower-frame-chip" data-ornament-pos="below" aria-pressed="false" title="Below" disabled><span>Below</span></button>
+                          </div>
+                          <input type="hidden" name="avatarOrnamentPos" value="above" data-tower-avatar-ornament-pos-input>
+                        </div>
+                        <div class="form-group">
+                          <label for="tower-handle">Handle</label>
+                          <input id="tower-handle" name="handle" type="text" maxlength="32" placeholder="yourhandle" autocomplete="username" data-tower-handle spellcheck="false">
+                          <span class="form-hint">Shows as @handle under your photo · used in NEWS links</span>
+                        </div>
+
+                        <div class="form-group tower-slogan-fields">
+                          <label for="tower-slogan">Quote or business slogan</label>
+                          <textarea
+                            id="tower-slogan"
+                            name="slogan"
+                            rows="2"
+                            maxlength="400"
+                            placeholder="e.g. Your health, our promise."
+                            data-tower-slogan
+                          ></textarea>
+                          <span class="form-hint">Shows as a scrapbook quote card on your public profile when filled in · max 400 characters</span>
+                        </div>
+
+                        <div class="form-group tower-public-url-fields" data-tower-public-url-fields>
+                          <label for="tower-public-url">Public profile URL</label>
+                          <div class="tower-public-url-row">
+                            <input id="tower-public-url" type="text" readonly data-tower-public-url spellcheck="false" aria-describedby="tower-public-url-hint">
+                            <button type="button" class="btn btn-secondary" data-tower-copy-public-url>Copy</button>
+                          </div>
+                          <span class="form-hint" id="tower-public-url-hint">Share this link — opens your public scrapbook (not My feed).</span>
+                        </div>
+
+                        <div class="form-group tower-social-fields">
+                          <p class="tower-social-fields-label">Social links</p>
+                          <span class="form-hint">Paste profile URLs — buttons appear under your photo after Save</span>
+                          <label for="tower-social-x">X</label>
+                          <input id="tower-social-x" name="socialX" type="url" maxlength="500" placeholder="https://x.com/…" data-tower-social="x" inputmode="url">
+                          <label for="tower-social-meta">Meta</label>
+                          <input id="tower-social-meta" name="socialMeta" type="url" maxlength="500" placeholder="https://…" data-tower-social="meta" inputmode="url">
+                          <label for="tower-social-instagram">Instagram</label>
+                          <input id="tower-social-instagram" name="socialInstagram" type="url" maxlength="500" placeholder="https://instagram.com/…" data-tower-social="instagram" inputmode="url">
+                          <label for="tower-social-youtube">YouTube</label>
+                          <input id="tower-social-youtube" name="socialYoutube" type="url" maxlength="500" placeholder="https://youtube.com/…" data-tower-social="youtube" inputmode="url">
+                          <label for="tower-social-tiktok">TikTok</label>
+                          <input id="tower-social-tiktok" name="socialTiktok" type="url" maxlength="500" placeholder="https://tiktok.com/@…" data-tower-social="tiktok" inputmode="url">
+                          <label for="tower-social-linkedin">LinkedIn</label>
+                          <input id="tower-social-linkedin" name="socialLinkedin" type="url" maxlength="500" placeholder="https://linkedin.com/in/…" data-tower-social="linkedin" inputmode="url">
+                        </div>
+                        <div class="form-group tower-music-fields">
+                          <label for="tower-music-title">Favorite song (profile player)</label>
+                          <input id="tower-music-title" name="musicTitle" type="text" maxlength="120" placeholder="Song title" data-tower-music-title>
+                          <label for="tower-music-artist" class="tower-music-url-label">Artist</label>
+                          <input id="tower-music-artist" name="musicArtist" type="text" maxlength="120" placeholder="Artist name" data-tower-music-artist>
+                          <p class="tower-frame-fields-label">Radio / YouTube URL</p>
+                          <div class="tower-video-radio-box" data-tower-music-radio-box>
+                            <div class="tower-radio-face tower-video-radio-face">
+                              <div class="tower-radio-dial" aria-hidden="true"></div>
+                              <label class="tower-video-radio-marquee" for="tower-music-url">
+                                <span class="tower-video-radio-marquee-tag" aria-hidden="true">URL</span>
+                                <input id="tower-music-url" name="musicUrl" type="url" maxlength="500" placeholder="Paste YouTube or audio link…" data-tower-music-url inputmode="url" autocomplete="off">
+                              </label>
+                              <div class="tower-radio-knobs" aria-hidden="true"><i></i><i></i><i></i></div>
+                            </div>
+                          </div>
+                          <span class="form-hint">One player only — paste a YouTube (or MP3) link, Save profile, and it loads for everyone who opens your public Tower.</span>
+                          <label for="tower-music-skin">Player look</label>
+                          <select id="tower-music-skin" data-tower-music-skin>
+                            <option value="radio" selected>Old-school radio</option>
+                            <option value="classic">Classic one-line</option>
+                            <option value="cd">CD player</option>
+                            <option value="mp3">MP3 player</option>
+                          </select>
+                          <label class="tower-music-enable">
+                            <input type="checkbox" data-tower-music-enable checked>
+                            <span>Play on my public Tower profile</span>
+                          </label>
+                          <span class="form-hint">Does not start on login or page load — visitors press Play / Sound on to listen.</span>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="tower-profile-html">Custom profile HTML</label>
+                          <textarea
+                            id="tower-profile-html"
+                            name="profileHtml"
+                            rows="6"
+                            maxlength="8000"
+                            spellcheck="false"
+                            placeholder="Optional HTML the site will render on your profile (no scripts)."
+                            data-tower-profile-html
+                          ></textarea>
+                          <span class="form-hint">Paste your own markup to customize this profile. Scripts and event handlers are stripped.</span>
+                        </div>
+
+                        <div class="tower-profile-html-preview" data-tower-html-preview></div>
+
+
+                        <details class="tower-public-widgets" data-tower-public-widgets>
+                          <summary class="tower-public-widgets-summary">Public widgets</summary>
+                          <div class="tower-public-widgets-body">
+                            <span class="form-hint">Show or hide stickers on your public scrapbook. Avatar always stays on. Live preview · also saved with Save profile.</span>
+                            <label class="tower-public-widget-check"><input type="checkbox" data-tower-public-widget="identity" checked> <span>Name</span></label>
+                            <label class="tower-public-widget-check"><input type="checkbox" data-tower-public-widget="slogan" checked> <span>Quote / slogan</span></label>
+                            <label class="tower-public-widget-check"><input type="checkbox" data-tower-public-widget="social" checked> <span>Social links</span></label>
+                            <label class="tower-public-widget-check"><input type="checkbox" data-tower-public-widget="music" checked> <span>Music player</span></label>
+                            <label class="tower-public-widget-check"><input type="checkbox" data-tower-public-widget="badges" checked> <span>Badges</span></label>
+                            <label class="tower-public-widget-check"><input type="checkbox" data-tower-public-widget="friends" checked> <span>Friends</span></label>
+                            <label class="tower-public-widget-check"><input type="checkbox" data-tower-public-widget="html" checked> <span>Custom HTML</span></label>
+                            <label class="tower-public-widget-check"><input type="checkbox" data-tower-public-widget="calendar"> <span>Calendar</span></label>
+                          </div>
+                        </details>
+
+                        <div class="form-group tower-account-phone" data-tower-account-phone>
+                          <label for="tower-account-phone">Account phone (demo)</label>
+                          <input id="tower-account-phone" type="tel" maxlength="20" placeholder="(312) 555-0147" data-tower-account-phone-input autocomplete="tel">
+                          <span class="form-hint">Required to claim a second page · max 2 profiles per phone · demo storage in-browser only</span>
+                        </div>
+                        <div class="form-actions">
+                          <button type="submit" class="btn btn-primary">Save profile</button>
+                        </div>
+                        <div class="tower-add-profile-row" data-tower-add-profile-row>
+                          <button type="button" class="btn btn-secondary" data-tower-add-profile hidden>Add professional page</button>
+                          <p class="commune-status" data-tower-add-profile-status hidden role="status" aria-live="polite"></p>
+                        </div>
+                        <p class="commune-status" data-tower-profile-status hidden role="status" aria-live="polite"></p>
+                      </form>
+                        </div>
+                      </div>
+                      </div><div class="tower-sticker tower-sticker--identity" data-tower-widget="identity" data-sticker-label="Name"><button type="button" class="tower-sticker-handle" data-tower-sticker-handle aria-label="Move Name sticker" tabindex="-1" hidden>⋮⋮</button><div class="tower-profile-name-wrap" data-tower-profile-name-wrap><p class="tower-profile-name" data-tower-profile-name>You</p><button type="button" class="tower-name-resize" data-tower-name-resize aria-label="Drag to resize display name" title="Drag to resize name"></button></div>
+                      <p class="tower-handle-badge" data-tower-handle-badge hidden></p>
+                      </div><div class="tower-sticker tower-sticker--slogan" data-tower-widget="slogan" data-sticker-label="Quote / slogan" hidden><button type="button" class="tower-sticker-handle" data-tower-sticker-handle aria-label="Move Quote / slogan sticker" tabindex="-1" hidden>⋮⋮</button><blockquote class="tower-slogan-card" data-tower-slogan-display></blockquote>
+                      </div><div class="tower-sticker tower-sticker--social" data-tower-widget="social" data-sticker-label="Social"><button type="button" class="tower-sticker-handle" data-tower-sticker-handle aria-label="Move Social sticker" tabindex="-1" hidden>⋮⋮</button><div class="tower-social-links" data-tower-social-links aria-label="Social links"></div>
+
+                      </div><div class="tower-sticker tower-sticker--music" data-tower-widget="music" data-sticker-label="Music"><button type="button" class="tower-sticker-handle" data-tower-sticker-handle aria-label="Move Music sticker" tabindex="-1" hidden>⋮⋮</button><div class="tower-music" data-tower-music data-music-skin="classic" hidden>
+                        <audio data-tower-audio preload="metadata" playsinline></audio>
+
+                        <div class="tower-music-youtube" data-tower-youtube hidden>
+                          <div class="tower-music-youtube-frame" data-tower-youtube-frame>
+                            <button type="button" class="tower-youtube-resize" data-tower-youtube-resize aria-label="Drag to resize YouTube" title="Drag to resize"></button>
+                          </div>
+                          <div class="tower-music-youtube-bar">
+                            <button type="button" class="tower-music-toggle" data-tower-music-toggle aria-pressed="true">Sound on</button>
+                            <span class="tower-music-classic-line" data-tower-music-label>Song — Artist</span>
+                          </div>
+                        </div>
+
+                        <!-- classic one-line -->
+                        <div class="tower-music-skin tower-music-skin--classic" data-music-face="classic">
+                          <button type="button" class="tower-music-toggle" data-tower-music-toggle aria-pressed="true">♪</button>
+                          <span class="tower-music-classic-line" data-tower-music-label>Song — Artist</span>
+                        </div>
+
+                        <!-- radio -->
+                        <div class="tower-music-skin tower-music-skin--radio" data-music-face="radio" hidden>
+                          <div class="tower-radio-face">
+                            <div class="tower-radio-dial" aria-hidden="true"></div>
+                            <div class="tower-radio-marquee"><span data-tower-music-label>Song — Artist</span></div>
+                            <div class="tower-radio-knobs" aria-hidden="true"><i></i><i></i></div>
+                            <button type="button" class="tower-music-toggle tower-radio-toggle" data-tower-music-toggle aria-pressed="true">Sound on</button>
+                          </div>
+                        </div>
+
+                        <!-- cd player -->
+                        <div class="tower-music-skin tower-music-skin--cd" data-music-face="cd" hidden>
+                          <div class="tower-cd-face">
+                            <div class="tower-cd-disc" data-tower-cd-disc aria-hidden="true"></div>
+                            <div class="tower-cd-readout">
+                              <span class="tower-cd-title" data-tower-music-label>Song — Artist</span>
+                              <button type="button" class="tower-music-toggle" data-tower-music-toggle aria-pressed="true">Sound on</button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- mp3 -->
+                        <div class="tower-music-skin tower-music-skin--mp3" data-music-face="mp3" hidden>
+                          <div class="tower-mp3-face">
+                            <div class="tower-mp3-screen"><span data-tower-music-label>Song — Artist</span></div>
+                            <div class="tower-mp3-buttons" aria-hidden="true"><b></b><b></b><b></b></div>
+                            <button type="button" class="tower-music-toggle" data-tower-music-toggle aria-pressed="true">Sound on</button>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- radio side scroller (page edge) -->
+                      <div class="tower-radio-side" data-tower-radio-side hidden aria-hidden="true">
+                        <div class="tower-radio-side-track"><span data-tower-radio-side-text>Now playing</span></div>
+                      </div>
+
+                      <div class="tower-sticker tower-sticker--badges" data-tower-widget="badges" data-sticker-label="Badges"><button type="button" class="tower-sticker-handle" data-tower-sticker-handle aria-label="Move Badges sticker" tabindex="-1" hidden>⋮⋮</button><div class="tower-badge-shelf" data-tower-badge-shelf aria-label="Badges">
+                        <p class="tower-badge-shelf-label" data-tower-badges-public>Badges</p>
+                        <!-- Individual badge pins render on the scrapbook stage (like top friends). -->
+                        <div class="tower-badge-stage" data-tower-badge-stage hidden></div>
+                      </div>
+
+                      </div><div class="tower-sticker tower-sticker--friends" data-tower-widget="friends" data-sticker-label="Friends">
+                        <button type="button" class="tower-sticker-handle" data-tower-sticker-handle aria-label="Move Friends sticker" tabindex="-1" hidden>⋮⋮</button>
+                        <div class="tower-friends-public" data-tower-friends-public aria-label="Featured friends"></div>
+                      </div>
+
+                    
+
+                      <div class="tower-sticker tower-sticker--html" data-tower-widget="html" data-sticker-label="Custom HTML">
+                        <button type="button" class="tower-sticker-handle" data-tower-sticker-handle aria-label="Move Custom HTML sticker" tabindex="-1" hidden>⋮⋮</button>
+                        <div class="tower-profile-html-public" data-tower-html-public></div>
+                      </div>
+
+                      <div class="tower-sticker tower-sticker--calendar" data-tower-widget="calendar" data-sticker-label="Calendar" data-tower-calendar-personal>
+                        <button type="button" class="tower-sticker-handle" data-tower-sticker-handle aria-label="Move Calendar sticker" tabindex="-1" hidden>⋮⋮</button>
+                        <div class="tower-cal tower-cal--public" data-tower-cal-public data-tower-calendar-personal aria-label="Personal calendar">
+                          <h4 class="tower-cal-public-title">Calendar</h4>
+                          <div data-tower-cal-public-body></div>
+                          <form class="tower-cal-friend-form" data-tower-cal-friend-form action="#" method="post">
+                            <h5 class="tower-cal-friend-heading">Friends schedule</h5>
+                            <p class="form-hint">Request a hangout on this profile’s calendar (demo). Owner can accept or edit from My feed.</p>
+                            <div class="form-group">
+                              <label for="tower-cal-friend-name">Your name</label>
+                              <input id="tower-cal-friend-name" name="requesterName" type="text" maxlength="80" required placeholder="Friend name" data-tower-cal-friend-name autocomplete="nickname">
+                            </div>
+                            <div class="form-group">
+                              <label for="tower-cal-friend-title">Event</label>
+                              <input id="tower-cal-friend-title" name="title" type="text" maxlength="120" required placeholder="Coffee, walk, study…" data-tower-cal-friend-title>
+                            </div>
+                            <div class="tower-cal-friend-row">
+                              <div class="form-group">
+                                <label for="tower-cal-friend-date">Date</label>
+                                <input id="tower-cal-friend-date" name="date" type="date" required data-tower-cal-friend-date>
+                              </div>
+                              <div class="form-group">
+                                <label for="tower-cal-friend-time">Time</label>
+                                <input id="tower-cal-friend-time" name="time" type="time" data-tower-cal-friend-time>
+                              </div>
+                            </div>
+                            <div class="form-group">
+                              <label for="tower-cal-friend-notes">Note</label>
+                              <input id="tower-cal-friend-notes" name="notes" type="text" maxlength="200" placeholder="Optional" data-tower-cal-friend-notes>
+                            </div>
+                            <div class="form-actions">
+                              <button type="submit" class="btn btn-primary">Request / add</button>
+                            </div>
+                            <p class="commune-status" data-tower-cal-friend-status hidden role="status" aria-live="polite"></p>
+                          </form>
+                        </div>
+                      </div>
+                  </aside>
+                  </div>
+                </div>
+            </div>
+
+            
+                </div><!-- /.tower-public-side -->
+              </div><!-- /.tower-app -->
+            </div><!-- /#panel-tower -->
+
+            <div role="tabpanel" id="panel-news" aria-labelledby="tab-news" hidden>
+              <div class="commune-paper" data-commune-app>
+                <!-- Newspaper masthead -->
+                <header class="paper-masthead">
+                  <p class="paper-eyebrow">An official <span data-brand>COGNATION</span> publication</p>
+                  <h3 class="paper-title">NEWS</h3>
+                  <p class="paper-subtitle" data-commune-edition-subtitle>Local Newspaper · Demo</p>
+                  <div class="paper-dateline" role="group" aria-label="Edition details">
+                    <span class="paper-volume" data-commune-volume>Vol. I · No. 1</span>
+                    <span class="paper-rule" aria-hidden="true"></span>
+                    <time class="paper-date" data-commune-date datetime=""></time>
+                    <span class="paper-rule" aria-hidden="true"></span>
+                    <span class="paper-price" data-commune-edition-label>Local edition · Demo</span>
+                  </div>
+
+                  <div class="paper-edition-scope" data-commune-edition-scope>
+                    <div class="paper-edition-toolbar">
+                      <span class="paper-edition-scope-label" id="commune-edition-label">Edition scope</span>
+                      <button type="button" class="btn btn-secondary paper-refresh-btn" data-commune-refresh hidden>
+                        Refresh hot topics
+                      </button>
+                    </div>
+                    <div
+                      class="paper-edition-seg"
+                      role="radiogroup"
+                      aria-labelledby="commune-edition-label"
+                    >
+                      <label class="paper-edition-opt">
+                        <input type="radio" name="commune-edition" value="local" data-commune-edition checked>
+                        <span>Local</span>
+                      </label>
+                      <label class="paper-edition-opt">
+                        <input type="radio" name="commune-edition" value="statewide" data-commune-edition>
+                        <span>Statewide</span>
+                      </label>
+                      <label class="paper-edition-opt">
+                        <input type="radio" name="commune-edition" value="nationwide" data-commune-edition>
+                        <span>Nationwide</span>
+                      </label>
+                      <label class="paper-edition-opt">
+                        <input type="radio" name="commune-edition" value="international" data-commune-edition>
+                        <span>International</span>
+                      </label>
+                    </div>
+                  </div>
+                </header>
+
+                <div class="paper-grid">
+                  <!-- LEFT: sections index -->
+                  <nav class="paper-col paper-col--left" aria-label="News sections">
+                    <h4 class="paper-col-heading">In this edition</h4>
+                    <ul class="paper-index" role="list">
+                      <li>
+                        <button type="button" class="paper-index-btn is-active" data-commune-section="feed" aria-current="true">
+                          <span class="paper-index-label">Front Page</span>
+                          <span class="paper-index-desc">From Tower</span>
+                        </button>
+                      </li>
+                      <li>
+                        <button type="button" class="paper-index-btn" data-commune-section="letters">
+                          <span class="paper-index-label">Town Square</span>
+                          <span class="paper-index-desc">Social posts</span>
+                        </button>
+                      </li>
+                      <li>
+                        <button type="button" class="paper-index-btn" data-commune-section="correspondent">
+                          <span class="paper-index-label">Correspondents</span>
+                          <span class="paper-index-desc">Public profiles</span>
+                        </button>
+                      </li>
+                    </ul>
+
+                    <div class="paper-rule-block" aria-hidden="true"></div>
+
+                    <h4 class="paper-col-heading">Topics</h4>
+                    <ul class="paper-topics" data-commune-topics-left></ul>
+                  </nav>
+
+                  <!-- CENTER: main well -->
+                  <div class="paper-col paper-col--center">
+                    <!-- FRONT PAGE / FEED -->
+                    <section class="paper-section" data-commune-pane="feed" aria-labelledby="paper-feed-heading">
+                      <h4 class="paper-section-kicker" id="paper-feed-heading">Front Page</h4>
+                      <p class="paper-dek" data-commune-feed-dek>Local plate from Tower; @friendsoffriends posts also land on friends’ friends’ Local feeds.</p>
+
+                      <div class="commune-feed commune-feed--readonly" data-commune-feed>
+                        <p class="commune-ai-note" role="note">Generated from Tower · not a compose box</p>
+                        <p class="commune-status" data-commune-feed-status hidden role="status" aria-live="polite"></p>
+                        <label class="commune-endless-toggle">
+                          <input type="checkbox" data-commune-endless checked>
+                          <span>Keep scrolling the wire</span>
+                        </label>
+                        <div class="paper-rule-block" aria-hidden="true"></div>
+                        <div
+                          class="commune-feed-list"
+                          data-commune-feed-list
+                          role="feed"
+                          aria-busy="false"
+                          aria-label="AI news and social feed"
+                        >
+                          <div class="commune-feed-sentinel" data-commune-feed-sentinel hidden aria-hidden="true"></div>
+                        </div>
+                        <p class="commune-feed-loading" data-commune-feed-loading hidden>Loading more AI wire…</p>
+                        <p class="commune-empty" data-commune-feed-empty hidden>No plate yet — News will fill this edition.</p>
+                      </div>
+                    </section>
+
+                    <!-- LETTERS / MESSAGES -->
+                    <section class="paper-section" data-commune-pane="letters" hidden aria-labelledby="paper-letters-heading">
+                      <h4 class="paper-section-kicker" id="paper-letters-heading">Town Square</h4>
+                      <p class="paper-dek">Social-style posts pulled into the local paper — AI-generated, read-only.</p>
+
+                      <div class="commune-social-board" data-commune-social-board role="feed" aria-label="Social posts">
+                        <article class="commune-social-card">
+                          <header class="commune-social-meta">
+                            <span class="commune-social-kind">Social</span>
+                            <span class="commune-feed-author">@market_square</span>
+                            <time datetime="2026-09-15T16:00:00.000Z">this afternoon</time>
+                          </header>
+                          <p class="commune-feed-body">Line for the farmers’ stall wrapped around the fountain. Someone brought a fiddle. Not complaining.</p>
+                        </article>
+                        <article class="commune-social-card">
+                          <header class="commune-social-meta">
+                            <span class="commune-social-kind">Social</span>
+                            <span class="commune-feed-author">@east_wing_reads</span>
+                            <time datetime="2026-09-15T15:20:00.000Z">earlier</time>
+                          </header>
+                          <p class="commune-feed-body">Library late-night lights still on. If you need quiet, the map room is empty.</p>
+                        </article>
+                        <article class="commune-social-card">
+                          <header class="commune-social-meta">
+                            <span class="commune-social-kind">Social</span>
+                            <span class="commune-feed-author">@blockwatch_n4</span>
+                            <time datetime="2026-09-15T14:05:00.000Z">midday</time>
+                          </header>
+                          <p class="commune-feed-body">Pothole on Cedar filled before lunch. City crew left a cone stack that looks like modern art.</p>
+                        </article>
+                      </div>
+                    </section>
+
+                    <!-- CORRESPONDENT / PROFILE -->
+                                        <section class="paper-section" data-commune-pane="correspondent" hidden aria-labelledby="paper-profile-heading">
+                      <h4 class="paper-section-kicker" id="paper-profile-heading">Correspondents</h4>
+                      <p class="paper-dek">Public bylines and social profiles assembled for the paper — AI-generated, not editable here.</p>
+
+                      <div class="commune-profile-gallery" data-commune-profile-gallery>
+                        <article class="commune-profile-card">
+                          <div class="commune-avatar" aria-hidden="true">AR</div>
+                          <div>
+                            <p class="commune-profile-name">Alex Rivera</p>
+                            <p class="commune-profile-bio">Neighborhood notes · library beat</p>
+                            <p class="commune-visibility-badge is-public"><span class="commune-vis-dot" aria-hidden="true"></span> Public</p>
+                          </div>
+                        </article>
+                        <article class="commune-profile-card">
+                          <div class="commune-avatar" aria-hidden="true">CD</div>
+                          <div>
+                            <p class="commune-profile-name">City Desk</p>
+                            <p class="commune-profile-bio">Wire + council coverage for the local plate</p>
+                            <p class="commune-visibility-badge is-public"><span class="commune-vis-dot" aria-hidden="true"></span> Public</p>
+                          </div>
+                        </article>
+                        <article class="commune-profile-card">
+                          <div class="commune-avatar" aria-hidden="true">MS</div>
+                          <div>
+                            <p class="commune-profile-name">@market_square</p>
+                            <p class="commune-profile-bio">Social voice from the square — not a login</p>
+                            <p class="commune-visibility-badge is-public"><span class="commune-vis-dot" aria-hidden="true"></span> Public</p>
+                          </div>
+                        </article>
+                      </div>
+                    </section>
+                  </div>
+
+                  <!-- RIGHT: briefs / secondary -->
+                  <aside class="paper-col paper-col--right" aria-label="Briefs">
+                    <h4 class="paper-col-heading">Briefs</h4>
+                    <article class="paper-brief">
+                      <h5 class="paper-brief-title">Byline</h5>
+                      <p class="paper-brief-body" data-commune-brief-byline>AI bylines · City Desk &amp; social voices</p>
+                    </article>
+                    <article class="paper-brief">
+                      <h5 class="paper-brief-title">Visibility</h5>
+                      <p class="paper-brief-body" data-commune-brief-visibility>Profiles are public plate only — no user fill-in.</p>
+                    </article>
+                    <article class="paper-brief">
+                      <h5 class="paper-brief-title">Latest dispatch</h5>
+                      <p class="paper-brief-body" data-commune-brief-latest>No posts yet.</p>
+                    </article>
+
+                    <div class="paper-rule-block" aria-hidden="true"></div>
+
+                    <h4 class="paper-col-heading">Also in <span data-brand>COGNATION</span></h4>
+                    <ul class="paper-topics" data-commune-topics-right></ul>
+                  </aside>
+                </div>
+              </div>
+            </div>
+
+            <div role="tabpanel" id="panel-commune" aria-labelledby="tab-commune" hidden>
+              <!-- CGN-007 visual shell: Engineer owns real swipe/like/follow graph behavior.
+                   Hooks: data-commune-shell, data-commune-deck, data-commune-card,
+                   data-card-type, data-commune-swipe=left|right, data-commune-enter-sim -->
+              <div
+                class="commune-swipe-shell"
+                data-commune-shell
+                role="region"
+                aria-label="COMMUNE swipe feed"
+                tabindex="0"
+              >
+                <header class="commune-swipe-header">
+                  <h3 class="commune-swipe-title">COMMUNE</h3>
+                  <p class="commune-swipe-dek">Swipe the deck — discover services, rooms, and live moments.</p>
+                  <div class="commune-dating-toggle-row">
+                    <label class="commune-dating-toggle" for="commune-see-dating">
+                      <input
+                        type="checkbox"
+                        id="commune-see-dating"
+                        name="seeDatingContent"
+                        data-commune-see-dating
+                        data-commune-dating-toggle
+                        data-see-dating-content
+                      >
+                      <span class="commune-dating-toggle-ui" aria-hidden="true"></span>
+                      <span class="commune-dating-toggle-text">See dating content</span>
+                    </label>
+                    <p class="form-hint commune-dating-toggle-hint" id="commune-dating-toggle-hint">
+                      Off by default. Dating cards show only when this is on and you’re 18+ (Engineer gates age).
+                    </p>
+                  </div>
+                </header>
+
+                <p class="commune-swipe-hint" id="commune-swipe-hint">
+                  Swipe left to dismiss · swipe right to like · or use the buttons below
+                </p>
+
+                <div class="commune-swipe-stage">
+                  <div class="commune-swipe-deck" data-commune-deck aria-live="polite" aria-atomic="true">
+                    <article class="commune-card is-active" data-commune-card data-card-type="featured-service" aria-label="Featured service, card 1 of 6">
+                      <p class="commune-card-kicker">Featured service</p>
+                      <h4 class="commune-card-title">Wellness Concierge Match</h4>
+                      <p class="commune-card-body">Book a guided intro with a vetted local wellness partner — demo card only.</p>
+                      <span class="commune-card-badge">Featured</span>
+                    </article>
+
+                    <article class="commune-card" data-commune-card data-card-type="ad" aria-label="Ad, card 2 of 6" hidden>
+                      <p class="commune-card-kicker">Sponsored</p>
+                      <h4 class="commune-card-title">Pink Hour Café</h4>
+                      <p class="commune-card-body">Neighborhood hang · baby-pink latte art · demo ad placement.</p>
+                      <span class="commune-card-badge commune-card-badge--ad">Ad</span>
+                    </article>
+
+                    <article class="commune-card" data-commune-card data-card-type="live-video" aria-label="Live video, card 3 of 6" hidden>
+                      <p class="commune-card-kicker">Live now</p>
+                      <h4 class="commune-card-title">Community Circle</h4>
+                      <div class="commune-live-chrome" aria-hidden="true">
+                        <button type="button" class="commune-live-play" tabindex="-1" disabled>▶</button>
+                        <span class="commune-live-pulse"></span>
+                        <span class="commune-live-label">LIVE</span>
+                      </div>
+                      <p class="commune-card-body">Stub play chrome — Engineer wires stream later.</p>
+                    </article>
+
+                    <article class="commune-card" data-commune-card data-card-type="speed-dating" data-dating-content aria-label="Speed dating, card 4 of 6" hidden data-dating-opt-in="true">
+                      <p class="commune-card-kicker">Speed dating</p>
+                      <h4 class="commune-card-title" data-dating-name>Jordan Lee</h4>
+                      <figure class="commune-dating-photo">
+                        <img
+                          data-dating-photo
+                          src="assets/logo.svg"
+                          alt="Profile photo of Jordan Lee"
+                          width="320"
+                          height="320"
+                        >
+                      </figure>
+                      <p class="commune-card-body">Dating opt-in · rate 1–10 below before you swipe right. Demo shell — Engineer wires averaging.</p>
+                      <div class="commune-dating-rate" data-dating-rate-wrap>
+                        <label class="commune-dating-rate-label" for="dating-rate-range">Your rating <span class="req" aria-hidden="true">*</span></label>
+                        <p class="form-hint" id="dating-rate-hint">Required before Like / swipe right</p>
+                        <div class="commune-dating-rate-row">
+                          <input
+                            type="range"
+                            id="dating-rate-range"
+                            name="dating-rate"
+                            min="1"
+                            max="10"
+                            step="1"
+                            value="5"
+                            data-dating-rate
+                            data-dating-rate-value
+                            aria-valuemin="1"
+                            aria-valuemax="10"
+                            aria-describedby="dating-rate-hint dating-rate-value-label"
+                          >
+                          <output class="commune-dating-rate-output" id="dating-rate-value-label" data-dating-rate-output for="dating-rate-range">5</output>
+                        </div>
+                        <p class="commune-dating-rate-status" data-dating-rate-status hidden role="status" aria-live="polite"></p>
+                      </div>
+                      <span class="commune-card-badge">Opt-in</span>
+                    </article>
+
+                    <article class="commune-card" data-commune-card data-card-type="chatroom" aria-label="Chatroom, card 5 of 6" hidden>
+                      <p class="commune-card-kicker">Chatroom</p>
+                      <h4 class="commune-card-title">Sim-world lounge</h4>
+                      <p class="commune-card-body">Drop into a shared ambient space with friends.</p>
+                      <button type="button" class="btn btn-primary commune-enter-sim" data-commune-enter-sim>
+                        Enter sim-world
+                      </button>
+                    </article>
+
+                    <article class="commune-card commune-card--fact" data-commune-card data-card-type="random-fact" data-fact-verified="true" aria-label="Random fact, card 6 of 6" hidden>
+                      <p class="commune-card-kicker">Random fact <span class="commune-fact-verified" aria-label="Verified">✓ Verified</span></p>
+                      <h4 class="commune-card-title">Did you know?</h4>
+                      <p class="commune-card-body">Octopuses have three hearts — two pump blood to the gills, one to the rest of the body. Source: aquarium / marine biology primers (Smithsonian Ocean).</p>
+                    </article>
+                  </div>
+                </div>
+
+                <div class="commune-swipe-actions" role="group" aria-label="Card actions">
+                  <button
+                    type="button"
+                    class="commune-swipe-btn commune-swipe-btn--dismiss"
+                    data-commune-swipe="left"
+                    aria-label="Dismiss card"
+                  >✕ Dismiss</button>
+                  <button
+                    type="button"
+                    class="commune-swipe-btn commune-swipe-btn--like"
+                    data-commune-swipe="right"
+                    aria-label="Like or share card"
+                  >♥ Like</button>
+                </div>
+
+                <div class="commune-swipe-dots" role="tablist" aria-label="Card position" data-commune-dots>
+                  <button type="button" class="commune-swipe-dot is-active" role="tab" aria-selected="true" aria-label="Card 1" data-commune-dot="0"></button>
+                  <button type="button" class="commune-swipe-dot" role="tab" aria-selected="false" aria-label="Card 2" data-commune-dot="1"></button>
+                  <button type="button" class="commune-swipe-dot" role="tab" aria-selected="false" aria-label="Card 3" data-commune-dot="2"></button>
+                  <button type="button" class="commune-swipe-dot" role="tab" aria-selected="false" aria-label="Card 4" data-commune-dot="3"></button>
+                  <button type="button" class="commune-swipe-dot" role="tab" aria-selected="false" aria-label="Card 5" data-commune-dot="4"></button>
+                  <button type="button" class="commune-swipe-dot" role="tab" aria-selected="false" aria-label="Card 6" data-commune-dot="5"></button>
+                </div>
+
+                <p class="commune-swipe-index" data-commune-index aria-live="polite">Card 1 of 6</p>
+              </div>
+            </div>
+
+            <!-- WELL retained for later provider-only access; not in public tablist -->
+            <div id="panel-well" hidden aria-hidden="true">
+              <div class="well-app is-locked" data-well-app data-well-side="patient" data-well-auth-state="locked">
+                <header class="well-chrome">
+                  <div class="well-chrome-top">
+                    <div class="well-brand-block">
+                      <h3 class="well-title">WELL</h3>
+                      <p class="well-dek">Patient chart · fillable docs · provider view-only</p>
+                    </div>
+                    <div class="well-chrome-end">
+                      <div class="well-session-bar" data-well-session-bar hidden>
+                        <span class="well-session-chip" data-well-session-chip title="Session ends when this tab closes">
+                          <span class="well-session-dot" aria-hidden="true"></span>
+                          WELL locked session
+                        </span>
+                        <button type="button" class="well-lock-btn" data-well-lock-btn>
+                          Lock WELL
+                        </button>
+                      </div>
+                      <div
+                        class="well-side-toggle"
+                        data-well-side-toggle
+                        role="tablist"
+                        aria-label="WELL portal side"
+                      >
+                        <button
+                          type="button"
+                          class="well-side-btn"
+                          role="tab"
+                          id="well-side-patient"
+                          data-well-side-btn="patient"
+                          aria-controls="well-patient-panel"
+                          aria-selected="true"
+                        >Patient</button>
+                        <button
+                          type="button"
+                          class="well-side-btn"
+                          role="tab"
+                          id="well-side-provider"
+                          data-well-side-btn="provider"
+                          aria-controls="well-provider-panel"
+                          aria-selected="false"
+                        >Provider</button>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="well-disclaimer" role="note">
+                    Demo only · not a real EHR · not HIPAA-certified · no PHI leaves the browser.
+                  </p>
+                </header>
+
+                <div
+                  class="well-auth-lock"
+                  data-well-auth-lock
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="well-auth-title"
+                  aria-describedby="well-auth-desc"
+                >
+                  <div class="well-auth-card">
+                    <div class="well-auth-badge" aria-hidden="true">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
+                    </div>
+                    <p class="well-auth-eyebrow">Second authentication lock</p>
+                    <h4 id="well-auth-title" class="well-auth-title">WELL clinical sign-in</h4>
+                    <p id="well-auth-desc" class="well-auth-desc">
+                      Chart and provider content stay locked until you complete username/password and a demo second factor (2FA). Separate from the Cognation site login.
+                    </p>
+
+                    <div class="well-auth-steps" data-well-auth-steps aria-hidden="true">
+                      <span class="well-auth-step is-active" data-well-auth-step-indicator="1">1 · Credentials</span>
+                      <span class="well-auth-step" data-well-auth-step-indicator="2">2 · 2FA</span>
+                    </div>
+
+                    <form
+                      class="well-auth-form"
+                      data-well-auth-form="credentials"
+                      action="#"
+                      method="post"
+                      novalidate
+                      autocomplete="off"
+                    >
+                      <div class="form-group">
+                        <label for="well-auth-username">WELL username</label>
+                        <input
+                          type="text"
+                          id="well-auth-username"
+                          name="wellUsername"
+                          autocomplete="off"
+                          autocapitalize="none"
+                          spellcheck="false"
+                          required
+                          placeholder="well-alexa"
+                        >
+                      </div>
+                      <div class="form-group">
+                        <label for="well-auth-password">WELL password</label>
+                        <input
+                          type="password"
+                          id="well-auth-password"
+                          name="wellPassword"
+                          autocomplete="off"
+                          required
+                          placeholder="••••••••"
+                        >
+                      </div>
+                      <p class="well-auth-status" data-well-auth-status="credentials" hidden role="status" aria-live="polite"></p>
+                      <div class="form-actions well-auth-actions">
+                        <button type="submit" class="btn btn-primary well-auth-submit">Continue to 2FA</button>
+                      </div>
+                      <p class="form-hint well-auth-hint">
+                        Demo WELL credentials: <code>well-alexa</code> or <code>alexa</code> · password <code>WellLock26</code>
+                      </p>
+                    </form>
+
+                    <form
+                      class="well-auth-form"
+                      data-well-auth-form="otp"
+                      action="#"
+                      method="post"
+                      novalidate
+                      autocomplete="off"
+                      hidden
+                    >
+                      <div class="well-auth-demo-code" data-well-auth-demo-code role="note">
+                        <span class="well-auth-demo-label">Demo authenticator / second factor</span>
+                        <strong class="well-auth-demo-value">Demo authenticator code: <code data-well-auth-code-display>————</code></strong>
+                        <span class="well-auth-demo-note">Shown on-screen for this prototype — not sent by SMS.</span>
+                      </div>
+                      <div class="form-group">
+                        <label for="well-auth-otp">6-digit verification code</label>
+                        <input
+                          type="text"
+                          id="well-auth-otp"
+                          name="wellOtp"
+                          inputmode="numeric"
+                          pattern="[0-9]{6}"
+                          maxlength="6"
+                          autocomplete="one-time-code"
+                          required
+                          placeholder="246801"
+                          spellcheck="false"
+                        >
+                      </div>
+                      <p class="well-auth-status" data-well-auth-status="otp" hidden role="status" aria-live="polite"></p>
+                      <div class="form-actions well-auth-actions">
+                        <button type="button" class="btn btn-secondary" data-well-auth-back>Back</button>
+                        <button type="submit" class="btn btn-primary well-auth-submit">Unlock WELL</button>
+                      </div>
+                      <p class="form-hint well-auth-hint">
+                        Enter the demo authenticator code shown above (prototype always uses a displayed code).
+                      </p>
+                    </form>
+                  </div>
+                </div>
+
+                <div class="well-secured" data-well-secured aria-hidden="true" inert>
+                  <div
+                    class="well-patient-side"
+                    id="well-patient-panel"
+                    data-well-patient-side
+                    role="tabpanel"
+                    aria-labelledby="well-side-patient"
+                  >
+                    <div class="well-grid well-grid--patient" data-well-patient-root></div>
+                  </div>
+
+                  <div
+                    class="well-provider-side"
+                    id="well-provider-panel"
+                    data-well-provider-side
+                    role="tabpanel"
+                    aria-labelledby="well-side-provider"
+                    hidden
+                  >
+                    <div class="well-grid well-grid--provider" data-well-provider-root></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div role="tabpanel" id="panel-pages" aria-labelledby="tab-pages" hidden>
+              <div class="pages-shell" data-pages-shell>
+                <header class="pages-intro">
+                  <h3 class="pages-title">PAGES</h3>
+                  <p class="pages-dek">Local businesses within 15 miles of you · A–Z</p>
+                  <p class="pages-geo-status" data-pages-geo-status role="status" aria-live="polite" hidden></p>
+                  
+                </header>
+
+                <div class="pages-search-row">
+                  <label class="pages-sr-only" for="pages-search">Search by name or keyword</label>
+                  <input
+                    type="search"
+                    id="pages-search"
+                    class="pages-search"
+                    data-pages-search
+                    placeholder="Search name or keyword…"
+                    autocomplete="off"
+                    spellcheck="false"
+                  >
+                  <label class="pages-sr-only" for="pages-category">Category</label>
+                  <select id="pages-category" class="pages-category" data-pages-category aria-label="Category"></select>
+                  <span class="pages-count" data-pages-count aria-live="polite"></span>
+                </div>
+
+                <nav class="pages-az" data-pages-az aria-label="Jump to letter"></nav>
+
+                <div class="pages-book">
+                  <div class="pages-results" data-pages-results aria-label="Directory listings"></div>
+                  <p class="pages-empty" data-pages-empty hidden>No local businesses within 15 miles match. Try another category, keyword, or enable location.</p>
+                </div>
+
+                <p class="pages-footer-note">Demo local directory · listings within 15 miles of your location (or Chicago fallback) · free maps backend later</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" aria-labelledby="value-heading">
+      <div class="container">
+        <h2 id="value-heading">What you get</h2>
+        <p class="section-intro">
+          A cohesive three-page footprint you can extend: home, about, and contact—shared chrome, responsive layout, and production-ready static files.
+        </p>
+        <div class="cards">
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">01</div>
+            <h3>Static &amp; simple</h3>
+            <p>Drop files onto Oracle Linux (or any host). No npm, no frameworks, no runtime dependencies.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">02</div>
+            <h3>Accessible by default</h3>
+            <p>Semantic HTML5, skip link, focus styles, and a mobile menu that works without a CSS framework.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">03</div>
+            <h3>Grok Bot ready</h3>
+            <p>A clear call-to-action links visitors to Grok Bot—button and link only, no chat embed.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; <span id="year">2026</span> <span data-brand>COGNATION</span>. Starter site — rename via <code>js/brand.js</code>.</p>
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="https://x.ai/bot" rel="noopener noreferrer">Grok Bot</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="js/brand.js"></script>
+  <script src="js/tabs.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/accounts.js"></script>
+  <script src="js/login.js" defer></script>
+  <script src="js/login-signup-shell.js" defer></script>
+  <script src="js/screen-break.js" defer></script>
+  <script src="js/people-search.js" defer></script>
+  <script src="js/tower.js" defer></script>
+  <script src="js/tower-follow.js" defer></script>
+  <script src="js/moderation.js" defer></script>
+  <script src="js/commune.js" defer></script>
+  <script src="js/commune-messages.js" defer></script>
+  <script src="js/commune-swipe.js" defer></script>
+  <script src="js/go-live.js" defer></script>
+  <script src="js/live-stubs.js" defer></script>
+  <script src="js/news-report-stub.js" defer></script>
+  <script src="js/well.js" defer></script>
+  <script src="js/well-auth.js" defer></script>
+  <script src="js/pages.js" defer></script>
+
+  <div class="tower-add-widget-dialog" data-tower-add-widget-dialog hidden role="dialog" aria-modal="true" aria-labelledby="tower-add-widget-title">
+    <div class="tower-add-widget-dialog-card">
+      <h3 id="tower-add-widget-title" class="tower-add-widget-title">Add to scrapbook</h3>
+      <p class="form-hint">Personal page: drop a quote or text sticker you can drag around.</p>
+      <div class="tower-add-widget-choices">
+        <button type="button" class="btn btn-primary" data-tower-add-choice="quote">Quote / text</button>
+        <button type="button" class="btn btn-secondary" data-tower-add-choice="slogan">Slogan card</button>
+      </div>
+      <label class="tower-add-widget-label" for="tower-add-quote-text">Quote text</label>
+      <textarea id="tower-add-quote-text" data-tower-add-quote-text rows="3" maxlength="400" placeholder="Type a quote or note…"></textarea>
+      <div class="form-actions">
+        <button type="button" class="btn btn-primary" data-tower-add-quote-confirm>Add sticker</button>
+        <button type="button" class="btn btn-secondary" data-tower-add-widget-cancel>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
