@@ -23,28 +23,29 @@
 :root {
   /* Display name lives in js/brand.js; token kept for theming hooks */
   --brand-name: "COGNATION";
-  /* Baby pink theme */
-  --color-bg: #fff5f9;
-  --color-surface: #ffeaf3;
-  --color-surface-2: #ffd6e8;
-  --color-border: #f5b6d0;
-  --color-text: #5a3a48;
-  --color-muted: #9a6b7d;
-  --color-heading: #4a2c3a;
-  --color-accent: #f4a4c4;
-  --color-accent-hover: #ef8bb4;
-  --color-accent-dim: rgba(244, 164, 196, 0.28);
-  --color-navy: #7a4a5c;
-  --color-indigo: #d489b0;
-  --focus-ring: 0 0 0 3px rgba(244, 164, 196, 0.45);
+  /* CGN-013: black ink · glass · #ED9300 · Oswald (Oslay when file provided) */
+  --color-bg: transparent;
+  --color-surface: rgba(255, 255, 255, 0.28);
+  --color-surface-2: rgba(255, 255, 255, 0.4);
+  --color-border: #000000;
+  --color-text: #000000;
+  --color-muted: #1a1a1a;
+  --color-heading: #000000;
+  --color-accent: #ED9300;
+  --color-accent-hover: #d98400;
+  --color-accent-dim: rgba(237, 147, 0, 0.28);
+  --color-navy: #000000;
+  --color-indigo: #ED9300;
+  --focus-ring: 0 0 0 3px rgba(237, 147, 0, 0.45);
   --radius: 12px;
   --radius-sm: 8px;
-  --shadow: 0 12px 40px rgba(210, 140, 170, 0.22);
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
   --max-width: 1100px;
   --header-h: 4rem;
   --topbar-h: 3.25rem;
-  --font: Georgia, "Times New Roman", Times, serif;
-  --font-display: Georgia, "Times New Roman", Times, serif;
+  --font: "Oswald", system-ui, sans-serif;
+  --font-display: "Oswald", system-ui, sans-serif;
+  --font-oslay: "Oslay", "Oswald", system-ui, sans-serif;
 }
 
 *,
@@ -788,14 +789,13 @@ body.login-gate-open {
   position: relative;
   z-index: 1;
   width: min(100%, 26rem);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.4);
+  border: 2px solid #000;
   border-radius: var(--radius);
   padding: 1.75rem 1.5rem 1.5rem;
   box-shadow: var(--shadow);
-  background-image:
-    radial-gradient(ellipse 90% 60% at 100% 0%, rgba(49, 46, 129, 0.45), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(34, 211, 238, 0.08), transparent 50%);
+  backdrop-filter: blur(10px);
+  background-image: none;
 }
 
 .login-gate-brand {
@@ -825,16 +825,19 @@ body.login-gate-open {
 .login-gate-brand--splash .login-gate-brand-name {
   display: block;
   width: 100%;
+  max-width: 100%;
   text-align: center;
   margin: 0.25rem auto 0;
-  font-family: "Rozha One", "Playfair Display", "Times New Roman", Times, Georgia, serif;
-  font-size: clamp(3.5rem, 14vw, 7.5rem);
-  font-weight: 400;
-  letter-spacing: 0.08em;
-  line-height: 1.02;
+  font-family: var(--font-oslay), "Oswald", system-ui, sans-serif;
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
   text-transform: uppercase;
-  color: var(--color-heading, #4a2c3a);
-  text-shadow: 2px 3px 0 rgba(74, 44, 58, 0.08);
+  color: #ED9300;
+  text-shadow: 0 2px 0 #000, 0 0 18px rgba(237, 147, 0, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .login-gate-tagline {
@@ -2343,7 +2346,7 @@ body.login-gate-open .app-topbar {
 
 .commune-paper:is([data-edition="international"], .commune-paper--broadsheet) .commune-banner {
   background: #fffef8;
-  border: 1px dashed #333;
+  border: 1px solid #333;
   border-radius: 0;
   color: #222;
   font-family: "IM Fell English", Georgia, serif;
@@ -3005,7 +3008,7 @@ body.login-gate-open .app-topbar {
 .tower-profile-html-preview {
   margin: 0.5rem 0 0.75rem;
   padding: 0.65rem;
-  border: 1px dashed var(--color-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-bg);
   font-size: 0.9rem;
@@ -3109,7 +3112,7 @@ body.login-gate-open .app-topbar {
 .tower-badge-shelf {
   margin: 0 0 0.85rem;
   padding: 0.55rem 0.6rem 0.7rem;
-  border: 1px dashed var(--color-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   background: var(--color-surface-2);
 }
@@ -3439,7 +3442,7 @@ body.login-gate-open .app-topbar {
 .pages-phone {
   color: var(--pages-ink);
   text-decoration: none;
-  border-bottom: 1px dotted rgba(26, 26, 26, 0.45);
+  border-bottom: 1px solid rgba(26, 26, 26, 0.45);
 }
 
 .pages-phone:hover,
@@ -3467,7 +3470,7 @@ body.login-gate-open .app-topbar {
   gap: 0.4rem 0.55rem;
   margin: 0.4rem 0 0;
   padding-top: 0.35rem;
-  border-top: 1px dashed rgba(26, 26, 26, 0.28);
+  border-top: 1px solid rgba(26, 26, 26, 0.28);
 }
 
 .pages-tower-link,
@@ -3517,7 +3520,7 @@ body.login-gate-open .app-topbar {
 .pages-call-hint {
   margin: 0.55rem 0 0;
   padding: 0.45rem 0.6rem;
-  border: 2px dashed var(--pages-ink);
+  border: 2px solid var(--pages-ink);
   background: rgba(255, 254, 245, 0.85);
   font-size: 0.82rem;
   font-weight: 700;
@@ -3532,7 +3535,7 @@ body.login-gate-open .app-topbar {
 .pages-empty {
   margin: 0.75rem 0 0;
   padding: 0.85rem 0.75rem;
-  border: 2px dashed var(--pages-ink);
+  border: 2px solid var(--pages-ink);
   background: rgba(255, 254, 245, 0.7);
   font-weight: 700;
   font-style: italic;
@@ -3676,7 +3679,7 @@ body.login-gate-open .app-topbar {
 }
 
 .tower-friend-chip.is-drop-target {
-  outline: 2px dashed #4a2c3a;
+  outline: 2px solid #4a2c3a;
   outline-offset: 2px;
 }
 
@@ -3702,7 +3705,7 @@ body.login-gate-open .app-topbar {
 .tower-friends-public {
   margin-top: 0.5rem;
   padding: 0.45rem 0.55rem;
-  border: 1px dashed rgba(74, 44, 58, 0.28);
+  border: 1px solid rgba(74, 44, 58, 0.28);
   border-radius: var(--radius-sm);
   background: rgba(255, 245, 249, 0.65);
 }
@@ -4765,7 +4768,7 @@ body.tower-radio-scroll .tower-radio-side { display: block; }
   gap: 0.5rem 0.75rem;
   margin: 0 0 0.75rem;
   padding: 0.55rem 0.7rem;
-  border: 1px dashed var(--color-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
   background: var(--color-surface);
 }
@@ -5150,7 +5153,7 @@ body.tower-radio-scroll .tower-radio-side { display: block; }
 .tower-bg-options {
   margin-top: 0.45rem;
   padding-top: 0.45rem;
-  border-top: 1px dashed var(--color-border);
+  border-top: 1px solid var(--color-border);
 }
 .tower-bg-options[hidden] {
   display: none !important;
@@ -5406,7 +5409,7 @@ body.tower-radio-scroll .tower-radio-side { display: block; }
 
 .tower-private-theme {
   margin: 0 0 1rem;
-  border: 1px dashed var(--color-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.45);
   padding: 0.35rem 0.65rem 0.55rem;
@@ -5448,7 +5451,7 @@ body.tower-radio-scroll .tower-radio-side { display: block; }
   flex: 1 1 100%;
   margin-top: 0.35rem;
   padding-top: 0.35rem;
-  border-top: 1px dashed var(--color-border);
+  border-top: 1px solid var(--color-border);
 }
 .tower-public-side[hidden],
 .tower-private-side[hidden] {
@@ -5974,7 +5977,7 @@ body.tower-radio-scroll .tower-radio-side { display: block; }
   margin: 0 0 0.9rem;
   padding: 0.7rem 0.8rem;
   border-radius: 10px;
-  border: 1px dashed #c48a9e;
+  border: 1px solid #c48a9e;
   background: linear-gradient(135deg, #fff8fb 0%, #eef7f9 100%);
 }
 
@@ -6217,7 +6220,7 @@ body.tower-radio-scroll .tower-radio-side { display: block; }
   font-weight: 600;
   color: #3a5560;
   background: var(--well-lock);
-  border: 1px dashed var(--well-line);
+  border: 1px solid var(--well-line);
   border-radius: var(--radius-sm);
 }
 
@@ -7877,7 +7880,7 @@ body.login-gate-open {
   background: rgba(255, 245, 249, 0.9);
 }
 .tower-cal-event.is-pending {
-  border-style: dashed;
+  border-style: solid;
   background: rgba(255, 248, 240, 0.95);
 }
 .tower-cal-event-main {
@@ -7933,7 +7936,7 @@ body.login-gate-open {
 .tower-cal-google {
   margin-top: 0.75rem;
   padding-top: 0.65rem;
-  border-top: 1px dashed rgba(212, 137, 176, 0.45);
+  border-top: 1px solid rgba(212, 137, 176, 0.45);
 }
 .tower-cal-friend-row {
   display: grid;
@@ -8210,7 +8213,7 @@ body.login-gate-open {
   border-color: var(--color-accent);
 }
 .commune-card[data-card-type="ad"] {
-  border-style: dashed;
+  border-style: solid;
 }
 .commune-card[data-card-type="live-video"] {
   border-color: #c45a7a;
@@ -9136,3 +9139,50 @@ body.login-gate-open {
 .tower-avatar-wrap .tower-go-live-btn[data-go-live] { position: absolute; }
 .tower-messages-shell[data-tower-messages-shell] > summary { cursor: pointer; }
 
+/* ===== CGN-013 theme overrides (Alexa approved 2026-09-17) ===== */
+html {
+  background: transparent;
+}
+body {
+  color: #000 !important;
+  background: transparent !important;
+  font-family: "Oswald", system-ui, sans-serif !important;
+}
+h1, h2, h3, h4, h5, h6,
+p, a, span, label, button, input, select, textarea,
+li, td, th, summary, figcaption {
+  color: #000;
+}
+.app-shell,
+.app-topbar,
+.site-header,
+.panel,
+.card,
+.tower-layout,
+.tower-feed,
+.tower-side,
+.commune-swipe-shell,
+.news-paper,
+.login-gate-panel {
+  background-color: rgba(255, 255, 255, 0.28) !important;
+  backdrop-filter: blur(8px);
+  border-color: #000 !important;
+  border-style: solid !important;
+}
+/* Kill prior coral page fills */
+.tower-tab-panel,
+[data-tower-app],
+#panel-tower,
+#main {
+  background-color: transparent !important;
+}
+button,
+.btn,
+[role="tab"][aria-selected="true"],
+.tab[aria-selected="true"] {
+  background-color: #ED9300 !important;
+  color: #000 !important;
+  border: 2px solid #000 !important;
+}
+a { color: #000; }
+a:hover { color: #ED9300; }
