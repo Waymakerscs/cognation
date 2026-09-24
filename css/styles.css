@@ -8990,8 +8990,8 @@ body { padding-top: 0 !important; }
   border: 1px solid #c45a5a;
   border-radius: 8px;
   padding: 0.45rem 0.4rem 0.55rem;
-  max-height: min(52vh, 28rem);
-  overflow: auto;
+  max-height: none;
+  overflow: visible;
 }
 .tower-friends-browse-heading {
   margin: 0 0 0.35rem;
