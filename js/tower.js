@@ -795,42 +795,19 @@
     wrap.className = "tower-post-reactbar";
     wrap.setAttribute("data-tower-post-id", post.id || "");
 
-    var pills = document.createElement("div");
-    pills.className = "tower-post-reactions";
-    pills.setAttribute("aria-label", "Reactions");
     var me = towerReactionViewerId();
     var reactions = post.reactions && typeof post.reactions === "object" ? post.reactions : {};
-    Object.keys(reactions).forEach(function (emoji) {
-      var users = reactions[emoji];
-      if (!Array.isArray(users) || !users.length) return;
-      var mine = users.indexOf(me) >= 0;
-      var pill = document.createElement("button");
-      pill.type = "button";
-      pill.className = "tower-react-pill" + (mine ? " is-mine" : "");
-      pill.setAttribute("data-tower-react", emoji);
-      pill.setAttribute(
-        "aria-label",
-        (mine ? "Remove your " : "Add ") + emoji + " reaction" + (users.length > 1 ? ", " + users.length + " total" : "")
-      );
-      pill.innerHTML =
-        '<span class="tower-react-pill-emoji" aria-hidden="true">' +
-        emoji +
-        "</span>" +
-        (users.length > 1
-          ? '<span class="tower-react-pill-count">' + String(users.length) + "</span>"
-          : "");
-      pills.appendChild(pill);
-    });
-    wrap.appendChild(pills);
-
     var controls = document.createElement("div");
     controls.className = "tower-react-controls";
     TOWER_POST_REACTIONS.forEach(function (face) {
+      var users = Array.isArray(reactions[face]) ? reactions[face] : [];
+      var mine = users.indexOf(me) >= 0;
       var b = document.createElement("button");
       b.type = "button";
-      b.className = "tower-react-face";
+      b.className = "tower-react-face" + (mine ? " is-mine" : "");
       b.setAttribute("data-tower-react", face);
-      b.setAttribute("aria-label", "React with " + face);
+      b.setAttribute("aria-pressed", mine ? "true" : "false");
+      b.setAttribute("aria-label", (mine ? "Remove your " : "React with ") + face);
       b.textContent = face;
       controls.appendChild(b);
     });
