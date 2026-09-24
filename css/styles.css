@@ -10018,3 +10018,117 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .cognation-masthead-brain { animation: none; }
 }
+
+/* ===== CGN-016 — one type and color system across every V1 tab ===== */
+:root {
+  --cgn-text: #f7f9ff;
+  --cgn-text-muted: rgba(232, 240, 255, 0.66);
+  --cgn-text-soft: rgba(232, 240, 255, 0.48);
+  --cgn-accent: #b7f6ff;
+  --cgn-accent-warm: #d8b7ff;
+  --cgn-border: rgba(209, 241, 255, 0.28);
+}
+
+#panel-tower,
+#panel-news,
+#panel-commune,
+#panel-tower :is(button, input, select, textarea, p, a, label, li, td, th, summary, figcaption, h1, h2, h3, h4, h5, h6),
+#panel-news :is(button, input, select, textarea, p, a, label, li, td, th, summary, figcaption, h1, h2, h3, h4, h5, h6),
+#panel-commune :is(button, input, select, textarea, p, a, label, li, td, th, summary, figcaption, h1, h2, h3, h4, h5, h6) {
+  font-family: var(--cgn-ui) !important;
+}
+
+#panel-tower,
+#panel-news,
+#panel-commune {
+  color: var(--cgn-text) !important;
+}
+
+#panel-tower :is(h1, h2, h3, h4, h5, h6),
+#panel-news :is(h1, h2, h3, h4, h5, h6),
+#panel-commune :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--cgn-text) !important;
+  font-weight: 680 !important;
+  letter-spacing: -0.04em !important;
+}
+
+#panel-tower :is(p, li, td, th, small, time, figcaption),
+#panel-news :is(p, li, td, th, small, time, figcaption),
+#panel-commune :is(p, li, td, th, small, time, figcaption) {
+  color: var(--cgn-text-muted) !important;
+}
+
+#panel-tower :is(a, .tower-post-author, .tower-friends-browse-heading, .tower-personal-calendar-heading),
+#panel-news :is(a, .paper-eyebrow, .paper-section-kicker, .commune-feed-author),
+#panel-commune :is(a, .commune-card-kicker, .commune-live-label) {
+  color: var(--cgn-accent) !important;
+}
+
+#panel-tower :is(input, select, textarea),
+#panel-news :is(input, select, textarea),
+#panel-commune :is(input, select, textarea) {
+  border-color: var(--cgn-border) !important;
+  border-radius: 0.65rem !important;
+  background: rgba(5, 8, 28, 0.28) !important;
+  color: var(--cgn-text) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+#panel-tower :is(input, select, textarea)::placeholder,
+#panel-news :is(input, select, textarea)::placeholder,
+#panel-commune :is(input, select, textarea)::placeholder {
+  color: var(--cgn-text-soft) !important;
+}
+
+#panel-tower :is(input, select, textarea):focus,
+#panel-news :is(input, select, textarea):focus,
+#panel-commune :is(input, select, textarea):focus {
+  border-color: var(--cgn-accent) !important;
+  box-shadow: 0 0 0 3px rgba(183, 246, 255, 0.13), 0 0 20px rgba(183, 246, 255, 0.12) !important;
+}
+
+#panel-tower :is(.tower-post, .tower-compact-block, .tower-private-theme, .tower-friends-browse, .tower-personal-calendar, .tower-private-messages),
+#panel-news :is(.paper-brief, .commune-feed-item, .commune-social-card, .commune-profile-card, .paper-col),
+#panel-commune :is(.commune-card, .commune-live-chrome, .commune-dating-toggle-ui) {
+  border-color: var(--cgn-border) !important;
+  background: rgba(16, 19, 48, 0.42) !important;
+  color: var(--cgn-text) !important;
+}
+
+#panel-tower :is(.tower-side-btn, .tower-go-live-btn, .tower-attach, .tower-public-widget-check),
+#panel-news :is(.paper-index-btn, .paper-edition-opt, .paper-refresh-btn, .commune-endless-toggle),
+#panel-commune :is(.commune-swipe-btn, .commune-dating-toggle, .commune-live-btn) {
+  border-color: rgba(183, 246, 255, 0.4) !important;
+  background: rgba(155, 235, 255, 0.1) !important;
+  color: var(--cgn-text) !important;
+}
+
+#panel-tower :is(.tower-side-btn.is-selected, .tower-go-live-btn:hover),
+#panel-news :is(.paper-index-btn.is-active, .paper-index-btn[aria-current="true"], .paper-edition-opt:has(input:checked)),
+#panel-commune :is(.commune-swipe-btn:hover, .commune-dating-toggle.is-on) {
+  border-color: rgba(210, 249, 255, 0.7) !important;
+  background: linear-gradient(100deg, rgba(139, 237, 255, 0.35), rgba(204, 161, 255, 0.3)) !important;
+  color: #fff !important;
+  box-shadow: 0 0 20px rgba(142, 234, 255, 0.18) !important;
+}
+
+#panel-news .paper-title,
+#panel-news .paper-subtitle,
+#panel-news .paper-dateline,
+#panel-news .paper-edition-scope-label,
+#panel-news .paper-col-heading {
+  color: var(--cgn-text) !important;
+  text-shadow: none !important;
+}
+
+#panel-news .paper-rule,
+#panel-news .paper-rule-block {
+  background: var(--cgn-border) !important;
+  border-color: var(--cgn-border) !important;
+}
+
+#panel-commune .commune-card-title,
+#panel-commune .commune-swipe-title {
+  color: var(--cgn-text) !important;
+  font-family: var(--cgn-ui) !important;
+}
