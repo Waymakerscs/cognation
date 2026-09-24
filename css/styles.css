@@ -9644,3 +9644,194 @@ button {
   .login-gate-tagline,
   .login-gate-brand--splash .login-gate-tagline { font-size: 0.57rem; letter-spacing: 0.16em; }
 }
+
+/* ===== CGN-015 — Cognation Two interface system for V1 features =====
+   This block changes presentation only: all panels, data hooks, and JS remain intact. */
+:root {
+  --cgn-ui: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --cgn-radius: 1.15rem;
+  --cgn-panel: rgba(16, 19, 48, 0.42);
+  --cgn-panel-hover: rgba(29, 33, 75, 0.56);
+}
+
+body,
+body :is(button, input, select, textarea, p, a, label, li, td, th, summary, figcaption, h1, h2, h3, h4, h5, h6) {
+  font-family: var(--cgn-ui) !important;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 24% 18%, rgba(77, 224, 246, 0.42), transparent 25%),
+    radial-gradient(ellipse at 81% 13%, rgba(248, 152, 209, 0.31), transparent 25%),
+    radial-gradient(ellipse at 50% 78%, rgba(160, 113, 255, 0.29), transparent 29%),
+    linear-gradient(145deg, #10122b, #251839) !important;
+  background-attachment: fixed !important;
+}
+
+.app-topbar {
+  min-height: 4.1rem;
+  border-bottom: 1px solid rgba(219, 245, 255, 0.35) !important;
+  background: rgba(15, 18, 46, 0.42) !important;
+  box-shadow: 0 18px 54px rgba(4, 6, 24, 0.22), 0 1px 28px rgba(148, 234, 255, 0.18);
+}
+
+.app-topbar .tablist [role="tab"],
+.app-topbar-shortcut {
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+}
+
+.site-header {
+  background: rgba(17, 19, 48, 0.25) !important;
+  border-bottom-color: rgba(219, 245, 255, 0.28) !important;
+  box-shadow: none;
+}
+
+.logo,
+.logo:hover {
+  font-family: var(--cgn-ui) !important;
+  font-size: clamp(1.05rem, 2.7vw, 1.55rem);
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.tabs.tabs--chrome .tab-panels {
+  max-width: 1240px;
+  margin-top: clamp(1rem, 3vw, 2.4rem);
+  padding: clamp(1.1rem, 3vw, 2.4rem);
+  border-radius: 1.45rem 1.45rem 0 0;
+  background: rgba(14, 17, 44, 0.3) !important;
+  box-shadow: 0 -18px 65px rgba(168, 235, 255, 0.11), inset 0 1px rgba(255, 255, 255, 0.25);
+}
+
+#panel-tower,
+#panel-news,
+#panel-commune,
+#panel-pages,
+[data-tower-app],
+.tower-tab-panel,
+.commune-paper,
+.commune-swipe-shell,
+.pages-shell {
+  background: transparent !important;
+}
+
+.tower-private-side,
+.tower-public-side,
+.tower-layout,
+.tower-left-rail,
+.tower-compose,
+.tower-post,
+.tower-private-theme,
+.tower-compact-block,
+.tower-private-messages,
+.commune-paper,
+.paper-masthead,
+.paper-grid,
+.paper-brief,
+.commune-feed-item,
+.commune-social-card,
+.commune-profile-card,
+.commune-card,
+.pages-listing,
+.pages-listing-row {
+  border: 1px solid rgba(220, 246, 255, 0.24) !important;
+  border-radius: var(--cgn-radius) !important;
+  background: var(--cgn-panel) !important;
+  background-image: none !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.17);
+  backdrop-filter: blur(16px) saturate(120%);
+}
+
+.tower-post:hover,
+.commune-feed-item:hover,
+.commune-card:hover,
+.pages-listing-row:hover {
+  background: var(--cgn-panel-hover) !important;
+}
+
+.tower-title,
+.commune-swipe-title,
+.pages-title,
+.paper-title {
+  color: #fff !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: clamp(1.8rem, 4vw, 3.6rem) !important;
+  font-weight: 720 !important;
+  letter-spacing: -0.075em !important;
+  line-height: 0.93 !important;
+  text-shadow: 0 0 28px rgba(172, 242, 255, 0.31);
+}
+
+.tower-post-body,
+.commune-feed-body,
+.paper-subtitle,
+.paper-dek,
+.pages-intro,
+.pages-dek {
+  color: rgba(244, 247, 255, 0.72) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.82rem !important;
+  line-height: 1.65 !important;
+}
+
+.paper-masthead,
+.paper-edition-seg,
+.paper-index-btn,
+.paper-brief,
+.paper-dateline {
+  color: #eefcff !important;
+  background-image: none !important;
+}
+
+.tower-side-btn,
+.paper-index-btn,
+.paper-edition-opt,
+.commune-swipe-btn,
+.pages-chip,
+.pages-az button,
+.btn,
+.app-logout-btn {
+  border: 1px solid rgba(187, 244, 255, 0.44) !important;
+  border-radius: 999px !important;
+  background: rgba(155, 235, 255, 0.1) !important;
+  color: #edfaff !important;
+  box-shadow: none !important;
+}
+
+.tower-side-btn.is-selected,
+.paper-index-btn.is-selected,
+.paper-edition-opt.is-selected,
+.pages-chip.is-selected,
+.pages-az button.is-selected,
+.btn-primary {
+  border-color: rgba(208, 249, 255, 0.72) !important;
+  background: linear-gradient(100deg, rgba(139, 237, 255, 0.42), rgba(204, 161, 255, 0.38)) !important;
+  color: #fff !important;
+  box-shadow: 0 0 21px rgba(142, 234, 255, 0.2) !important;
+}
+
+.tower-sticker,
+.tower-slogan-card,
+.tower-public-widget,
+.tower-public-section {
+  background: rgba(16, 19, 48, 0.34) !important;
+  background-image: none !important;
+  border-color: rgba(220, 246, 255, 0.24) !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 720px) {
+  .tabs.tabs--chrome .tab-panels {
+    margin-top: 0.75rem;
+    padding: 1rem;
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  .tower-title,
+  .commune-swipe-title,
+  .pages-title,
+  .paper-title { font-size: clamp(1.8rem, 10vw, 2.75rem) !important; }
+}
