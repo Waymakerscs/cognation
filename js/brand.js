@@ -7,7 +7,7 @@
   "use strict";
 
   var SITE_BRAND = "COGNATION";
-  var SITE_TAGLINE = "Build clarity. Ship faster.";
+  var SITE_TAGLINE = "A social wellness concierge";
 
   window.SITE_BRAND = SITE_BRAND;
   window.SITE_TAGLINE = SITE_TAGLINE;
