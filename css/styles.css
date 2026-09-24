@@ -126,8 +126,9 @@ main {
 
 /* Header */
 .site-header {
-  position: sticky;
-  top: var(--topbar-h);
+  /* The people directory belongs to the page flow, rather than remaining pinned over it. */
+  position: relative;
+  top: auto;
   z-index: 100;
   background: rgba(255, 245, 249, 0.92);
   backdrop-filter: blur(10px);
