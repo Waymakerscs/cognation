@@ -125,10 +125,10 @@
     if (titleEl) titleEl.textContent = isSignup ? "Sign up" : "Sign in";
     if (descEl) {
       descEl.innerHTML = isSignup
-        ? 'Create a <span data-brand>COGNATION</span> demo profile (age, location, contact).'
+        ? 'Create your <span data-brand>COGNATION</span> account.'
         : 'Welcome to <span data-brand>COGNATION</span>. Sign in with your account to continue.';
     }
-    if (demoHint) demoHint.hidden = isSignup;
+    if (demoHint) demoHint.hidden = true;
     setStatus("");
   }
 
@@ -281,23 +281,7 @@
             });
           return;
         }
-        writeProfile(profile);
-        setStatus(
-          "Profile saved locally (age " +
-            profile.age +
-            "). Use demo sign-in alexa / TowerCommune26 to enter — profile age drives COMMUNE gates.",
-          false
-        );
-        /* Flip to signin with fields retained for demo handoff */
-        window.setTimeout(function () {
-          setMode("signin");
-          setStatus(
-            "Demo sign-in: alexa / TowerCommune26. Your age (" +
-              profile.age +
-              ") is saved for COMMUNE dating / 21+ gates.",
-            false
-          );
-        }, 600);
+        setStatus("Account sign-up is not configured. Please try again later.", true);
         return;
       }
 

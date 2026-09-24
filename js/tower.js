@@ -19,6 +19,15 @@
   var TOWER_PROFILE_KEY = "cognation.tower.profile.v1";
   var REACTION_CLEANUP_KEY = "cognation.tower.reaction-cleanup.v1";
 
+  function remoteSocial() {
+    return window.CognationSupabaseSocial || null;
+  }
+
+  function usingRemoteSocial() {
+    var social = remoteSocial();
+    return !!(social && social.active && social.active());
+  }
+
   var AVATAR_FRAMES = {
     none: { label: "None", overlay: "" },
     "ornate-gold": { label: "Ornate gold oval", overlay: "assets/frames/ornate-gold-oval-cutout.png" },
@@ -334,6 +343,11 @@
   }
 
   function resolveActiveProfileId() {
+    var social = remoteSocial();
+    if (social && social.getViewedProfileId) {
+      var remoteId = social.getViewedProfileId();
+      if (remoteId) return remoteId;
+    }
     if (window.CognationAccounts && typeof window.CognationAccounts.ensureSeeded === "function") {
       try { window.CognationAccounts.ensureSeeded(); } catch (e) {}
     }
@@ -409,6 +423,11 @@
     getActiveProfileId: resolveActiveProfileId,
     load: function () {
       var id = resolveActiveProfileId();
+      var social = remoteSocial();
+      if (social && social.getTowerProfile) {
+        var remote = social.getTowerProfile(id);
+        if (remote) return remote;
+      }
       if (id && window.CognationAccounts && window.CognationAccounts.getProfileById) {
         var rec = window.CognationAccounts.getProfileById(id);
         if (rec) {
@@ -532,6 +551,22 @@
     save: function (data) {
       data = data || {};
       var id = data._profileId || resolveActiveProfileId();
+      if (usingRemoteSocial() && id) {
+        var social = remoteSocial();
+        var activeSession = getSessionObject();
+        if (
+          social &&
+          social.updateCurrentProfile &&
+          activeSession &&
+          id === activeSession.activeProfileId
+        ) {
+          social.updateCurrentProfile({
+            displayName: data.displayName,
+            handle: data.handle,
+            bio: data.slogan,
+          }).catch(function () {});
+        }
+      }
       var towerBlob = {};
       Object.keys(data).forEach(function (k) {
         if (k.charAt(0) === "_") return;
@@ -712,6 +747,9 @@
     },
     list: function () {
       var data = this.load();
+      if (usingRemoteSocial() && (!data || !data.remote)) {
+        return [];
+      }
       if (!data) {
         data = { version: 1, posts: JSON.parse(JSON.stringify(SEED)) };
         this.save(data);
@@ -720,6 +758,18 @@
       return data.posts.slice().sort(function (a, b) {
         return String(b.createdAt).localeCompare(String(a.createdAt));
       });
+    },
+    setRemotePosts: function (posts) {
+      var data = {
+        version: 2,
+        remote: true,
+        posts: Array.isArray(posts) ? posts.slice() : [],
+      };
+      this.save(data);
+      document.dispatchEvent(
+        new CustomEvent("cognation:tower-updated", { detail: { remote: true } })
+      );
+      return data.posts;
     },
     toggleReaction: function (postId, face) {
       face = String(face || "");
@@ -754,6 +804,12 @@
       return { ok: true, post: found };
     },
     add: function (fields) {
+      if (usingRemoteSocial()) {
+        return {
+          ok: false,
+          error: "Tower is syncing with Cognation. Please try posting again.",
+        };
+      }
       var body = String((fields && fields.body) || "").trim();
       if (!body && !(fields && fields.attachments && fields.attachments.length)) {
         return { ok: false, error: "Add a note or an upload." };
@@ -1027,9 +1083,19 @@
 
   /** Logged-in viewer owns the currently resolved Tower profile. */
   function isTowerOwner(profile) {
+    var remoteSession = getSessionObject();
+    profile = profile || TowerProfileStore.get();
+    if (
+      remoteSession &&
+      remoteSession.source === "supabase" &&
+      remoteSession.activeProfileId &&
+      profile &&
+      profile._profileId === remoteSession.activeProfileId
+    ) {
+      return true;
+    }
     var user = getSessionUsername();
     if (!user) return false;
-    profile = profile || TowerProfileStore.get();
     if (window.CognationAccounts) {
       var id = (profile && profile._profileId) || TowerProfileStore.getActiveProfileId();
       var rec = id ? window.CognationAccounts.getProfileById(id) : null;
@@ -3970,6 +4036,30 @@
     var session = getSessionObject();
     var user = session && session.username ? String(session.username).toLowerCase() : "";
     var profiles = [];
+    if (usingRemoteSocial()) {
+      var social = remoteSocial();
+      profiles = social && social.getMyProfiles ? social.getMyProfiles() : [];
+      var remoteOwner = isTowerOwner(TowerProfileStore.get());
+      toggle.hidden = !remoteOwner;
+      var currentRemoteKind =
+        (TowerProfileStore.get() && TowerProfileStore.get()._profileKind) ||
+        (session && session.profileKind) ||
+        "personal";
+      toggle.querySelectorAll("[data-tower-profile-kind]").forEach(function (btn) {
+        var remoteKind = btn.getAttribute("data-tower-profile-kind");
+        var hasRemote = profiles.some(function (p) {
+          return p.kind === remoteKind;
+        });
+        btn.setAttribute("aria-selected", remoteKind === currentRemoteKind ? "true" : "false");
+        btn.classList.toggle("is-selected", remoteKind === currentRemoteKind);
+        btn.hidden = !hasRemote && remoteKind !== "professional";
+        btn.disabled = !hasRemote;
+        if (!hasRemote && remoteKind === "professional") {
+          btn.title = "Add a professional page from Edit profile";
+        }
+      });
+      return;
+    }
     if (user && window.CognationAccounts) {
       profiles = window.CognationAccounts.getProfilesForUsername(user) || [];
     }
@@ -4004,6 +4094,23 @@
   function switchProfileKind(root, kind) {
     kind = kind === "professional" ? "professional" : "personal";
     var session = getSessionObject();
+    if (usingRemoteSocial()) {
+      var social = remoteSocial();
+      var remoteProfiles = social && social.getMyProfiles ? social.getMyProfiles() : [];
+      var remoteTarget = remoteProfiles.filter(function (profile) {
+        return profile.kind === kind;
+      })[0];
+      if (!remoteTarget || !social || !social.setActiveProfile) return false;
+      social.setActiveProfile(remoteTarget);
+      if (remoteTarget.handle) {
+        try { location.hash = "tower-profile-" + remoteTarget.handle; } catch (eRemote) {}
+      }
+      renderProfileChrome(root);
+      syncProfileKindToggle(root);
+      syncAddProfileUi(root);
+      applyTowerSide(root, "public");
+      return true;
+    }
     if (!session || !session.username || !window.CognationAccounts) return false;
     var profiles = window.CognationAccounts.getProfilesForUsername(session.username) || [];
     var target = profiles.filter(function (p) { return p.kind === kind; })[0];
@@ -4057,6 +4164,22 @@
     var session = getSessionObject();
     var user = session && session.username ? String(session.username).toLowerCase() : "";
     if (!btn) return;
+    if (usingRemoteSocial()) {
+      var social = remoteSocial();
+      var remoteProfiles = social && social.getMyProfiles ? social.getMyProfiles() : [];
+      var hasRemoteProfessional = remoteProfiles.some(function (p) {
+        return p.kind === "professional";
+      });
+      btn.hidden = hasRemoteProfessional;
+      if (status) {
+        status.hidden = !hasRemoteProfessional;
+        status.textContent = hasRemoteProfessional
+          ? "Your professional page is set up."
+          : "";
+        status.classList.remove("is-error");
+      }
+      return;
+    }
     if (!user || !window.CognationAccounts) {
       btn.hidden = true;
       return;
@@ -4101,6 +4224,46 @@
     if (!btn) return;
     btn.addEventListener("click", function () {
       var session = getSessionObject();
+      if (usingRemoteSocial()) {
+        var social = remoteSocial();
+        if (!social || !social.createProfessionalProfile) {
+          setSt("Sign in to add a page.", true);
+          return;
+        }
+        var remoteNameIn = root.querySelector("#tower-display-name");
+        var remoteHandleIn = root.querySelector("[data-tower-handle]");
+        btn.disabled = true;
+        setSt("Creating your professional page…", false);
+        social
+          .createProfessionalProfile({
+            displayName: remoteNameIn && remoteNameIn.value
+              ? remoteNameIn.value
+              : "Professional page",
+            handle: remoteHandleIn && remoteHandleIn.value
+              ? remoteHandleIn.value + "-pro"
+              : "professional-page",
+          })
+          .then(function (profile) {
+            setSt("Professional page created.", false);
+            if (profile && profile.handle) {
+              location.hash = "tower-profile-" + profile.handle;
+            }
+            syncAddProfileUi(root);
+            syncProfileKindToggle(root);
+            renderProfileChrome(root);
+            applyTowerSide(root, "public");
+          })
+          .catch(function (error) {
+            setSt(
+              (error && error.message) || "Could not create a professional page.",
+              true
+            );
+          })
+          .finally(function () {
+            btn.disabled = false;
+          });
+        return;
+      }
       if (!session || !session.username || !window.CognationAccounts) {
         setSt("Sign in to add a page.", true);
         return;
@@ -5948,6 +6111,32 @@
             type: f.type || "",
           });
         });
+        if (usingRemoteSocial()) {
+          var social = remoteSocial();
+          if (!social || !social.createTowerPost) {
+            setStatus("Tower is still connecting. Please try again.", true);
+            return;
+          }
+          setStatus("Posting to Tower…", false);
+          social
+            .createTowerPost({
+              body: bodyInput ? bodyInput.value : "",
+              attachments: attachments,
+            })
+            .then(function () {
+              if (bodyInput) bodyInput.value = "";
+              if (fileInput) fileInput.value = "";
+              setStatus("Posted to Tower.", false);
+              renderFeed(root);
+            })
+            .catch(function (error) {
+              setStatus(
+                (error && error.message) || "Could not post to Tower. Please try again.",
+                true
+              );
+            });
+          return;
+        }
         var result = TowerStore.add({
           authorName: postAuthorFromProfile(TowerProfileStore.get()),
           body: bodyInput ? bodyInput.value : "",
@@ -5966,6 +6155,11 @@
 
     document.addEventListener("cognation:tower-updated", function () {
       renderFeed(root);
+    });
+    document.addEventListener("cognation:remote-profile-loaded", function () {
+      renderProfileChrome(root);
+      renderFeed(root);
+      if (hashRequestsPublicSide()) applyTowerSide(root, "public");
     });
   }
 

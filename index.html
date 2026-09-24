@@ -47,7 +47,7 @@
       <div id="login-credentials-step" data-login-credentials-step data-login-mode="signin">
       <form id="login-form" class="login-form" action="#" method="post" novalidate data-login-form>
         <div class="form-group">
-          <label for="login-username">Email or username</label>
+          <label for="login-username">Email address</label>
           <input
             type="text"
             id="login-username"
@@ -230,8 +230,8 @@
             Need an account? Sign up
           </button>
         </p>
-        <p class="form-hint login-demo-hint" data-login-demo-hint>Demo: username <code>alexa</code> · password <code>TowerCommune26</code></p>
-        <p class="form-hint login-demo-storage-hint">Demo storage is in this browser only — not production identity.</p>
+        <p class="form-hint login-demo-hint" data-login-demo-hint hidden>Sign in with the email and password you used to create your Cognation account.</p>
+        <p class="form-hint login-demo-storage-hint">Your account is secured by Cognation sign-in.</p>
       </form>
       </div>
 
@@ -437,6 +437,11 @@
 
                     <!-- Left rail: friends circles + personal calendar -->
                     <aside class="tower-left-rail" data-tower-calendar aria-label="Friends and calendar">
+                      <section class="tower-remote-social" data-remote-social hidden aria-label="Connections">
+                        <h4 class="tower-friends-browse-heading">Connections</h4>
+                        <div data-remote-friend-requests></div>
+                        <div data-remote-notifications></div>
+                      </section>
                       <div class="tower-friends-browse" data-tower-friends-browse data-tower-friends aria-label="Friends">
                         <h4 class="tower-friends-browse-heading">Friends</h4>
                         <ul class="tower-friends-browse-list" data-tower-friends-browse-list role="list"></ul>
@@ -1612,6 +1617,7 @@
   <script src="js/login.js" defer></script>
   <script src="js/login-signup-shell.js" defer></script>
   <script src="js/screen-break.js" defer></script>
+  <script src="js/supabase-social.js" defer></script>
   <script src="js/people-search.js" defer></script>
   <script src="js/tower.js" defer></script>
   <script src="js/social-graph.js" defer></script>

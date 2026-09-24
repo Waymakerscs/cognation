@@ -239,9 +239,11 @@
     if (
       window.CognationSupabase &&
       window.CognationSupabase.configured &&
-      window.CognationSupabase.configured() &&
-      username.indexOf("@") > 0
+      window.CognationSupabase.configured()
     ) {
+      if (username.indexOf("@") <= 0) {
+        return Promise.reject(new Error("Enter the email address for your Cognation account."));
+      }
       return window.CognationSupabase.signIn(username, password).then(function (result) {
         var user = result && result.user;
         if (!user) throw new Error("bad credentials");
@@ -255,11 +257,7 @@
         });
       });
     }
-    if (username === EXPECTED_USER.toLowerCase() && password === EXPECTED_PASS) {
-      var profiles = loadProfilesForUser(EXPECTED_USER);
-      return Promise.resolve({ username: EXPECTED_USER, profiles: profiles });
-    }
-    return Promise.reject(new Error("bad credentials"));
+    return Promise.reject(new Error("Cognation sign-in is not configured."));
   }
 
   function logout(opts) {
@@ -324,8 +322,11 @@
         setStatus("");
         finishWithProfileChoice(result.username, result.profiles, result);
       },
-      function () {
-        setStatus("Wrong username or password.", true);
+      function (error) {
+        setStatus(
+          (error && error.message) || "Wrong email or password.",
+          true
+        );
       }
     );
   });

@@ -1,13 +1,22 @@
 /**
- * Top-right people search (demo directory).
- * Searches first name, last name, full name, and @handle.
- * "Add" stores friend ids for Tower featured friends / future graph.
+ * Top-right member search.
+ * Authenticated Supabase members search real Cognation profiles and open the
+ * selected Tower page. The legacy directory remains available only offline.
  */
 (function () {
   "use strict";
 
   var PEOPLE = [{"id": "alex-rivera", "first": "Alex", "last": "Rivera", "handle": "alexrivera"}, {"id": "sam-okonkwo", "first": "Sam", "last": "Okonkwo", "handle": "samok"}, {"id": "jordan-lee", "first": "Jordan", "last": "Lee", "handle": "jlee"}, {"id": "mira-chen", "first": "Mira", "last": "Chen", "handle": "mirachen"}, {"id": "chris-patel", "first": "Chris", "last": "Patel", "handle": "cpatel"}, {"id": "susan-park", "first": "Susan", "last": "Park", "handle": "susanpark"}, {"id": "devon-brooks", "first": "Devon", "last": "Brooks", "handle": "devonb"}, {"id": "riley-nguyen", "first": "Riley", "last": "Nguyen", "handle": "rileyng"}, {"id": "casey-morris", "first": "Casey", "last": "Morris", "handle": "caseym"}, {"id": "avery-kim", "first": "Avery", "last": "Kim", "handle": "averyk"}, {"id": "taylor-james", "first": "Taylor", "last": "James", "handle": "tjames"}, {"id": "morgan-diaz", "first": "Morgan", "last": "Diaz", "handle": "morgand"}, {"id": "quinn-foster", "first": "Quinn", "last": "Foster", "handle": "qfoster"}, {"id": "harper-wong", "first": "Harper", "last": "Wong", "handle": "harperw"}, {"id": "alexa-thomas", "first": "Alexa", "last": "Thomas", "handle": "alexa"}];
   var ADDED_KEY = "cognation.people.added.v1";
+
+  function remoteSocial() {
+    return window.CognationSupabaseSocial || null;
+  }
+
+  function hasRemoteSession() {
+    var social = remoteSocial();
+    return !!(social && social.active && social.active());
+  }
 
   function escapeHtml(str) {
     return String(str)
@@ -43,6 +52,10 @@
   function searchPeople(query) {
     var q = normalize(query);
     if (!q) return [];
+    var social = remoteSocial();
+    if (hasRemoteSession() && social && social.memberResults) {
+      return social.memberResults(q);
+    }
     return PEOPLE.filter(function (p) {
       var full = (p.first + " " + p.last).toLowerCase();
       return (
@@ -58,6 +71,7 @@
   function renderResults(root, items) {
     var box = root.querySelector("[data-people-search-results]");
     if (!box) return;
+    var remote = hasRemoteSession();
     var added = loadAdded();
     box.innerHTML = "";
     if (!items.length) {
@@ -70,11 +84,12 @@
       var row = document.createElement("div");
       row.className = "people-search-row";
       row.setAttribute("role", "option");
-      var already = added.indexOf(p.id) >= 0;
+      var name = remote ? p.display_name : p.first + " " + p.last;
+      var already = !remote && added.indexOf(p.id) >= 0;
       row.innerHTML =
         '<div class="people-search-meta">' +
         '<span class="people-search-name">' +
-        escapeHtml(p.first + " " + p.last) +
+        escapeHtml(name) +
         "</span>" +
         '<span class="people-search-handle">@' +
         escapeHtml(p.handle) +
@@ -84,13 +99,22 @@
         '"' +
         (already ? " disabled" : "") +
         ">" +
-        (already ? "Added" : "Add") +
+        (remote ? "Open" : already ? "Added" : "Add") +
         "</button>";
       box.appendChild(row);
     });
     box.querySelectorAll("[data-add-id]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var id = btn.getAttribute("data-add-id");
+        if (hasRemoteSession()) {
+          var social = remoteSocial();
+          var profile = social && social.getProfile ? social.getProfile(id) : null;
+          if (profile && social.openProfile) {
+            social.openProfile(profile);
+            inputClear(root);
+          }
+          return;
+        }
         var ids = loadAdded();
         if (ids.indexOf(id) === -1) ids.push(id);
         saveAdded(ids);
@@ -114,6 +138,16 @@
         );
       });
     });
+  }
+
+  function inputClear(root) {
+    var input = root.querySelector("[data-people-search-input]");
+    var box = root.querySelector("[data-people-search-results]");
+    if (input) input.value = "";
+    if (box) {
+      box.innerHTML = "";
+      box.hidden = true;
+    }
   }
 
   function initSearch(root) {
