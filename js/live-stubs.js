@@ -409,29 +409,6 @@
     var root = document.querySelector("[data-tower-app]") || document;
     var stage = root.querySelector("[data-live-stage]");
     if (stage && !stage.hidden) initStage(stage);
-
-    function injectFeedButtons() {
-      document.querySelectorAll("[data-tower-feed] .tower-post").forEach(function (post) {
-        if (post.querySelector("[data-go-live]")) return;
-        var meta = post.querySelector(".tower-post-meta");
-        if (!meta) return;
-        var b = document.createElement("button");
-        b.type = "button";
-        b.className = "tower-go-live-btn tower-go-live-btn--feed";
-        b.setAttribute("data-go-live", "");
-        b.setAttribute("aria-label", "Go live");
-        b.textContent = "Go live";
-        meta.appendChild(b);
-      });
-    }
-    injectFeedButtons();
-    var feed = document.querySelector("[data-tower-feed]");
-    if (feed && typeof MutationObserver !== "undefined") {
-      new MutationObserver(injectFeedButtons).observe(feed, {
-        childList: true,
-        subtree: true,
-      });
-    }
   }
 
   if (document.readyState === "loading") {
