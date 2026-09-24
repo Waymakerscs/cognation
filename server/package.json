@@ -1,0 +1,16 @@
+{
+  "name": "cognation-api",
+  "version": "1.0.0",
+  "description": "Cognation multi-user API for authentication, social graph, notifications, and session wellbeing features.",
+  "main": "server.js",
+  "scripts": {
+    "test": "node test.js",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
