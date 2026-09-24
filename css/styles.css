@@ -7248,6 +7248,24 @@ body.login-gate-open {
   box-shadow: none !important;
   backdrop-filter: none !important;
 }
+
+/* Keep the tab labels, but remove the fixed empty container entirely. */
+body { padding-top: 0 !important; }
+
+.app-topbar {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 0 0.8rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
 .tower-post-likes { display: none; }
 
 /* Private feed: button color + see-through author / messages */
