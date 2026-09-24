@@ -8457,6 +8457,7 @@ body { padding-top: 0 !important; }
   justify-items: center;
   gap: 0.35rem;
   margin: 0.15rem auto 0.55rem;
+  order: 2;
   position: relative;
   z-index: 8;
 }
