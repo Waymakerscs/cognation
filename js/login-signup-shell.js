@@ -153,7 +153,12 @@
     }
 
     req(user, function (el) {
-      return el && el.value.trim().length > 0;
+      return (
+        el &&
+        /^[a-z0-9_-]{3,40}$/i.test(
+          String(el.value || "").trim().replace(/^@/, "")
+        )
+      );
     });
     req(pass, function (el) {
       return el && el.value.length > 0;
@@ -231,7 +236,7 @@
         e.preventDefault();
         e.stopImmediatePropagation();
         if (!validateSignup()) {
-          setStatus("Please fix the highlighted fields.", true);
+          setStatus("Use a 3–40 character username (letters, numbers, _ or -), then fix any highlighted fields.", true);
           return;
         }
         var profile = collectSignupProfile();

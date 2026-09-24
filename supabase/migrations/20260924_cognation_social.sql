@@ -9,7 +9,6 @@ create table public.profiles (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   kind public.cognation_profile_kind not null default 'personal',
-  username text not null unique check (username ~ '^[a-z0-9_.-]{3,40}$'),
   handle text not null unique check (handle ~ '^[a-z0-9_-]{3,40}$'),
   display_name text not null check (char_length(display_name) between 1 and 80),
   bio text not null default '' check (char_length(bio) <= 280),
@@ -97,18 +96,18 @@ language plpgsql
 security definer set search_path = public
 as $$
 declare
-  supplied_username text := lower(coalesce(new.raw_user_meta_data ->> 'username', ''));
-  supplied_handle text := lower(coalesce(new.raw_user_meta_data ->> 'handle', supplied_username));
+  supplied_handle text := lower(coalesce(new.raw_user_meta_data ->> 'handle', ''));
   supplied_name text := coalesce(new.raw_user_meta_data ->> 'display_name', split_part(new.email, '@', 1));
 begin
-  if supplied_username !~ '^[a-z0-9_.-]{3,40}$' then
-    raise exception 'A valid username is required';
+  supplied_handle := regexp_replace(supplied_handle, '[^a-z0-9_-]', '', 'g');
+  if char_length(supplied_handle) < 3 then
+    supplied_handle := 'member_' || replace(left(new.id::text, 8), '-', '');
   end if;
   if supplied_handle !~ '^[a-z0-9_-]{3,40}$' then
     raise exception 'A valid handle is required';
   end if;
-  insert into public.profiles (user_id, kind, username, handle, display_name)
-  values (new.id, 'personal', supplied_username, supplied_handle, left(supplied_name, 80));
+  insert into public.profiles (user_id, kind, handle, display_name)
+  values (new.id, 'personal', supplied_handle, left(supplied_name, 80));
   return new;
 end;
 $$;
