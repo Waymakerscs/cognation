@@ -809,20 +809,18 @@
       b.setAttribute("aria-pressed", mine ? "true" : "false");
       b.setAttribute("aria-label", (mine ? "Remove your " : "React with ") + face);
       b.textContent = face;
+      /* Bind directly to the control so the reaction remains clickable inside
+         profile layouts that add their own pointer/drag interactions. */
+      b.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        var result = TowerStore.toggleReaction(post.id, face);
+        if (!result.ok) return;
+        renderFeed(root);
+      });
       controls.appendChild(b);
     });
     wrap.appendChild(controls);
-
-    wrap.addEventListener("click", function (ev) {
-      var btn = ev.target.closest("[data-tower-react]");
-      if (!btn || !wrap.contains(btn)) return;
-      ev.preventDefault();
-      var face = btn.getAttribute("data-tower-react");
-      var id = wrap.getAttribute("data-tower-post-id");
-      var result = TowerStore.toggleReaction(id, face);
-      if (!result.ok) return;
-      renderFeed(root);
-    });
     return wrap;
   }
 
