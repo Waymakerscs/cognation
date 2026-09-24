@@ -461,6 +461,9 @@
         created = true;
         p = defaultEmptyProfileBlob();
       }
+      if (p._remote) {
+        metaKind = p._profileKind === "professional" ? "professional" : "personal";
+      }
       p._profileId = profileId || "";
       p._profileKind = metaKind;
       try { pruneEmptyPublicWidgetsInProfile(p); } catch (ePrune) {}

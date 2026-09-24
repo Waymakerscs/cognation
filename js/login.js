@@ -278,7 +278,15 @@
   }
 
   function isAuthenticated() {
-    return !!readLocalSession();
+    var current = readLocalSession();
+    if (
+      window.CognationSupabase &&
+      window.CognationSupabase.configured &&
+      window.CognationSupabase.configured()
+    ) {
+      return !!(current && current.source === "supabase" && current.supabaseUserId);
+    }
+    return !!current;
   }
 
   function setActiveProfile(profileId) {
@@ -454,7 +462,35 @@
       localStorage.removeItem("cognation.session.demo.v1");
     } catch (e) {}
     var session = readLocalSession();
+    var remoteConfigured =
+      window.CognationSupabase &&
+      window.CognationSupabase.configured &&
+      window.CognationSupabase.configured();
+    if (remoteConfigured && (!session || session.source !== "supabase")) {
+      writeLocalSession(null);
+      openGate();
+      return;
+    }
     if (session) {
+      if (remoteConfigured) {
+        window.CognationSupabase
+          .getUser()
+          .then(function (user) {
+            if (!user || !user.id) throw new Error("Session expired.");
+            session.supabaseUserId = user.id;
+            writeLocalSession(session);
+            hydrateSessionProfile(session);
+            closeGate();
+          })
+          .catch(function () {
+            writeLocalSession(null);
+            openGate({
+              message: "Your session ended. Sign in again to continue.",
+              isError: true,
+            });
+          });
+        return;
+      }
       hydrateSessionProfile(session);
       closeGate();
     } else {

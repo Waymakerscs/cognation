@@ -98,6 +98,10 @@
     });
   }
 
+  function getUser() {
+    return request("/auth/v1/user", { method: "GET" });
+  }
+
   function rest(table, options) {
     options = options || {};
     var suffix = options.query ? "?" + options.query : "";
@@ -124,6 +128,7 @@
     signUp: signUp,
     signIn: signIn,
     signOut: signOut,
+    getUser: getUser,
     rest: rest,
     rpc: rpc,
   };
