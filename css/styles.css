@@ -10132,3 +10132,32 @@ body {
   color: var(--cgn-text) !important;
   font-family: var(--cgn-ui) !important;
 }
+
+/* Tower personal/public page uses the shared blue-violet surface, never a profile color highlight. */
+[data-tower-public-side],
+[data-tower-scrapbook] {
+  --tower-feed-bg: rgba(16, 19, 48, 0.48) !important;
+  --tower-public-text: #f7f9ff !important;
+  --tower-public-btn: #b7f6ff !important;
+}
+
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--identity,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--badges,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--friends,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--html,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--calendar,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--music,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--video,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--social,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--slogan,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--quote,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--avatar {
+  border-color: var(--cgn-border) !important;
+  background: rgba(16, 19, 48, 0.42) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.15) !important;
+}
+
+.tower-layout--scrapbook .tower-friend-pin.is-widget-selected,
+.tower-layout--scrapbook .tower-badge-pin.is-widget-selected {
+  outline-color: var(--cgn-accent) !important;
+}
