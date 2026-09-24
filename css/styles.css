@@ -8452,6 +8452,20 @@ body { padding-top: 0 !important; }
   box-shadow: none;
 }
 
+.tower-profile-actions {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  margin: 0.15rem auto 0.55rem;
+  position: relative;
+  z-index: 8;
+}
+
+.tower-profile-actions .tower-follow-row {
+  margin: 0;
+  padding: 0;
+}
+
 /* ===== CGN-007 Signup mode UX ===== */
 .login-signup-fields {
   display: grid;
@@ -9160,6 +9174,13 @@ body { padding-top: 0 !important; }
   outline: 2px solid #fff;
 }
 
+.tower-profile-actions .tower-go-live-btn[data-go-live] {
+  position: static;
+  left: auto;
+  bottom: auto;
+  transform: none;
+}
+
 /* Live stage */
 .tower-live-panel[data-live-stage] {
   margin-top: 0.65rem;
@@ -9347,7 +9368,7 @@ li, td, th, summary, figcaption {
 }
 button,
 .btn,
-[role="tab"][aria-selected="true"],
+[role="tab"][aria-selected="true"]:not(.tower-kind-btn),
 .tab[aria-selected="true"] {
   background-color: #ED9300 !important;
   color: #000 !important;

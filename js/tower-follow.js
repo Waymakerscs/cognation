@@ -28,7 +28,6 @@
   }
 
   function isProfessionalContext(btn) {
-    var row = btn.closest("[data-tower-follow-row]");
     var root = btn.closest("[data-tower-root], [data-tower-app], #panel-tower") || document;
     var kindBtn = root.querySelector('[data-tower-profile-kind="professional"][aria-selected="true"]');
     if (kindBtn) return true;
@@ -44,22 +43,23 @@
     if (id) btn.setAttribute("data-profile-id", id);
     var row = btn.closest("[data-tower-follow-row]");
     var pro = isProfessionalContext(btn);
-    if (row) row.hidden = !pro;
-    btn.hidden = !pro;
-    if (!pro || !id || !api) {
+    if (row) row.hidden = false;
+    btn.hidden = false;
+    if (!id || !api) {
       btn.setAttribute("aria-pressed", "false");
       btn.classList.remove("is-following");
-      btn.textContent = "Follow";
+      btn.textContent = pro ? "Follow" : "Add friend";
       return;
     }
     var following = api.isFollowing(id);
     btn.setAttribute("aria-pressed", following ? "true" : "false");
     btn.classList.toggle("is-following", following);
-    btn.textContent = following ? "Following" : "Follow";
-    btn.setAttribute(
-      "aria-label",
-      following ? "Unfollow this professional profile" : "Follow this professional profile"
-    );
+    btn.textContent = pro
+      ? (following ? "Following" : "Follow")
+      : (following ? "Friend added" : "Add friend");
+    btn.setAttribute("aria-label", pro
+      ? (following ? "Unfollow this professional profile" : "Follow this professional profile")
+      : (following ? "Remove this friend" : "Add this person as a friend"));
   }
 
   function syncAll() {

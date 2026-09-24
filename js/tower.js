@@ -17,6 +17,7 @@
 
   var TOWER_KEY = "cognation.tower.posts.v3";
   var TOWER_PROFILE_KEY = "cognation.tower.profile.v1";
+  var REACTION_CLEANUP_KEY = "cognation.tower.reaction-cleanup.v1";
 
   var AVATAR_FRAMES = {
     none: { label: "None", overlay: "" },
@@ -664,6 +665,31 @@
     }
   }
 
+  function clearLegacyReactionSelections(data) {
+    try {
+      if (localStorage.getItem(REACTION_CLEANUP_KEY)) return false;
+      var changed = false;
+      (data.posts || []).forEach(function (post) {
+        if (!post || !post.reactions || typeof post.reactions !== "object") return;
+        Object.keys(post.reactions).forEach(function (face) {
+          var users = Array.isArray(post.reactions[face]) ? post.reactions[face] : [];
+          var filtered = users.filter(function (user) {
+            return String(user || "").toLowerCase() !== "you" &&
+              String(user || "").toLowerCase() !== "alexa";
+          });
+          if (filtered.length === users.length) return;
+          changed = true;
+          if (filtered.length) post.reactions[face] = filtered;
+          else delete post.reactions[face];
+        });
+      });
+      localStorage.setItem(REACTION_CLEANUP_KEY, "1");
+      return changed;
+    } catch (e) {
+      return false;
+    }
+  }
+
   var TowerStore = {
     load: function () {
       try {
@@ -690,6 +716,7 @@
         data = { version: 1, posts: JSON.parse(JSON.stringify(SEED)) };
         this.save(data);
       }
+      if (clearLegacyReactionSelections(data)) this.save(data);
       return data.posts.slice().sort(function (a, b) {
         return String(b.createdAt).localeCompare(String(a.createdAt));
       });

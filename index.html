@@ -519,17 +519,6 @@
                     <button type="button" class="tower-kind-btn" role="tab" data-tower-profile-kind="personal" aria-selected="true" id="tower-kind-personal">Personal page</button>
                     <button type="button" class="tower-kind-btn" role="tab" data-tower-profile-kind="professional" aria-selected="false" id="tower-kind-professional">Professional page</button>
                   </div>
-                  <!-- CGN-007 Follow shell: Engineer wires follow graph. Hook: data-tower-follow + data-profile-id -->
-                  <div class="tower-follow-row" data-tower-follow-row>
-                    <button
-                      type="button"
-                      class="tower-follow-btn"
-                      data-tower-follow
-                      data-profile-id=""
-                      aria-pressed="false"
-                      aria-label="Follow this profile"
-                    >Follow</button>
-                  </div>
                   <div class="tower-scrapbook-bar" data-tower-scrapbook-bar>
                   <button type="button" class="btn btn-secondary" data-tower-add-widget title="Add a quote or text sticker">Add content</button>
                   <button type="button" class="btn btn-secondary" data-tower-reset-layout>Reset layout</button>
@@ -656,7 +645,18 @@
                           <span class="visually-hidden">Upload profile picture</span>
                           <input type="file" accept="image/*" data-tower-avatar-file>
                         </label>
-                        <!-- CGN-010: Go Live from profile pic -->
+                      </div>
+                      <div class="tower-profile-actions">
+                        <div class="tower-follow-row" data-tower-follow-row>
+                          <button
+                            type="button"
+                            class="tower-follow-btn"
+                            data-tower-follow
+                            data-profile-id=""
+                            aria-pressed="false"
+                            aria-label="Add this person as a friend"
+                          >Add friend</button>
+                        </div>
                         <button type="button" class="tower-go-live-btn" data-go-live aria-label="Go live">Go live</button>
                       </div>
                       </div>
