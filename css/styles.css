@@ -10326,3 +10326,14 @@ body {
 .tower-layout--scrapbook .tower-badge-pin.is-widget-selected {
   outline-color: var(--cgn-accent) !important;
 }
+
+/* The feature panels supply their own surfaces; this wrapper must never render as an empty card. */
+.tabs.tabs--chrome .tab-panels {
+  margin-top: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
