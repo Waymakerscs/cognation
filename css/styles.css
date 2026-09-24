@@ -9888,3 +9888,123 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .login-brain { animation: none; }
 }
+
+/* Persistent home masthead: a large, illuminated route back to Cognation. */
+.cognation-masthead {
+  position: relative;
+  z-index: 0;
+  min-height: clamp(350px, 43vw, 560px);
+  overflow: hidden;
+  border-bottom: 1px solid rgba(219, 245, 255, 0.38);
+  background:
+    radial-gradient(ellipse at 50% 12%, rgba(150, 141, 243, 0.36), transparent 51%),
+    radial-gradient(ellipse at 18% 35%, rgba(74, 221, 243, 0.3), transparent 36%),
+    radial-gradient(ellipse at 83% 30%, rgba(246, 146, 204, 0.25), transparent 34%);
+}
+
+.cognation-masthead::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  opacity: 0.38;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.8) 0 0.7px, transparent 1px),
+    radial-gradient(circle, rgba(165, 241, 255, 0.8) 0 0.65px, transparent 1px);
+  background-position: 22px 42px, 124px 88px;
+  background-size: 165px 186px, 239px 212px;
+}
+
+.cognation-masthead-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: inherit;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4.25rem) clamp(1rem, 4vw, 3rem) 1.5rem;
+  justify-items: center;
+  align-content: start;
+}
+
+.cognation-masthead-kicker {
+  margin: 0;
+  color: rgba(235, 250, 255, 0.78) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.63rem !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase;
+  text-shadow: 0 0 16px rgba(170, 243, 255, 0.72);
+}
+
+.cognation-masthead-home {
+  margin-top: clamp(1.1rem, 3vw, 2.25rem);
+  color: #fff !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: clamp(4rem, 13.2vw, 12.2rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.11em !important;
+  line-height: 0.72 !important;
+  text-decoration: none;
+  text-shadow: 0 0 26px rgba(189, 247, 255, 0.92), 0 0 90px rgba(211, 160, 255, 0.7);
+  transition: transform 200ms ease, text-shadow 200ms ease;
+}
+
+.cognation-masthead-home:hover,
+.cognation-masthead-home:focus-visible {
+  color: #fff !important;
+  transform: scale(1.018);
+  text-shadow: 0 0 34px rgba(189, 247, 255, 1), 0 0 108px rgba(211, 160, 255, 0.82);
+}
+
+.cognation-masthead-brain {
+  position: relative;
+  width: min(610px, 67vw);
+  aspect-ratio: 16 / 7.25;
+  margin: clamp(-0.25rem, -1vw, -0.9rem) 0 0;
+  filter: drop-shadow(0 0 19px rgba(125, 239, 255, 0.88)) drop-shadow(0 0 55px rgba(199, 140, 255, 0.62));
+  animation: masthead-brain-float 7s ease-in-out infinite alternate;
+}
+
+.cognation-masthead-brain::before {
+  position: absolute;
+  z-index: -1;
+  inset: 19% 14%;
+  border-radius: 50%;
+  content: "";
+  background: radial-gradient(ellipse, rgba(115, 237, 255, 0.35), rgba(196, 131, 255, 0.2) 50%, transparent 72%);
+  filter: blur(25px);
+}
+
+.cognation-masthead-brain img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(ellipse 60% 70% at 50% 49%, #000 48%, transparent 88%);
+  mask-image: radial-gradient(ellipse 60% 70% at 50% 49%, #000 48%, transparent 88%);
+}
+
+#main .tabs-section {
+  position: relative;
+  z-index: 2;
+  margin-top: clamp(-4rem, -6vw, -5.5rem);
+}
+
+@keyframes masthead-brain-float {
+  from { transform: translateY(-3px) scale(0.985); }
+  to { transform: translateY(6px) scale(1.02); }
+}
+
+@media (max-width: 720px) {
+  .cognation-masthead { min-height: 365px; }
+  .cognation-masthead-inner { padding-top: 2.4rem; }
+  .cognation-masthead-home { font-size: clamp(3.55rem, 17.5vw, 6.3rem) !important; }
+  .cognation-masthead-brain { width: min(100%, 490px); }
+  #main .tabs-section { margin-top: -3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cognation-masthead-brain { animation: none; }
+}
