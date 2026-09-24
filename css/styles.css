@@ -9278,6 +9278,28 @@ li, td, th, summary, figcaption {
   text-shadow: 0 0 14px rgba(177, 245, 255, 0.88);
 }
 
+.app-topbar-shortcut {
+  flex: 0 0 auto;
+  border: 0 !important;
+  border-bottom: 1px solid transparent !important;
+  border-radius: 0 !important;
+  padding: 0.35rem 0 0.42rem !important;
+  background: transparent !important;
+  color: rgba(245, 248, 255, 0.64) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-shadow: 0 0 12px rgba(164, 237, 255, 0.32);
+}
+
+.app-topbar-shortcut:hover,
+.app-topbar-shortcut:focus-visible {
+  border-bottom-color: var(--cgn-cyan) !important;
+  color: #fff !important;
+  text-shadow: 0 0 14px rgba(177, 245, 255, 0.88);
+}
+
 .app-topbar-actions .grok-whisper,
 .app-topbar-actions .app-logout-btn {
   border: 1px solid rgba(197, 240, 255, 0.38) !important;
@@ -9431,7 +9453,8 @@ button {
   }
 
   .app-topbar .tablist::-webkit-scrollbar { display: none; }
-  .app-topbar .tablist [role="tab"] { flex: 0 0 auto; font-size: 0.65rem; }
+  .app-topbar .tablist [role="tab"],
+  .app-topbar-shortcut { flex: 0 0 auto; font-size: 0.65rem; }
   .tabs.tabs--chrome .tab-panels { margin-top: 0.75rem; border-radius: 1rem 1rem 0 0; }
   .app-topbar-actions .grok-whisper { display: none; }
 }

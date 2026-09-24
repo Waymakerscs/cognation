@@ -71,9 +71,40 @@
     activate(initial >= 0 ? initial : 0, false);
   }
 
+  function openTowerAnchor(name) {
+    var towerTab = document.getElementById("tab-tower");
+    if (towerTab) towerTab.click();
+
+    if (typeof window.CognationTowerApplySide === "function") {
+      window.CognationTowerApplySide("private");
+    }
+
+    var selector = name === "calendar"
+      ? "[data-tower-calendar-personal]"
+      : "[data-tower-friends-browse]";
+    window.setTimeout(function () {
+      var target = document.querySelector(selector);
+      if (target && target.scrollIntoView) {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 50);
+  }
+
+  function initTowerShortcuts() {
+    document.querySelectorAll("[data-tower-anchor]").forEach(function (shortcut) {
+      shortcut.addEventListener("click", function () {
+        openTowerAnchor(shortcut.getAttribute("data-tower-anchor"));
+      });
+    });
+  }
+
   function activateMainTabFromHash() {
     var hash = (location.hash || "").replace(/^#/, "");
     if (!hash) return;
+    if (hash === "calendar" || hash === "circle") {
+      openTowerAnchor(hash);
+      return;
+    }
     var tabIdMap = {
       news: "tab-news",
       "panel-news": "tab-news",
@@ -119,6 +150,7 @@
 
   function boot() {
     document.querySelectorAll("[data-tabs]").forEach(initTabs);
+    initTowerShortcuts();
     activateMainTabFromHash();
     window.addEventListener("hashchange", activateMainTabFromHash);
   }
