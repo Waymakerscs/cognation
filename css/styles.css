@@ -9689,6 +9689,16 @@ body {
   box-shadow: none;
 }
 
+.header-inner {
+  grid-template-columns: 1fr;
+  min-height: 3.4rem;
+}
+
+.header-inner .people-search {
+  grid-column: 1;
+  justify-self: end;
+}
+
 .logo,
 .logo:hover {
   font-family: var(--cgn-ui) !important;
