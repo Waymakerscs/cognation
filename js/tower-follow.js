@@ -31,6 +31,9 @@
     var root = btn.closest("[data-tower-root], [data-tower-app], #panel-tower") || document;
     var kindBtn = root.querySelector('[data-tower-profile-kind="professional"][aria-selected="true"]');
     if (kindBtn) return true;
+    /* When the public page selector is visible, it is the source of truth.
+       The signed-in profile can remain professional while viewing Personal. */
+    if (root.querySelector("[data-tower-profile-kind]")) return false;
     var p = activeProfile();
     if (p && (p._profileKind === "professional" || p.kind === "professional")) return true;
     /* Show follow on public professional pages even if personal selected? Prefer kind from profile */
