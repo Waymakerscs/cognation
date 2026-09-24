@@ -7106,6 +7106,128 @@ body.login-gate-open {
   font-weight: 700;
   color: var(--color-heading);
 }
+
+/* NEWS shares the quiet Cognation system instead of its legacy newspaper palette. */
+#panel-news .commune-paper,
+#panel-news .commune-paper * {
+  font-family: var(--cgn-ui) !important;
+}
+
+#panel-news .commune-paper {
+  color: var(--cgn-text) !important;
+  background: transparent !important;
+}
+
+#panel-news .paper-masthead {
+  border: 1px solid var(--cgn-border) !important;
+  border-radius: var(--cgn-radius) !important;
+  padding: clamp(1.25rem, 3vw, 2.5rem) !important;
+  background:
+    linear-gradient(135deg, rgba(174, 243, 255, 0.1), rgba(193, 153, 255, 0.1)),
+    rgba(16, 19, 48, 0.42) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.17) !important;
+  text-align: left !important;
+}
+
+#panel-news .paper-eyebrow,
+#panel-news .paper-edition-scope-label,
+#panel-news .paper-section-kicker {
+  color: var(--cgn-accent) !important;
+  font-size: 0.61rem !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+}
+
+#panel-news .paper-title {
+  margin: 0.7rem 0 0 !important;
+  color: #fff !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: clamp(2.7rem, 6vw, 5.5rem) !important;
+  font-weight: 740 !important;
+  letter-spacing: -0.09em !important;
+  line-height: 0.86 !important;
+  text-shadow: 0 0 28px rgba(172, 242, 255, 0.33) !important;
+}
+
+#panel-news .paper-subtitle,
+#panel-news .paper-dateline,
+#panel-news .paper-volume,
+#panel-news .paper-price,
+#panel-news .paper-date {
+  color: var(--cgn-text-muted) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.01em !important;
+}
+
+#panel-news .paper-grid {
+  gap: 1px !important;
+  border: 1px solid var(--cgn-border) !important;
+  border-radius: var(--cgn-radius) !important;
+  background: var(--cgn-border) !important;
+  overflow: hidden;
+}
+
+#panel-news .paper-col,
+#panel-news .paper-section,
+#panel-news .commune-feed-item,
+#panel-news .commune-social-card,
+#panel-news .commune-profile-card,
+#panel-news .paper-brief {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: rgba(16, 19, 48, 0.44) !important;
+  box-shadow: none !important;
+}
+
+#panel-news .paper-col-heading,
+#panel-news .paper-brief-title,
+#panel-news .commune-profile-name,
+#panel-news .commune-feed-author {
+  color: var(--cgn-text) !important;
+  font-family: var(--cgn-ui) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+}
+
+#panel-news .paper-index-label,
+#panel-news .paper-index-desc,
+#panel-news .paper-brief-body,
+#panel-news .commune-feed-body,
+#panel-news .commune-profile-bio,
+#panel-news .paper-topics,
+#panel-news .commune-feed-meta {
+  color: var(--cgn-text-muted) !important;
+  font-family: var(--cgn-ui) !important;
+}
+
+#panel-news .paper-index-btn,
+#panel-news .paper-edition-opt {
+  border: 1px solid transparent !important;
+  border-radius: 0.65rem !important;
+  background: transparent !important;
+}
+
+#panel-news .paper-index-btn:hover,
+#panel-news .paper-index-btn.is-active,
+#panel-news .paper-index-btn[aria-current="true"],
+#panel-news .paper-edition-opt:has(input:checked) {
+  border-color: rgba(183, 246, 255, 0.5) !important;
+  background: rgba(149, 236, 255, 0.12) !important;
+}
+
+#panel-news .paper-edition-opt span {
+  color: var(--cgn-text-muted) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.07em !important;
+}
+
+#panel-news .paper-edition-opt:has(input:checked) span,
+#panel-news .paper-index-btn.is-active .paper-index-label,
+#panel-news .paper-index-btn[aria-current="true"] .paper-index-label {
+  color: #fff !important;
+}
 .tower-post-likes { display: none; }
 
 /* Private feed: button color + see-through author / messages */
