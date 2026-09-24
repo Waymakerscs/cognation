@@ -7228,6 +7228,26 @@ body.login-gate-open {
 #panel-news .paper-index-btn[aria-current="true"] .paper-index-label {
   color: #fff !important;
 }
+
+/* News and Commune render their own panels; remove the empty shared chrome around them. */
+.tabs.tabs--chrome:has(#panel-news:not([hidden])) .tab-panels,
+.tabs.tabs--chrome:has(#panel-commune:not([hidden])) .tab-panels {
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.tabs.tabs--chrome:has(#panel-news:not([hidden])) .app-topbar,
+.tabs.tabs--chrome:has(#panel-commune:not([hidden])) .app-topbar {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
 .tower-post-likes { display: none; }
 
 /* Private feed: button color + see-through author / messages */
