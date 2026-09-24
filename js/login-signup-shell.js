@@ -221,7 +221,8 @@
     });
   }
 
-  /* Capture phase: persist signup profile; allow demo login path after */
+  /* Create a real account when Supabase is configured; retain local capture
+     only for the offline demo. */
   form.addEventListener(
     "submit",
     function (e) {
@@ -234,6 +235,47 @@
           return;
         }
         var profile = collectSignupProfile();
+        var password = (form.querySelector("#login-password") || {}).value || "";
+        var handle = String(profile.username || "")
+          .trim()
+          .toLowerCase()
+          .replace(/^@/, "")
+          .replace(/[^a-z0-9_-]/g, "")
+          .slice(0, 40);
+        if (
+          window.CognationSupabase &&
+          window.CognationSupabase.configured &&
+          window.CognationSupabase.configured()
+        ) {
+          setStatus("Creating your Cognation account…", false);
+          window.CognationSupabase
+            .signUp({
+              email: profile.email,
+              password: password,
+              username: profile.username,
+              handle: handle,
+              displayName: profile.username,
+            })
+            .then(function (result) {
+              writeProfile(profile);
+              if (result && result.session && window.CognationAuth) {
+                return window.CognationAuth.login(profile.email, password);
+              }
+              setMode("signin");
+              setStatus(
+                "Account created. Check your email to confirm it, then sign in with your email.",
+                false
+              );
+              return null;
+            })
+            .catch(function (error) {
+              setStatus(
+                (error && error.message) || "Could not create your account. Please try again.",
+                true
+              );
+            });
+          return;
+        }
         writeProfile(profile);
         setStatus(
           "Profile saved locally (age " +

@@ -199,6 +199,24 @@
     return [];
   }
 
+  function mapSupabaseProfile(profile) {
+    return {
+      id: profile.id,
+      kind: profile.kind,
+      handle: profile.handle,
+      displayName: profile.display_name || profile.displayName || "",
+    };
+  }
+
+  function loadSupabaseProfiles(user) {
+    if (!window.CognationSupabase || !user || !user.id) return Promise.resolve([]);
+    return window.CognationSupabase.rest("profiles", {
+      query: "select=id,kind,handle,display_name&user_id=eq." + encodeURIComponent(user.id),
+    }).then(function (profiles) {
+      return Array.isArray(profiles) ? profiles.map(mapSupabaseProfile) : [];
+    });
+  }
+
   function finishWithProfileChoice(username, profiles) {
     profiles = profiles || [];
     if (profiles.length <= 1) {
@@ -211,6 +229,23 @@
   function login(username, password) {
     username = normalizeLoginUser(username);
     password = String(password || "").trim();
+    if (
+      window.CognationSupabase &&
+      window.CognationSupabase.configured &&
+      window.CognationSupabase.configured() &&
+      username.indexOf("@") > 0
+    ) {
+      return window.CognationSupabase.signIn(username, password).then(function (result) {
+        var user = result && result.user;
+        if (!user) throw new Error("bad credentials");
+        return loadSupabaseProfiles(user).then(function (profiles) {
+          return {
+            username: user.email || username,
+            profiles: profiles,
+          };
+        });
+      });
+    }
     if (username === EXPECTED_USER.toLowerCase() && password === EXPECTED_PASS) {
       var profiles = loadProfilesForUser(EXPECTED_USER);
       return Promise.resolve({ username: EXPECTED_USER, profiles: profiles });
@@ -220,12 +255,19 @@
 
   function logout(opts) {
     opts = opts || {};
-    writeLocalSession(null);
-    openGate({
-      message: opts.message || "Signed out. Sign in to continue.",
-      isError: !!opts.isError,
+    var remote =
+      window.CognationSupabase &&
+      window.CognationSupabase.configured &&
+      window.CognationSupabase.configured()
+        ? window.CognationSupabase.signOut().catch(function () {})
+        : Promise.resolve();
+    return remote.then(function () {
+      writeLocalSession(null);
+      openGate({
+        message: opts.message || "Signed out. Sign in to continue.",
+        isError: !!opts.isError,
+      });
     });
-    return Promise.resolve();
   }
 
   function isAuthenticated() {
