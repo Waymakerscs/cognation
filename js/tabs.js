@@ -9,7 +9,9 @@
     var tablist = root.querySelector('[role="tablist"]');
     if (!tablist) return;
 
-    var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]'));
+    var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]')).filter(function (tab) {
+      return !tab.hidden;
+    });
     var panels = tabs
       .map(function (tab) {
         var id = tab.getAttribute("aria-controls");
@@ -88,7 +90,7 @@
     };
     if (tabIdMap[hash]) {
       var mapped = document.getElementById(tabIdMap[hash]);
-      if (mapped) mapped.click();
+      if (mapped && !mapped.hidden) mapped.click();
       return;
     }
     if (hash.indexOf("tower-profile-") !== 0) return;
