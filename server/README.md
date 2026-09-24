@@ -1,8 +1,12 @@
-# COGNATION session + screen-break service
+# COGNATION multi-user API
 
-Tiny Node (Express) API that backs the static site’s demo login, activity heartbeat, mandatory screen-break, and auto-logout.
+Node + Express API for persistent Cognation accounts, profiles, friend requests,
+friendships, professional follows, notifications, and Tower posts. It also retains
+the existing session-break endpoints.
 
-**v1 storage:** in-memory `Map`. **Restarting the process clears every session.**
+**Persistent storage:** SQLite at `COGNATION_DB_PATH` (defaults to
+`server/cognation.db`). Back up this file in production. Screen-break sessions
+remain in-memory for now, so a process restart signs users out.
 
 No paid cloud services are required — runs on a free-tier / Always Free OCI Ampere VM (or any small Ubuntu box) behind nginx serving the static site.
 
@@ -18,6 +22,28 @@ No paid cloud services are required — runs on a free-tier / Always Free OCI Am
 | `GET` | `/healthz` | Liveness + current timer config. |
 
 If `breakDeadline` passes without a successful complete, the next request that loads the session **invalidates** it (auto-logout).
+
+## Multi-user API
+
+All endpoints below use the secure cookie created by `POST /api/auth/login` or
+`POST /api/auth/register`.
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/api/auth/register` | Create a user and personal profile. Requires username, password (10+ chars), displayName, and handle. |
+| `POST` | `/api/auth/login` | Authenticate a persistent user. |
+| `POST` | `/api/auth/logout` | End the authenticated session. |
+| `GET` | `/api/auth/me` | Current user and profiles. |
+| `POST` | `/api/profiles` | Create the current user’s professional profile. |
+| `GET` | `/api/profiles/:handle` | Read a public profile and follower count. |
+| `POST` | `/api/profiles/:profileId/follow` | Follow or unfollow a profile; creates a notification on follow. |
+| `POST` | `/api/profiles/:profileId/friend-requests` | Send a friend request to a personal profile. |
+| `GET` | `/api/friend-requests/incoming` | List pending requests for the current user. |
+| `POST` | `/api/friend-requests/:requestId/accept` | Accept a request and create a friendship. |
+| `GET` | `/api/friends` | List the current user’s friends. |
+| `GET` | `/api/notifications` | List the current user’s notifications. |
+| `POST` | `/api/tower/posts` | Create a Tower post (`authorProfileId`, `body`, optional `visibility`). |
+| `GET` | `/api/tower/feed` | Read the current user’s shared Tower feed. |
 
 ## Defaults
 

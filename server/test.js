@@ -4,10 +4,21 @@
  */
 "use strict";
 
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+
 process.env.PORT = process.env.PORT || "0";
 process.env.SCREEN_LIMIT_MS = "50";
 process.env.BREAK_MS = "80";
 process.env.COOKIE_SECURE = "false";
+process.env.COGNATION_DB_PATH = path.join(
+  os.tmpdir(),
+  `cognation-api-test-${process.pid}.db`
+);
+try {
+  fs.unlinkSync(process.env.COGNATION_DB_PATH);
+} catch {}
 
 const http = require("http");
 const { app, sessions, COOKIE_NAME } = require("./server");
@@ -145,7 +156,91 @@ async function main() {
     assert(r.json.authenticated === false, "logout");
     assert(!sessions.has(sid2), "session destroyed");
 
-    console.log("ok — all session smoke tests passed");
+    // Register two persistent users, then exercise the social graph.
+    r = await request(server, "POST", "/api/auth/register", {
+      body: {
+        username: "alice",
+        password: "alice-social-pass",
+        displayName: "Alice Example",
+        handle: "alice-example",
+      },
+    });
+    assert(r.status === 201, "Alice registered");
+    const aliceCookie = `${COOKIE_NAME}=${encodeURIComponent(sidFromSetCookie(r.setCookie))}`;
+    const alicePersonal = r.json.profiles[0];
+
+    r = await request(server, "POST", "/api/auth/register", {
+      body: {
+        username: "bob",
+        password: "bob-social-pass",
+        displayName: "Bob Example",
+        handle: "bob-example",
+      },
+    });
+    assert(r.status === 201, "Bob registered");
+    const bobCookie = `${COOKIE_NAME}=${encodeURIComponent(sidFromSetCookie(r.setCookie))}`;
+    const bobPersonal = r.json.profiles[0];
+
+    r = await request(server, "POST", "/api/profiles", {
+      cookie: bobCookie,
+      body: {
+        kind: "professional",
+        displayName: "Bob Coaching",
+        handle: "bob-coaching",
+        bio: "Practical coaching for neighborhood projects.",
+      },
+    });
+    assert(r.status === 201, "professional profile created");
+    const bobProfessional = r.json.profile;
+
+    r = await request(server, "POST", `/api/profiles/${bobPersonal.id}/friend-requests`, {
+      cookie: aliceCookie,
+    });
+    assert(r.status === 201 && r.json.pending, "friend request created");
+
+    r = await request(server, "GET", "/api/friend-requests/incoming", { cookie: bobCookie });
+    assert(r.json.requests.length === 1, "Bob sees incoming request");
+    const requestId = r.json.requests[0].id;
+
+    r = await request(server, "POST", `/api/friend-requests/${requestId}/accept`, {
+      cookie: bobCookie,
+    });
+    assert(r.status === 200 && r.json.ok, "friend request accepted");
+
+    r = await request(server, "GET", "/api/friends", { cookie: aliceCookie });
+    assert(r.json.friends.some((friend) => friend.username === "bob"), "friendship persisted");
+
+    r = await request(server, "POST", "/api/tower/posts", {
+      cookie: aliceCookie,
+      body: {
+        authorProfileId: alicePersonal.id,
+        body: "Building the real multi-user Tower.",
+        visibility: "friends",
+      },
+    });
+    assert(r.status === 201 && r.json.post.body, "Tower post created");
+
+    r = await request(server, "GET", "/api/tower/feed", { cookie: bobCookie });
+    assert(
+      r.json.posts.some((post) => post.body === "Building the real multi-user Tower."),
+      "friends feed is shared"
+    );
+
+    r = await request(server, "POST", `/api/profiles/${bobProfessional.id}/follow`, {
+      cookie: aliceCookie,
+    });
+    assert(r.status === 200 && r.json.following && r.json.followerCount === 1, "follow persisted");
+
+    r = await request(server, "GET", "/api/notifications", { cookie: bobCookie });
+    assert(
+      r.json.notifications.some((notification) => notification.type === "professional_follow"),
+      "follow notification created"
+    );
+
+    r = await request(server, "GET", "/api/profiles/bob-coaching");
+    assert(r.json.profile.followerCount === 1, "public follower count");
+
+    console.log("ok — session and multi-user social API tests passed");
   } finally {
     await new Promise((resolve) => server.close(resolve));
   }
