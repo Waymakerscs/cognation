@@ -1,7 +1,9 @@
 /**
  * CGN-007 — Login/signup shell behavior.
  * Mode: [data-login-mode]="signin|signup" on [data-login-credentials-step]
- * Signup fields: age, country, state, phone, email
+ * Signup fields: age, country, phone, personal email, professional email.
+ * Both emails belong to one account. Personal email is the sign-in address
+ * and the personal profile page. Professional email is the professional page.
  * Persists member profile for COMMUNE age / dating gates.
  */
 (function () {
@@ -18,14 +20,15 @@
   var signinCountry = form.querySelector("[data-login-signin-country]");
   var signinCountrySelect = form.querySelector("[data-login-signin-country-select]");
   var signupCountrySelect = form.querySelector("[data-login-signup-country-select]");
-  var stateSelect = form.querySelector("#state");
-  var stateText = form.querySelector("[data-login-state-text]");
   var submitBtn = form.querySelector("[data-login-submit]");
   var titleEl = document.getElementById("login-gate-title");
   var descEl = document.getElementById("login-gate-desc");
   var statusEl = document.getElementById("login-status");
   var demoHint = form.querySelector("[data-login-demo-hint]");
   var passwordInput = form.querySelector("#login-password");
+  var usernameInput = form.querySelector("#login-username");
+  var usernameLabel = form.querySelector('label[for="login-username"]');
+  var usernameHint = form.querySelector("#login-email-hint");
 
   function setStatus(msg, isError) {
     if (!statusEl) return;
@@ -45,6 +48,7 @@
 
   function writeProfile(fields) {
     var next = Object.assign({}, readProfile(), fields || {});
+    delete next.state;
     try {
       localStorage.setItem(MEMBER_PROFILE_KEY, JSON.stringify(next));
     } catch (e) {}
@@ -62,23 +66,6 @@
       new CustomEvent("cognation:member-profile-updated", { detail: next })
     );
     return next;
-  }
-
-  function syncStateInputs(country) {
-    var isUS = country === "United States";
-    if (stateSelect && stateText) {
-      stateSelect.hidden = !isUS;
-      stateSelect.disabled = !isUS;
-      stateText.hidden = isUS;
-      stateText.disabled = isUS;
-      if (isUS) {
-        stateSelect.setAttribute("name", "state");
-        stateText.removeAttribute("name");
-      } else {
-        stateText.setAttribute("name", "state");
-        stateSelect.removeAttribute("name");
-      }
-    }
   }
 
   function setMode(mode) {
@@ -102,16 +89,8 @@
 
     form.querySelectorAll("[data-login-signup-fields] input, [data-login-signup-fields] select").forEach(function (el) {
       if (el === signupCountrySelect) return;
-      if (el === stateText || el === stateSelect) {
-        if (!isSignup) {
-          el.disabled = true;
-          el.removeAttribute("name");
-        }
-        return;
-      }
       el.disabled = !isSignup;
     });
-    if (isSignup && signupCountrySelect) syncStateInputs(signupCountrySelect.value);
 
     if (passwordInput) {
       passwordInput.setAttribute("autocomplete", isSignup ? "new-password" : "current-password");
@@ -122,11 +101,16 @@
         ? "Have an account? Sign in"
         : "Need an account? Sign up";
     }
+    document.querySelectorAll("[data-login-open-mode]").forEach(function (btn) {
+      var on = btn.getAttribute("data-login-open-mode") === mode;
+      btn.setAttribute("aria-selected", on ? "true" : "false");
+      btn.classList.toggle("is-selected", on);
+    });
     if (titleEl) titleEl.textContent = isSignup ? "Sign up" : "Sign in";
     if (descEl) {
       descEl.innerHTML = isSignup
-        ? 'Create your <span data-brand>COGNATION</span> account.'
-        : 'Welcome to <span data-brand>COGNATION</span>. Sign in with your account to continue.';
+        ? 'Enter at least one email. If you enter both, the personal email signs in.'
+        : 'Welcome to <span data-brand>COGNATION</span>. Sign in with your personal email to continue.';
     }
     if (demoHint) demoHint.hidden = true;
     setStatus("");
@@ -141,8 +125,8 @@
     var ok = true;
     var age = form.querySelector("#age");
     var phone = form.querySelector("#phone");
-    var email = form.querySelector("#email");
-    var user = form.querySelector("#login-username");
+    var personalEmail = form.querySelector("#email-personal");
+    var professionalEmail = form.querySelector("#email-professional");
     var pass = form.querySelector("#login-password");
     var country = signupCountrySelect;
 
@@ -152,14 +136,6 @@
       if (bad) ok = false;
     }
 
-    req(user, function (el) {
-      return (
-        el &&
-        /^[a-z0-9_-]{3,40}$/i.test(
-          String(el.value || "").trim().replace(/^@/, "")
-        )
-      );
-    });
     req(pass, function (el) {
       return el && el.value.length > 0;
     });
@@ -171,59 +147,82 @@
     req(country, function (el) {
       return el && el.value;
     });
-    if (country && country.value === "United States") {
-      req(stateSelect, function (el) {
-        return el && el.value;
-      });
-    } else {
-      req(stateText, function (el) {
-        return el && el.value.trim().length > 0;
-      });
-    }
     req(phone, function (el) {
       return el && el.value.trim().length >= 7;
     });
-    req(email, function (el) {
-      return el && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim());
-    });
+    function emailOk(value) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
+    }
+    var personalValue = personalEmail ? personalEmail.value.trim() : "";
+    var professionalValue = professionalEmail ? professionalEmail.value.trim() : "";
+    var personalBad = personalValue ? !emailOk(personalValue) : !professionalValue;
+    var professionalBad = professionalValue ? !emailOk(professionalValue) : !personalValue;
+    if (
+      personalValue &&
+      professionalValue &&
+      emailOk(personalValue) &&
+      emailOk(professionalValue) &&
+      personalValue.toLowerCase() === professionalValue.toLowerCase()
+    ) {
+      professionalBad = true;
+    }
+    markInvalid(personalEmail, personalBad);
+    markInvalid(professionalEmail, professionalBad);
+    if (personalBad || professionalBad) ok = false;
     return ok;
   }
 
   function collectSignupProfile() {
     var ageEl = form.querySelector("#age");
     var phoneEl = form.querySelector("#phone");
-    var emailEl = form.querySelector("#email");
+    var personalEl = form.querySelector("#email-personal");
+    var professionalEl = form.querySelector("#email-professional");
     var country =
       (signupCountrySelect && signupCountrySelect.value) ||
       "United States";
-    var state = "";
-    if (country === "United States") {
-      state = stateSelect ? stateSelect.value : "";
-    } else {
-      state = stateText ? stateText.value.trim() : "";
-    }
+    var personal = personalEl ? personalEl.value.trim() : "";
+    var professional = professionalEl ? professionalEl.value.trim() : "";
+    var loginEmail = personal || professional;
     return {
       age: ageEl ? parseInt(ageEl.value, 10) : null,
       country: country,
-      state: state,
       phone: phoneEl ? phoneEl.value.trim() : "",
-      email: emailEl ? emailEl.value.trim() : "",
-      username: (form.querySelector("#login-username") || {}).value || "",
+      personalEmail: personal,
+      professionalEmail: professional,
+      email: loginEmail,
+      loginEmail: loginEmail,
+      displayName: displayNameFromEmail(loginEmail),
+      handle: handleFromEmail(loginEmail),
       updatedAt: Date.now(),
     };
   }
 
-  if (toggleBtn) {
-    toggleBtn.addEventListener("click", function () {
-      var cur = step.getAttribute("data-login-mode") || "signin";
-      setMode(cur === "signup" ? "signin" : "signup");
-    });
+  function displayNameFromEmail(email) {
+    var local = String(email || "").split("@")[0] || "";
+    var words = local.replace(/[._-]+/g, " ").replace(/[^a-zA-Z0-9 ]/g, " ").trim();
+    if (!words) return "Member";
+    return words
+      .split(/\s+/)
+      .map(function (word) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(" ")
+      .slice(0, 80);
   }
 
-  if (signupCountrySelect) {
-    signupCountrySelect.addEventListener("change", function () {
-      syncStateInputs(signupCountrySelect.value);
-    });
+  function handleFromEmail(email) {
+    var local = String(email || "")
+      .split("@")[0]
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]/g, "")
+      .slice(0, 32);
+    if (local.length < 3) local = ("member" + local).slice(0, 40);
+    return local || "member";
+  }
+
+  function requestLiveLocation() {
+    if (!window.CognationLocation || !window.CognationLocation.request) return;
+    window.CognationLocation.request().then(function () {}, function () {});
   }
 
   /* Create a real account when Supabase is configured; retain local capture
@@ -232,21 +231,23 @@
     "submit",
     function (e) {
       var mode = step.getAttribute("data-login-mode") || "signin";
+      requestLiveLocation();
       if (mode === "signup") {
         e.preventDefault();
         e.stopImmediatePropagation();
         if (!validateSignup()) {
-          setStatus("Use a 3–40 character username (letters, numbers, _ or -), then fix any highlighted fields.", true);
+          setStatus("Enter at least one email and fix any highlighted fields.", true);
           return;
         }
         var profile = collectSignupProfile();
         var password = (form.querySelector("#login-password") || {}).value || "";
-        var handle = String(profile.username || "")
-          .trim()
-          .toLowerCase()
-          .replace(/^@/, "")
-          .replace(/[^a-z0-9_-]/g, "")
-          .slice(0, 40);
+        var handle = profile.handle || handleFromEmail(profile.loginEmail);
+        requestLiveLocation();
+        try {
+          if (profile.country) {
+            localStorage.setItem("cognation.member.country.v1", profile.country);
+          }
+        } catch (err) {}
         if (
           window.CognationSupabase &&
           window.CognationSupabase.configured &&
@@ -255,21 +256,28 @@
           setStatus("Creating your Cognation account…", false);
           window.CognationSupabase
             .signUp({
-              email: profile.email,
+              email: profile.loginEmail,
+              personalEmail: profile.personalEmail,
+              professionalEmail: profile.professionalEmail,
               password: password,
-              username: profile.username,
+              username: profile.loginEmail,
               handle: handle,
-              displayName: profile.username,
+              displayName: profile.displayName,
             })
             .then(function (result) {
               writeProfile(profile);
-              if (result && result.session && window.CognationAuth) {
-                return window.CognationAuth.login(profile.email, password);
+              var signedIn =
+                result &&
+                (result.access_token ||
+                  (result.session && result.session.access_token));
+              if (signedIn && window.CognationAuth) {
+                return window.CognationAuth.login(profile.loginEmail, password).then(function (session) {
+                  if (session) location.replace("index.html");
+                });
               }
-              setMode("signin");
               setStatus(
-                "Account created. Check your email to confirm it, then sign in with your email.",
-                false
+                "The account was not signed in. Supabase is still set to send a confirmation email. Turn off Confirm email under Authentication, Providers, Email. The next successful signup opens the signed-in home.",
+                true
               );
               return null;
             })
@@ -306,19 +314,20 @@
     var p = readProfile();
     var ageEl = form.querySelector("#age");
     var phoneEl = form.querySelector("#phone");
-    var emailEl = form.querySelector("#email");
+    var personalEl = form.querySelector("#email-personal");
+    var professionalEl = form.querySelector("#email-professional");
     if (ageEl && p.age != null) ageEl.value = p.age;
     if (phoneEl && p.phone) phoneEl.value = p.phone;
-    if (emailEl && p.email) emailEl.value = p.email;
+    if (personalEl && (p.personalEmail || p.email)) personalEl.value = p.personalEmail || p.email;
+    if (professionalEl && p.professionalEmail) professionalEl.value = p.professionalEmail;
     if (signupCountrySelect && p.country) signupCountrySelect.value = p.country;
     if (signinCountrySelect && p.country) {
       try {
         signinCountrySelect.value = p.country;
       } catch (e) {}
     }
-    if (p.country === "United States" && stateSelect && p.state) stateSelect.value = p.state;
-    else if (stateText && p.state) stateText.value = p.state;
   })();
 
-  setMode("signin");
+  setMode(step.getAttribute("data-login-mode") === "signup" ? "signup" : "signin");
+  requestLiveLocation();
 })();

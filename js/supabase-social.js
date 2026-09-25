@@ -57,6 +57,25 @@
       .slice(0, 40);
   }
 
+  function accountEmailBook() {
+    if (client() && client().readEmailBook) return client().readEmailBook() || {};
+    try {
+      return JSON.parse(localStorage.getItem("cognation.account.emails.v1") || "null") || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function emailForProfile(profile) {
+    var stored = String(profile.email || "").trim().toLowerCase();
+    if (stored) return stored;
+    var book = accountEmailBook();
+    if (!book || !profile.user_id || String(book.userId || "") !== String(profile.user_id)) return "";
+    return profile.kind === "professional"
+      ? String(book.professionalEmail || "").trim().toLowerCase()
+      : String(book.personalEmail || "").trim().toLowerCase();
+  }
+
   function cacheProfile(profile) {
     if (!profile || !profile.id) return null;
     var item = {
@@ -66,6 +85,7 @@
       handle: normalizeHandle(profile.handle),
       display_name: String(profile.display_name || "Member").slice(0, 80),
       bio: String(profile.bio || "").slice(0, 280),
+      email: emailForProfile(profile),
     };
     state.profiles[item.id] = item;
     if (item.handle) state.handles[item.handle] = item.id;
@@ -141,21 +161,31 @@
       displayName: profile.display_name,
       handle: profile.handle,
       slogan: profile.bio,
+      profileEmail: profile.email || "",
       socialLinks: {},
       avatarDataUrl: "",
       badges: { role: "", interest: "", status: "" },
       featuredFriendIds: [],
       friendsDisplayCount: 3,
+      /* Same scrapbook widgets as the demo page, on both profile kinds. */
       publicWidgets: {
         identity: true,
-        slogan: !!profile.bio,
-        social: false,
-        music: false,
-        badges: false,
+        slogan: true,
+        social: true,
+        music: true,
+        badges: true,
         friends: true,
-        html: false,
+        html: true,
         calendar: true,
       },
+      widgetLayout: null,
+      customHtml: "",
+      musicUrl: "",
+      musicEnabled: true,
+      awardedBadges: null,
+      badgeVisibility: null,
+      quoteStickers: [],
+      backgroundCollage: { layoutId: "none", cells: [] },
     };
   }
 
@@ -469,6 +499,48 @@
       });
   }
 
+  function deliverNotificationEmails(notifications) {
+    var config = window.CognationConfig || {};
+    var book = accountEmailBook();
+    var me = identity();
+    var personal = String(
+      book.personalEmail || (me && me.username) || ""
+    )
+      .trim()
+      .toLowerCase();
+    var professional = String(book.professionalEmail || "")
+      .trim()
+      .toLowerCase();
+    var emails = [];
+    if (personal.indexOf("@") > 0) emails.push(personal);
+    if (professional.indexOf("@") > 0 && emails.indexOf(professional) < 0) {
+      emails.push(professional);
+    }
+    var pending = (notifications || []).filter(function (note) {
+      return note && !note.read_at;
+    });
+    if (!pending.length || !emails.length) {
+      return { ok: true, sent: 0, emails: emails };
+    }
+    /* The app stores notifications in Supabase and renders them in Tower.
+       There is no mail provider in this project to deliver those as email. */
+    if (!config.emailApiUrl || !config.emailApiKey) {
+      return {
+        ok: false,
+        sent: 0,
+        emails: emails,
+        missing:
+          "No email provider or API key. In-app notifications are stored, but they are not emailed to the personal and professional addresses.",
+      };
+    }
+    return {
+      ok: false,
+      sent: 0,
+      emails: emails,
+      missing: "Email settings are present but this project has no mail sender to call.",
+    };
+  }
+
   function refreshNotifications() {
     var me = identity();
     if (!me) return Promise.resolve({ notifications: [], requests: [] });
@@ -496,6 +568,7 @@
           requests: Array.isArray(result[1]) ? result[1] : [],
         };
         renderConnections(payload);
+        state.emailDelivery = deliverNotificationEmails(payload.notifications);
         emit("cognation:remote-notifications-loaded", payload);
         return payload;
       });

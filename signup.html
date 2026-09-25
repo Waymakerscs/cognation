@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>COGNATION — Sign up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Great+Vibes&family=Rozha+One&family=IM+Fell+English:ital@0;1&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Special+Elite&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="login-gate" class="login-gate login-gate--splash" role="dialog" aria-modal="true" aria-labelledby="login-gate-title" aria-describedby="login-gate-desc">
+    <div class="login-gate-backdrop" tabindex="-1" aria-hidden="true"></div>
+    <div class="login-gate-panel">
+      <div class="login-gate-brand login-gate-brand--splash">
+        <span class="login-gate-brand-name" data-brand>COGNATION</span>
+        <p class="login-gate-tagline" id="login-gate-tagline" data-brand-tagline>A social wellness concierge</p>
+        <figure class="login-brain" aria-label="Holographic circuitry brain">
+          <img src="assets/cognation-holographic-circuit-brain.png" alt="Holographic circuitry brain">
+        </figure>
+      </div>
+      <p class="login-gate-eyebrow">Sign up</p>
+      <h2 id="login-gate-title">Sign up</h2>
+      <p id="login-gate-desc" class="login-gate-desc">Enter at least one email. If you enter both, the personal email signs in and the professional email stays on that same account.</p>
+      <div id="login-credentials-step" data-login-credentials-step data-login-mode="signup">
+      <form id="login-form" class="login-form" action="#" method="post" novalidate data-login-form>
+        <div class="login-form-scroll">
+        <!-- Signup-only fields (shown when data-login-mode="signup") -->
+        <div class="login-signup-fields" data-login-signup-fields>
+          <div class="form-group">
+            <label for="email-personal">Personal email</label>
+            <input
+              type="email"
+              id="email-personal"
+              name="personalEmail"
+              autocomplete="email"
+              inputmode="email"
+              placeholder="you@personal.example"
+              aria-describedby="email-personal-hint"
+              aria-invalid="false"
+            >
+            <span class="form-hint" id="email-personal-hint">Optional if you enter a professional email. When both are filled in, this one signs in.</span>
+          </div>
+          <div class="form-group">
+            <label for="email-professional">Professional email</label>
+            <input
+              type="email"
+              id="email-professional"
+              name="professionalEmail"
+              autocomplete="off"
+              inputmode="email"
+              placeholder="you@work.example"
+              aria-describedby="email-professional-hint"
+              aria-invalid="false"
+            >
+            <span class="form-hint" id="email-professional-hint">Optional if you enter a personal email. Same account, not a second login.</span>
+          </div>
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input
+              type="password"
+              id="login-password"
+              name="password"
+              autocomplete="new-password"
+              required
+              placeholder="••••••••"
+            >
+          </div>
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input
+              type="number"
+              id="age"
+              name="age"
+              min="13"
+              max="120"
+              inputmode="numeric"
+              autocomplete="bday-year"
+              required
+              aria-describedby="age-hint"
+              aria-invalid="false"
+            >
+            <span class="form-hint" id="age-hint">Must be 13 or older.</span>
+          </div>
+          <div class="form-group">
+            <label for="country">Country</label>
+            <select id="country" name="country" required aria-invalid="false" data-login-signup-country-select disabled>
+              <option value="United States" selected>United States</option>
+              <option value="Canada">Canada</option>
+              <option value="United Kingdom">United Kingdom</option>
+              <option value="Mexico">Mexico</option>
+              <option value="India">India</option>
+              <option value="Australia">Australia</option>
+              <option value="Germany">Germany</option>
+              <option value="France">France</option>
+              <option value="Brazil">Brazil</option>
+              <option value="Japan">Japan</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              autocomplete="tel"
+              inputmode="tel"
+              required
+              placeholder="+1 555 0100"
+              aria-describedby="phone-hint"
+              aria-invalid="false"
+            >
+            <span class="form-hint" id="phone-hint">Include country code when possible.</span>
+          </div>
+        </div>
+
+        <!-- Sign-in country (kept for existing login.js country persist) -->
+        <div class="form-group" data-login-signin-country>
+          <label for="login-country">Country</label>
+          <select id="login-country" name="country" required data-login-signin-country-select>
+            <option value="United States" selected>United States</option>
+            <option value="Canada">Canada</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="Mexico">Mexico</option>
+            <option value="India">India</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        </div>
+
+        <p id="login-status" class="login-status" hidden role="status" aria-live="polite"></p>
+        <div class="form-actions login-form-actions">
+          <button type="submit" class="btn btn-primary login-submit-btn" data-login-submit>Sign in</button>
+        </div>
+        <p class="form-hint login-demo-hint" data-login-demo-hint hidden>Sign in with your personal email. Both profile pages belong to that one account.</p>
+        <p class="form-hint login-demo-storage-hint">Your account is secured by Cognation sign-in.</p>
+      </form>
+      </div>
+
+      <div id="login-profile-picker" class="login-profile-picker" hidden data-login-profile-picker>
+        <h3 class="login-profile-picker-title">Choose profile</h3>
+        <p class="login-profile-picker-desc">This account has two Tower pages. Pick which one to enter.</p>
+        <div id="login-profile-picker-list" class="login-profile-picker-list" role="radiogroup" aria-label="Tower profiles"></div>
+        <div class="form-actions login-form-actions login-profile-picker-actions">
+          <button type="button" class="btn btn-secondary" id="login-profile-back">Back</button>
+          <button type="button" class="btn btn-primary" id="login-profile-continue">Continue</button>
+        </div>
+        <p class="form-hint login-demo-storage-hint">Up to 2 profiles per phone · demo registry in localStorage.</p>
+
+    </div>
+  </div>
+  <script src="js/cognation-config.js"></script>
+  <script src="js/location-service.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/brand.js"></script>
+  <script src="js/accounts.js"></script>
+  <script src="js/login.js" defer></script>
+  <script src="js/login-signup-shell.js" defer></script>
+</body>
+</html>

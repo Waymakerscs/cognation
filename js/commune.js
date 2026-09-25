@@ -35,6 +35,26 @@
   }
 
   window.CognationMemberCountry = { get: getMemberCountry, set: setMemberCountry };
+  var LIVE_STATE_KEY = "cognation.member.liveState.v1";
+
+  function readLivePlace() {
+    if (window.CognationLocation && window.CognationLocation.get) {
+      return window.CognationLocation.get();
+    }
+    try {
+      var saved = JSON.parse(localStorage.getItem(LIVE_STATE_KEY) || "null");
+      if (saved && saved.source === "geolocation" && (saved.state || saved.region || saved.locality || typeof saved.lat === "number")) {
+        return saved;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function writeLivePlace(place) {
+    try {
+      localStorage.setItem(LIVE_STATE_KEY, JSON.stringify(place || {}));
+    } catch (e) {}
+  }
   var FEED_SEED_REV = 4; /* refresh international broadsheet wire */
 
   var EDITIONS = {
@@ -606,6 +626,40 @@
           getMemberCountry() +
           " — national sources (Google News–style). Same broadsheet as International.";
       }
+      if (editionId === "local" && labelEl) {
+        var localPlace = readLivePlace();
+        var localName = localPlace && (localPlace.locality || localPlace.region || localPlace.state);
+        labelEl.textContent = localName
+          ? "Local · " + localName
+          : "Local · allow location at sign-in";
+      }
+      if (editionId === "local" && dekEl) {
+        var localNow = readLivePlace();
+        var localLabel = localNow && (localNow.locality || localNow.region || localNow.state);
+        dekEl.textContent = localLabel
+          ? "Local news for " +
+            localLabel +
+            (localNow.region && localNow.locality && localNow.region !== localNow.locality
+              ? ", " + localNow.region
+              : "") +
+            ", from the position allowed at signup or sign-in."
+          : "Allow location on the signup or sign-in page. Local news uses that position, not a saved state.";
+      }
+      if (editionId === "statewide" && labelEl) {
+        var livePlace = readLivePlace();
+        labelEl.textContent = livePlace && (livePlace.state || livePlace.region)
+          ? "Statewide · " + (livePlace.state || livePlace.region)
+          : "Statewide · allow location at sign-in";
+      }
+      if (editionId === "statewide" && dekEl) {
+        var liveNow = readLivePlace();
+        dekEl.textContent = liveNow && (liveNow.state || liveNow.region)
+          ? "Statewide news for " +
+            (liveNow.state || liveNow.region) +
+            (liveNow.country ? ", " + liveNow.country : "") +
+            ", from the position allowed at signup or sign-in."
+          : "Allow location on the signup or sign-in page. Statewide news uses that position, not a saved state.";
+      }
       editionInputs.forEach(function (input) {
         input.checked = input.value === editionId;
       });
@@ -634,6 +688,7 @@
     function updateRefreshButton() {
       if (!refreshBtn) return;
       var show =
+        editionId === "local" ||
         editionId === "statewide" ||
         editionId === "nationwide" ||
         editionId === "international";
@@ -659,6 +714,103 @@
       FeedStore.save(state);
       renderFeed();
       setStatus(feedStatus, note || "Plate refreshed with new hot topics.", false);
+    }
+
+    function fetchStatewide(place, sourceNote) {
+      var stateName = place && place.state ? String(place.state) : "";
+      var countryName = (place && place.country) || getMemberCountry();
+      if (!stateName) return Promise.resolve([]);
+      var path =
+        "/api/news/statewide?state=" +
+        encodeURIComponent(stateName) +
+        "&country=" +
+        encodeURIComponent(countryName);
+      return fetch(path, { headers: { Accept: "application/json" } })
+        .then(function (res) {
+          if (!res.ok) throw new Error("api " + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          var posts = (data && data.seedPosts) || [];
+          return posts.map(function (p) {
+            var copy = {};
+            Object.keys(p).forEach(function (k) {
+              copy[k] = p[k];
+            });
+            copy.sourceDetail = (p.source || "Google News") + " · " + sourceNote;
+            copy.body = sourceNote + " — " + (p.body || "");
+            return copy;
+          });
+        })
+        .catch(function () {
+          return [];
+        });
+    }
+
+    function regionOf(place) {
+      if (!place) return "";
+      return String(place.state || place.region || "").trim();
+    }
+
+    function localityOf(place) {
+      if (!place) return "";
+      return String(place.locality || "").trim();
+    }
+
+    function ensureLivePlace() {
+      var place = readLivePlace();
+      if (place && (regionOf(place) || localityOf(place) || typeof place.lat === "number")) {
+        return Promise.resolve(place);
+      }
+      if (window.CognationLocation && window.CognationLocation.request) {
+        return window.CognationLocation.request();
+      }
+      return Promise.resolve(null);
+    }
+
+    function askLivePlace() {
+      return ensureLivePlace();
+    }
+
+    function loadPlaceNews(place, queryName, sourceNote) {
+      if (!queryName) {
+        setStatus(
+          feedStatus,
+          "Location was not allowed. This edition waits for the location service and does not use a saved state.",
+          false
+        );
+        applyEditionChrome();
+        return Promise.resolve([]);
+      }
+      return fetchStatewide(
+        { state: queryName, country: (place && place.country) || getMemberCountry() },
+        sourceNote
+      ).then(function (posts) {
+        if (!posts || !posts.length) {
+          setStatus(
+            feedStatus,
+            "No live headlines yet for " + queryName + ".",
+            false
+          );
+          applyEditionChrome();
+          return [];
+        }
+        applyRefreshedPosts(posts, sourceNote + " for " + queryName + ".");
+        applyEditionChrome();
+        return posts;
+      });
+    }
+
+    function loadStatewideNews() {
+      return ensureLivePlace().then(function (place) {
+        return loadPlaceNews(place, regionOf(place), "Statewide");
+      });
+    }
+
+    function loadLocalNews() {
+      return ensureLivePlace().then(function (place) {
+        return loadPlaceNews(place, localityOf(place) || regionOf(place), "Local");
+      });
     }
 
     function refreshStatewidePlate() {
@@ -733,10 +885,13 @@
     }
 
     function refreshHotTopics() {
-      if (editionId === "local") return;
       setStatus(feedStatus, "Refreshing hot topics…", false);
       if (editionId === "statewide") {
-        refreshStatewidePlate();
+        loadStatewideNews();
+        return;
+      }
+      if (editionId === "local") {
+        loadLocalNews();
         return;
       }
       var apiPath =
@@ -1202,6 +1357,8 @@
       editionId = EditionStore.setId(id);
       applyEditionChrome();
       renderFeed();
+      if (editionId === "statewide") loadStatewideNews();
+      if (editionId === "local") loadLocalNews();
       setStatus(feedStatus, "Switched to " + (EDITIONS[editionId].label) + " edition (demo).", false);
     }
 
@@ -1302,6 +1459,13 @@
     showSection("feed");
     renderProfile();
     renderFeed();
+    document.addEventListener("cognation:live-location", function () {
+      applyEditionChrome();
+      if (editionId === "statewide") loadStatewideNews();
+      if (editionId === "local") loadLocalNews();
+    });
+    if (editionId === "statewide") loadStatewideNews();
+    if (editionId === "local") loadLocalNews();
   }
 
   function boot() {

@@ -29,7 +29,7 @@
   var pickerBack = document.getElementById("login-profile-back");
   var credentialsStep = document.getElementById("login-credentials-step");
 
-  if (!gate || !form) return;
+  if (!gate) return;
 
   var lastFocus = null;
   var pendingUsername = null;
@@ -116,10 +116,16 @@
       var h = String(p.handle || "").replace(/^@/, "");
       handle.textContent = h ? "@" + h : "No handle yet";
 
+      var email = document.createElement("span");
+      email.className = "login-profile-card-email";
+      email.textContent = p.email || "";
+      if (!p.email) email.hidden = true;
+
       label.appendChild(input);
       label.appendChild(title);
       label.appendChild(name);
       label.appendChild(handle);
+      label.appendChild(email);
       pickerList.appendChild(label);
     });
   }
@@ -133,7 +139,7 @@
     showCredentialsStep();
     if (opts.message) setStatus(opts.message, !!opts.isError);
     else setStatus("");
-    var first = form.querySelector('input[name="username"]');
+    var first = form && (form.querySelector('input[name="email"]') || form.querySelector('input[name="username"]'));
     if (first) {
       window.setTimeout(function () {
         first.focus();
@@ -142,7 +148,16 @@
     document.dispatchEvent(new CustomEvent("cognation:session-ended"));
   }
 
+  function isAuthScreen() {
+    var path = String(location.pathname || "").replace(/\/+$/, "");
+    return /\/(signin|signup)(\.html)?$/.test(path);
+  }
+
   function closeGate() {
+    if (isAuthScreen()) {
+      location.replace("index.html");
+      return;
+    }
     gate.hidden = true;
     gate.setAttribute("aria-hidden", "true");
     document.body.classList.remove("login-gate-open");
@@ -209,16 +224,44 @@
       handle: profile.handle,
       displayName: profile.display_name || profile.displayName || "",
       userId: profile.user_id || "",
+      email: profile.email || "",
     };
+  }
+
+  function applyStoredEmails(profiles, user) {
+    var book = {};
+    if (window.CognationSupabase && window.CognationSupabase.readEmailBook) {
+      book = window.CognationSupabase.readEmailBook() || {};
+    }
+    var meta = (user && user.user_metadata) || {};
+    var personal = String(book.personalEmail || meta.personal_email || (user && user.email) || "")
+      .trim()
+      .toLowerCase();
+    var professional = String(book.professionalEmail || meta.professional_email || "")
+      .trim()
+      .toLowerCase();
+    return (profiles || []).map(function (profile) {
+      if (!profile.email) {
+        profile.email = profile.kind === "professional" ? professional : personal;
+      }
+      return profile;
+    });
   }
 
   function loadSupabaseProfiles(user) {
     if (!window.CognationSupabase || !user || !user.id) return Promise.resolve([]);
-    return window.CognationSupabase.rest("profiles", {
-      query: "select=id,kind,handle,display_name,user_id&user_id=eq." + encodeURIComponent(user.id),
-    }).then(function (profiles) {
-      return Array.isArray(profiles) ? profiles.map(mapSupabaseProfile) : [];
-    });
+    var id = encodeURIComponent(user.id);
+    function load(query) {
+      return window.CognationSupabase.rest("profiles", { query: query });
+    }
+    return load("select=id,kind,handle,display_name,user_id,email&user_id=eq." + id)
+      .catch(function () {
+        return load("select=id,kind,handle,display_name,user_id&user_id=eq." + id);
+      })
+      .then(function (profiles) {
+        var mapped = Array.isArray(profiles) ? profiles.map(mapSupabaseProfile) : [];
+        return applyStoredEmails(mapped, user);
+      });
   }
 
   function finishWithProfileChoice(username, profiles, auth) {
@@ -247,13 +290,21 @@
       return window.CognationSupabase.signIn(username, password).then(function (result) {
         var user = result && result.user;
         if (!user) throw new Error("bad credentials");
-        return loadSupabaseProfiles(user).then(function (profiles) {
-          return {
-            username: user.email || username,
-            profiles: profiles,
-            source: "supabase",
-            supabaseUserId: user.id,
-          };
+        var ensure =
+          window.CognationSupabase.ensureAccountEmails
+            ? window.CognationSupabase.ensureAccountEmails({}).catch(function () {
+                return null;
+              })
+            : Promise.resolve(null);
+        return ensure.then(function () {
+          return loadSupabaseProfiles(user).then(function (profiles) {
+            return {
+              username: user.email || username,
+              profiles: profiles,
+              source: "supabase",
+              supabaseUserId: user.id,
+            };
+          });
         });
       });
     }
@@ -310,9 +361,9 @@
     return session;
   }
 
-  form.addEventListener("submit", function (e) {
+  if (form) form.addEventListener("submit", function (e) {
     e.preventDefault();
-    var userInput = form.querySelector('input[name="username"]');
+    var userInput = form.querySelector('input[name="email"]') || form.querySelector('input[name="username"]');
     var passInput = form.querySelector('input[name="password"]');
     var countryInput = form.querySelector('select[name="country"]');
     var username = userInput ? userInput.value.trim() : "";
@@ -362,7 +413,7 @@
     pickerBack.addEventListener("click", function () {
       showCredentialsStep();
       setStatus("");
-      var first = form.querySelector('input[name="username"]');
+      var first = form && (form.querySelector('input[name="email"]') || form.querySelector('input[name="username"]'));
       if (first) first.focus();
     });
   }

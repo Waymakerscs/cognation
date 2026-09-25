@@ -176,10 +176,11 @@
         identity: true,
         slogan: true,
         social: true,
-        music: false,
+        music: true,
         badges: true,
-        friends: false,
+        friends: true,
         html: true,
+        calendar: true,
       },
       friendPinLayout: {},
       badgePinLayout: {},
@@ -375,6 +376,7 @@
     Object.keys(tower).forEach(function (k) {
       rec[k] = tower[k];
     });
+    if (opts.email) rec.email = String(opts.email).trim().toLowerCase();
 
     saveProfileRecord(rec);
     var acct = getAccountByUsername(username);

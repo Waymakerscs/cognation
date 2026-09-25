@@ -10401,3 +10401,162 @@ body {
   box-shadow: none !important;
   backdrop-filter: none !important;
 }
+
+/* Sign-in / sign-up: full COGNATION wordmark in the header face, and a submit
+   button that stays at the bottom of the panel instead of traveling with scroll. */
+.login-gate {
+  overflow: hidden !important;
+}
+
+.login-gate-panel,
+.login-gate--splash .login-gate-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
+  max-height: min(92svh, 52rem);
+}
+
+.login-gate-brand--splash {
+  container-type: inline-size;
+  flex: 0 0 auto;
+}
+
+.login-gate--splash .login-gate-brand--splash .login-gate-brand-name {
+  /* Same face and glow as .cognation-masthead-home inside the site. */
+  font-family: var(--cgn-ui) !important;
+  font-weight: 800 !important;
+  font-size: clamp(1.85rem, 12cqi, 3.35rem) !important;
+  letter-spacing: -0.11em !important;
+  line-height: 0.95 !important;
+  text-transform: uppercase;
+  color: #fff !important;
+  text-shadow: 0 0 26px rgba(189, 247, 255, 0.92), 0 0 90px rgba(211, 160, 255, 0.7) !important;
+  white-space: nowrap;
+  overflow: visible !important;
+  text-overflow: clip;
+  max-width: 100%;
+}
+
+.login-entry-switch {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.55rem;
+  margin: 0 0 1rem;
+}
+
+.login-entry-btn {
+  flex: 1 1 0;
+  min-height: 2.75rem;
+  border-radius: 999px !important;
+  cursor: pointer;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+}
+
+.login-entry-btn[aria-selected="true"] {
+  border-color: rgba(207, 248, 255, 0.7) !important;
+  background: linear-gradient(100deg, rgba(139, 237, 255, 0.7), rgba(204, 161, 255, 0.7)) !important;
+  color: #10132c !important;
+}
+
+.login-entry-btn[aria-selected="false"] {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+
+a.login-entry-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none !important;
+  border: 1px solid rgba(207, 248, 255, 0.7) !important;
+  background: linear-gradient(100deg, rgba(139, 237, 255, 0.7), rgba(204, 161, 255, 0.7)) !important;
+  color: #10132c !important;
+}
+
+#login-credentials-step,
+.login-form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.login-form-scroll {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.login-form-actions {
+  position: static !important;
+  bottom: auto !important;
+  flex: 0 0 auto;
+  margin-top: 0.75rem;
+  background: transparent !important;
+}
+
+.tower-profile-email {
+  margin: 0.2rem 0 0;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  word-break: break-word;
+}
+
+.login-profile-card-email {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  opacity: 0.85;
+  word-break: break-word;
+}
+
+/* Credential pages: keep the glowy wordmark, give the fillable boxes the panel. */
+.login-gate--splash:has(#login-form) .login-brain {
+  width: min(100%, 6.5rem);
+  margin: 0.05rem auto 0;
+}
+
+.login-gate--splash:has(#login-form) .login-gate-brand--splash {
+  margin-bottom: 0.2rem;
+}
+
+.login-gate--splash:has(#login-form) .login-gate-panel {
+  padding-top: 0.85rem;
+}
+
+.login-gate--splash:has(#login-form) .login-gate-desc {
+  margin-bottom: 0.45rem;
+}
+
+.login-form .form-group {
+  margin-bottom: 0.65rem;
+}
+
+.login-form input,
+.login-form select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  color: #fff !important;
+  background: rgba(6, 10, 32, 0.94) !important;
+  border: 1px solid rgba(168, 244, 255, 0.8) !important;
+}
+
+.login-form [hidden],
+.login-form input[hidden],
+.login-form select[hidden] {
+  display: none !important;
+}
+
+.login-form-scroll {
+  min-height: 14rem;
+  scrollbar-color: rgba(168, 244, 255, 0.75) transparent;
+}

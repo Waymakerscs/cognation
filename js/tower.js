@@ -111,6 +111,57 @@
   }
 
   var TOWER_SIDE_KEY = "cognation.tower.side";
+  var PROFILE_WIDGETS_KEY = "cognation.profile.widgets.v1";
+
+  function readWidgetOverlays() {
+    try {
+      return JSON.parse(localStorage.getItem(PROFILE_WIDGETS_KEY) || "{}") || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function readWidgetOverlay(id) {
+    if (!id) return null;
+    var all = readWidgetOverlays();
+    return all[String(id)] || null;
+  }
+
+  function writeWidgetOverlay(id, blob) {
+    if (!id || !blob) return;
+    var all = readWidgetOverlays();
+    var copy = {};
+    Object.keys(blob).forEach(function (k) {
+      if (!k || k.charAt(0) === "_") return;
+      copy[k] = blob[k];
+    });
+    all[String(id)] = copy;
+    try {
+      localStorage.setItem(PROFILE_WIDGETS_KEY, JSON.stringify(all));
+    } catch (e) {}
+  }
+
+  function mergeWidgetOverlay(profile, id) {
+    var overlay = readWidgetOverlay(id);
+    if (!profile || !overlay) return profile;
+    var remoteName = profile.displayName;
+    var remoteHandle = profile.handle;
+    var remoteSlogan = profile.slogan;
+    var remoteEmail = profile.profileEmail;
+    var remoteId = profile._profileId;
+    var remoteKind = profile._profileKind;
+    Object.keys(overlay).forEach(function (k) {
+      profile[k] = overlay[k];
+    });
+    if (remoteName) profile.displayName = remoteName;
+    if (remoteHandle) profile.handle = remoteHandle;
+    if (remoteSlogan) profile.slogan = remoteSlogan;
+    if (remoteEmail) profile.profileEmail = remoteEmail;
+    profile._profileId = remoteId;
+    profile._profileKind = remoteKind;
+    profile._remote = true;
+    return profile;
+  }
   var DEFAULT_PRIVATE_FEED_THEME = {
     backgroundColor: "#fff5f9",
     fontFamily: "georgia",
@@ -426,7 +477,7 @@
       var social = remoteSocial();
       if (social && social.getTowerProfile) {
         var remote = social.getTowerProfile(id);
-        if (remote) return remote;
+        if (remote) return mergeWidgetOverlay(remote, id);
       }
       if (id && window.CognationAccounts && window.CognationAccounts.getProfileById) {
         var rec = window.CognationAccounts.getProfileById(id);
@@ -466,7 +517,7 @@
       }
       p._profileId = profileId || "";
       p._profileKind = metaKind;
-      try { pruneEmptyPublicWidgetsInProfile(p); } catch (ePrune) {}
+      if (!p.profileEmail && p.email) p.profileEmail = String(p.email);
       p._profilePhone = metaPhone;
       if (!p.avatarFrame) p.avatarFrame = "none";
       else p.avatarFrame = normalizeFrameId(p.avatarFrame);
@@ -575,6 +626,7 @@
         if (k.charAt(0) === "_") return;
         towerBlob[k] = data[k];
       });
+      if (id) writeWidgetOverlay(id, towerBlob);
       if (id && window.CognationAccounts && typeof window.CognationAccounts.updateProfileTower === "function") {
         var result = window.CognationAccounts.updateProfileTower(id, towerBlob);
         if (result && result.ok) {
@@ -2966,7 +3018,7 @@
   }
 
   function applyPublicWidgets(root, p) {
-    if (p) pruneEmptyPublicWidgetsInProfile(p);
+    var ownerPage = isTowerOwner(p);
     var widgets = normalizePublicWidgets(p && p.publicWidgets);
     var sloganText = p && typeof p.slogan === "string" ? p.slogan.trim() : "";
     var htmlText = p && typeof p.customHtml === "string" ? p.customHtml.trim() : "";
@@ -2975,13 +3027,14 @@
     var friendIds = (p && p.featuredFriendIds) || [];
     PUBLIC_WIDGET_IDS.forEach(function (id) {
       var on = widgets[id] !== false;
-      if (id === "slogan" && !sloganText) on = false;
-      /* Auto-prune empty shells so ghost handles do not linger on personal scrapbooks */
-      if (id === "html" && !htmlText) on = false;
-      if (id === "social" && !profileHasSocialLinks(p)) on = false;
-      if (id === "music" && !musicOn) on = false;
-      if (id === "friends" && (!friendIds || !friendIds.length)) on = false;
-      if (id === "badges" && !profileHasVisibleBadges(p)) on = false;
+      if (!ownerPage) {
+        if (id === "slogan" && !sloganText) on = false;
+        if (id === "html" && !htmlText) on = false;
+        if (id === "social" && !profileHasSocialLinks(p)) on = false;
+        if (id === "music" && !musicOn) on = false;
+        if (id === "friends" && (!friendIds || !friendIds.length)) on = false;
+        if (id === "badges" && !profileHasVisibleBadges(p)) on = false;
+      }
       var el = root.querySelector('[data-tower-widget="' + id + '"]');
       if (!el) return;
       el.hidden = !on;
@@ -5670,6 +5723,12 @@
     var htmlInput = root.querySelector("[data-tower-profile-html]");
     var preview = root.querySelector("[data-tower-html-preview]");
     if (nameEl) nameEl.textContent = p.displayName || "You";
+    var emailEl = root.querySelector("[data-tower-profile-email]");
+    if (emailEl) {
+      var shownEmail = String(p.profileEmail || p.email || "").trim();
+      emailEl.hidden = !shownEmail;
+      emailEl.textContent = shownEmail;
+    }
     applyDisplayNameSize(root, p.displayNameSize || 28);
     initDisplayNameResize(root);
     var handleBadge = root.querySelector("[data-tower-handle-badge]");
