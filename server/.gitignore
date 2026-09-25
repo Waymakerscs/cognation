@@ -1,0 +1,4 @@
+node_modules/
+cognation.db
+cognation.db-shm
+cognation.db-wal

@@ -33,7 +33,10 @@
     <div class="login-gate-panel">
       <div class="login-gate-brand login-gate-brand--splash">
         <span class="login-gate-brand-name" data-brand>COGNATION</span>
-        <p class="login-gate-tagline" id="login-gate-tagline">“a social wellness concierge”</p>
+        <p class="login-gate-tagline" id="login-gate-tagline" data-brand-tagline>A social wellness concierge</p>
+        <figure class="login-brain" aria-label="Holographic circuitry brain">
+          <img src="assets/cognation-holographic-circuit-brain.png" alt="Holographic circuitry brain">
+        </figure>
       </div>
       <p class="login-gate-eyebrow">Welcome</p>
       <h2 id="login-gate-title">Sign in</h2>
@@ -44,7 +47,7 @@
       <div id="login-credentials-step" data-login-credentials-step data-login-mode="signin">
       <form id="login-form" class="login-form" action="#" method="post" novalidate data-login-form>
         <div class="form-group">
-          <label for="login-username">Username</label>
+          <label for="login-username">Email address</label>
           <input
             type="text"
             id="login-username"
@@ -53,7 +56,7 @@
             required
             autocapitalize="none"
             spellcheck="false"
-            placeholder="alexa"
+            placeholder="you@example.com"
           >
         </div>
         <div class="form-group">
@@ -227,8 +230,8 @@
             Need an account? Sign up
           </button>
         </p>
-        <p class="form-hint login-demo-hint" data-login-demo-hint>Demo: username <code>alexa</code> · password <code>TowerCommune26</code></p>
-        <p class="form-hint login-demo-storage-hint">Demo storage is in this browser only — not production identity.</p>
+        <p class="form-hint login-demo-hint" data-login-demo-hint hidden>Sign in with the email and password you used to create your Cognation account.</p>
+        <p class="form-hint login-demo-storage-hint">Your account is secured by Cognation sign-in.</p>
       </form>
       </div>
 
@@ -247,9 +250,6 @@
 
   <header class="site-header">
     <div class="container header-inner">
-      <a class="logo" href="index.html">
-        <span data-brand>COGNATION</span>
-      </a>
       <div class="people-search" data-people-search>
         <label class="visually-hidden" for="people-search-input">Search people</label>
         <input
@@ -266,8 +266,18 @@
     </div>
   </header>
 
+  <section class="cognation-masthead" aria-label="Cognation">
+    <div class="cognation-masthead-inner">
+      <p class="cognation-masthead-kicker">A social wellness concierge</p>
+      <a class="cognation-masthead-home" href="index.html" aria-label="Cognation home">COGNATION</a>
+      <figure class="cognation-masthead-brain">
+        <img src="assets/cognation-holographic-circuit-brain.png" alt="Holographic circuitry brain">
+      </figure>
+    </div>
+  </section>
+
   <main id="main">
-    <!-- Tab order (L→R): TOWER · NEWS · COMMUNE · PAGES (WELL hidden from public chrome) -->
+    <!-- Tab order (L→R): TOWER · NEWS · COMMUNE · CALENDAR · CIRCLE (V2 areas stay hidden) -->
     <section class="section tabs-section" aria-label="COGNATION">
       <div class="container">
         <div class="tabs tabs--chrome" data-tabs>
@@ -276,7 +286,9 @@
               <button type="button" role="tab" id="tab-tower" aria-controls="panel-tower" aria-selected="true" tabindex="0">TOWER</button>
               <button type="button" role="tab" id="tab-news" aria-controls="panel-news" aria-selected="false" tabindex="-1">NEWS</button>
               <button type="button" role="tab" id="tab-commune" aria-controls="panel-commune" aria-selected="false" tabindex="-1">COMMUNE</button>
-              <button type="button" role="tab" id="tab-pages" aria-controls="panel-pages" aria-selected="false" tabindex="-1">PAGES</button>
+              <button type="button" class="app-topbar-shortcut" data-tower-anchor="calendar">CALENDAR</button>
+              <button type="button" class="app-topbar-shortcut" data-tower-anchor="circle">CIRCLE</button>
+              <button type="button" role="tab" id="tab-pages" aria-controls="panel-pages" aria-selected="false" tabindex="-1" hidden>PAGES</button>
             </div>
             <div class="app-topbar-actions">
               <a class="grok-whisper" href="https://x.ai/bot" rel="noopener noreferrer">talk to grok bot</a>
@@ -425,6 +437,11 @@
 
                     <!-- Left rail: friends circles + personal calendar -->
                     <aside class="tower-left-rail" data-tower-calendar aria-label="Friends and calendar">
+                      <section class="tower-remote-social" data-remote-social hidden aria-label="Connections">
+                        <h4 class="tower-friends-browse-heading">Connections</h4>
+                        <div data-remote-friend-requests></div>
+                        <div data-remote-notifications></div>
+                      </section>
                       <div class="tower-friends-browse" data-tower-friends-browse data-tower-friends aria-label="Friends">
                         <h4 class="tower-friends-browse-heading">Friends</h4>
                         <ul class="tower-friends-browse-list" data-tower-friends-browse-list role="list"></ul>
@@ -506,17 +523,6 @@
                   <div class="tower-profile-kind-toggle" data-tower-profile-kind-toggle role="tablist" aria-label="Public profile page" hidden>
                     <button type="button" class="tower-kind-btn" role="tab" data-tower-profile-kind="personal" aria-selected="true" id="tower-kind-personal">Personal page</button>
                     <button type="button" class="tower-kind-btn" role="tab" data-tower-profile-kind="professional" aria-selected="false" id="tower-kind-professional">Professional page</button>
-                  </div>
-                  <!-- CGN-007 Follow shell: Engineer wires follow graph. Hook: data-tower-follow + data-profile-id -->
-                  <div class="tower-follow-row" data-tower-follow-row>
-                    <button
-                      type="button"
-                      class="tower-follow-btn"
-                      data-tower-follow
-                      data-profile-id=""
-                      aria-pressed="false"
-                      aria-label="Follow this profile"
-                    >Follow</button>
                   </div>
                   <div class="tower-scrapbook-bar" data-tower-scrapbook-bar>
                   <button type="button" class="btn btn-secondary" data-tower-add-widget title="Add a quote or text sticker">Add content</button>
@@ -644,7 +650,18 @@
                           <span class="visually-hidden">Upload profile picture</span>
                           <input type="file" accept="image/*" data-tower-avatar-file>
                         </label>
-                        <!-- CGN-010: Go Live from profile pic -->
+                      </div>
+                      <div class="tower-profile-actions">
+                        <div class="tower-follow-row" data-tower-follow-row>
+                          <button
+                            type="button"
+                            class="tower-follow-btn"
+                            data-tower-follow
+                            data-profile-id=""
+                            aria-pressed="false"
+                            aria-label="Add this person as a friend"
+                          >Add friend</button>
+                        </div>
                         <button type="button" class="tower-go-live-btn" data-go-live aria-label="Go live">Go live</button>
                       </div>
                       </div>
@@ -1577,32 +1594,6 @@
       </div>
     </section>
 
-    <section class="section section-alt" aria-labelledby="value-heading">
-      <div class="container">
-        <h2 id="value-heading">What you get</h2>
-        <p class="section-intro">
-          A cohesive three-page footprint you can extend: home, about, and contact—shared chrome, responsive layout, and production-ready static files.
-        </p>
-        <div class="cards">
-          <article class="card">
-            <div class="card-icon" aria-hidden="true">01</div>
-            <h3>Static &amp; simple</h3>
-            <p>Drop files onto Oracle Linux (or any host). No npm, no frameworks, no runtime dependencies.</p>
-          </article>
-          <article class="card">
-            <div class="card-icon" aria-hidden="true">02</div>
-            <h3>Accessible by default</h3>
-            <p>Semantic HTML5, skip link, focus styles, and a mobile menu that works without a CSS framework.</p>
-          </article>
-          <article class="card">
-            <div class="card-icon" aria-hidden="true">03</div>
-            <h3>Grok Bot ready</h3>
-            <p>A clear call-to-action links visitors to Grok Bot—button and link only, no chat embed.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
   </main>
 
   <footer class="site-footer">
@@ -1617,6 +1608,8 @@
     </div>
   </footer>
 
+  <script src="js/cognation-config.js"></script>
+  <script src="js/supabase-client.js"></script>
   <script src="js/brand.js"></script>
   <script src="js/tabs.js" defer></script>
   <script src="js/main.js" defer></script>
@@ -1624,8 +1617,10 @@
   <script src="js/login.js" defer></script>
   <script src="js/login-signup-shell.js" defer></script>
   <script src="js/screen-break.js" defer></script>
+  <script src="js/supabase-social.js" defer></script>
   <script src="js/people-search.js" defer></script>
   <script src="js/tower.js" defer></script>
+  <script src="js/social-graph.js" defer></script>
   <script src="js/tower-follow.js" defer></script>
   <script src="js/moderation.js" defer></script>
   <script src="js/commune.js" defer></script>

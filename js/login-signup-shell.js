@@ -125,10 +125,10 @@
     if (titleEl) titleEl.textContent = isSignup ? "Sign up" : "Sign in";
     if (descEl) {
       descEl.innerHTML = isSignup
-        ? 'Create a <span data-brand>COGNATION</span> demo profile (age, location, contact).'
+        ? 'Create your <span data-brand>COGNATION</span> account.'
         : 'Welcome to <span data-brand>COGNATION</span>. Sign in with your account to continue.';
     }
-    if (demoHint) demoHint.hidden = isSignup;
+    if (demoHint) demoHint.hidden = true;
     setStatus("");
   }
 
@@ -153,7 +153,12 @@
     }
 
     req(user, function (el) {
-      return el && el.value.trim().length > 0;
+      return (
+        el &&
+        /^[a-z0-9_-]{3,40}$/i.test(
+          String(el.value || "").trim().replace(/^@/, "")
+        )
+      );
     });
     req(pass, function (el) {
       return el && el.value.length > 0;
@@ -221,7 +226,8 @@
     });
   }
 
-  /* Capture phase: persist signup profile; allow demo login path after */
+  /* Create a real account when Supabase is configured; retain local capture
+     only for the offline demo. */
   form.addEventListener(
     "submit",
     function (e) {
@@ -230,27 +236,52 @@
         e.preventDefault();
         e.stopImmediatePropagation();
         if (!validateSignup()) {
-          setStatus("Please fix the highlighted fields.", true);
+          setStatus("Use a 3–40 character username (letters, numbers, _ or -), then fix any highlighted fields.", true);
           return;
         }
         var profile = collectSignupProfile();
-        writeProfile(profile);
-        setStatus(
-          "Profile saved locally (age " +
-            profile.age +
-            "). Use demo sign-in alexa / TowerCommune26 to enter — profile age drives COMMUNE gates.",
-          false
-        );
-        /* Flip to signin with fields retained for demo handoff */
-        window.setTimeout(function () {
-          setMode("signin");
-          setStatus(
-            "Demo sign-in: alexa / TowerCommune26. Your age (" +
-              profile.age +
-              ") is saved for COMMUNE dating / 21+ gates.",
-            false
-          );
-        }, 600);
+        var password = (form.querySelector("#login-password") || {}).value || "";
+        var handle = String(profile.username || "")
+          .trim()
+          .toLowerCase()
+          .replace(/^@/, "")
+          .replace(/[^a-z0-9_-]/g, "")
+          .slice(0, 40);
+        if (
+          window.CognationSupabase &&
+          window.CognationSupabase.configured &&
+          window.CognationSupabase.configured()
+        ) {
+          setStatus("Creating your Cognation account…", false);
+          window.CognationSupabase
+            .signUp({
+              email: profile.email,
+              password: password,
+              username: profile.username,
+              handle: handle,
+              displayName: profile.username,
+            })
+            .then(function (result) {
+              writeProfile(profile);
+              if (result && result.session && window.CognationAuth) {
+                return window.CognationAuth.login(profile.email, password);
+              }
+              setMode("signin");
+              setStatus(
+                "Account created. Check your email to confirm it, then sign in with your email.",
+                false
+              );
+              return null;
+            })
+            .catch(function (error) {
+              setStatus(
+                (error && error.message) || "Could not create your account. Please try again.",
+                true
+              );
+            });
+          return;
+        }
+        setStatus("Account sign-up is not configured. Please try again later.", true);
         return;
       }
 

@@ -126,8 +126,9 @@ main {
 
 /* Header */
 .site-header {
-  position: sticky;
-  top: var(--topbar-h);
+  /* The people directory belongs to the page flow, rather than remaining pinned over it. */
+  position: relative;
+  top: auto;
   z-index: 100;
   background: rgba(255, 245, 249, 0.92);
   backdrop-filter: blur(10px);
@@ -7079,6 +7080,11 @@ body.login-gate-open {
   border-color: var(--color-accent);
   outline: none;
 }
+.tower-react-face.is-mine {
+  border-color: var(--cgn-accent, #b7f6ff) !important;
+  background: linear-gradient(100deg, rgba(139, 237, 255, 0.32), rgba(204, 161, 255, 0.28)) !important;
+  box-shadow: 0 0 16px rgba(142, 234, 255, 0.2);
+}
 .tower-react-pill {
   appearance: none;
   display: inline-flex;
@@ -7100,6 +7106,204 @@ body.login-gate-open {
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--color-heading);
+}
+
+/* NEWS shares the quiet Cognation system instead of its legacy newspaper palette. */
+#panel-news .commune-paper,
+#panel-news .commune-paper * {
+  font-family: var(--cgn-ui) !important;
+}
+
+#panel-news .commune-paper {
+  color: var(--cgn-text) !important;
+  background: transparent !important;
+}
+
+#panel-news .paper-masthead {
+  border: 1px solid var(--cgn-border) !important;
+  border-radius: var(--cgn-radius) !important;
+  padding: clamp(1.25rem, 3vw, 2.5rem) !important;
+  background:
+    linear-gradient(135deg, rgba(174, 243, 255, 0.1), rgba(193, 153, 255, 0.1)),
+    rgba(16, 19, 48, 0.42) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.17) !important;
+  text-align: left !important;
+}
+
+#panel-news .paper-eyebrow,
+#panel-news .paper-edition-scope-label,
+#panel-news .paper-section-kicker {
+  color: var(--cgn-accent) !important;
+  font-size: 0.61rem !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.15em !important;
+  text-transform: uppercase !important;
+}
+
+#panel-news .paper-title {
+  margin: 0.7rem 0 0 !important;
+  color: #fff !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: clamp(2.7rem, 6vw, 5.5rem) !important;
+  font-weight: 740 !important;
+  letter-spacing: -0.09em !important;
+  line-height: 0.86 !important;
+  text-shadow: 0 0 28px rgba(172, 242, 255, 0.33) !important;
+}
+
+#panel-news .paper-subtitle,
+#panel-news .paper-dateline,
+#panel-news .paper-volume,
+#panel-news .paper-price,
+#panel-news .paper-date {
+  color: var(--cgn-text-muted) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.01em !important;
+}
+
+#panel-news .paper-grid {
+  gap: 1px !important;
+  border: 1px solid var(--cgn-border) !important;
+  border-radius: var(--cgn-radius) !important;
+  background: var(--cgn-border) !important;
+  overflow: hidden;
+}
+
+#panel-news .paper-col,
+#panel-news .paper-section,
+#panel-news .commune-feed-item,
+#panel-news .commune-social-card,
+#panel-news .commune-profile-card,
+#panel-news .paper-brief {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: rgba(16, 19, 48, 0.44) !important;
+  box-shadow: none !important;
+}
+
+#panel-news .paper-col-heading,
+#panel-news .paper-brief-title,
+#panel-news .commune-profile-name,
+#panel-news .commune-feed-author {
+  color: var(--cgn-text) !important;
+  font-family: var(--cgn-ui) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+}
+
+#panel-news .paper-index-label,
+#panel-news .paper-index-desc,
+#panel-news .paper-brief-body,
+#panel-news .commune-feed-body,
+#panel-news .commune-profile-bio,
+#panel-news .paper-topics,
+#panel-news .commune-feed-meta {
+  color: var(--cgn-text-muted) !important;
+  font-family: var(--cgn-ui) !important;
+}
+
+#panel-news .paper-index-btn,
+#panel-news .paper-edition-opt {
+  border: 1px solid transparent !important;
+  border-radius: 0.65rem !important;
+  background: transparent !important;
+}
+
+#panel-news .paper-index-btn:hover,
+#panel-news .paper-index-btn.is-active,
+#panel-news .paper-index-btn[aria-current="true"],
+#panel-news .paper-edition-opt:has(input:checked) {
+  border-color: rgba(183, 246, 255, 0.5) !important;
+  background: rgba(149, 236, 255, 0.12) !important;
+}
+
+#panel-news .paper-edition-opt span {
+  color: var(--cgn-text-muted) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.65rem !important;
+  letter-spacing: 0.07em !important;
+}
+
+#panel-news .paper-edition-opt:has(input:checked) span,
+#panel-news .paper-index-btn.is-active .paper-index-label,
+#panel-news .paper-index-btn[aria-current="true"] .paper-index-label {
+  color: #fff !important;
+}
+
+/* News and Commune render their own panels; remove the empty shared chrome around them. */
+.tabs.tabs--chrome:has(#panel-news:not([hidden])) .tab-panels,
+.tabs.tabs--chrome:has(#panel-commune:not([hidden])) .tab-panels {
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Live Supabase connection state in the Tower rail. */
+.tower-remote-social {
+  margin-bottom: 0.85rem;
+  padding: 0.85rem;
+  border: 1px solid var(--cgn-border);
+  border-radius: 0.9rem;
+  background: rgba(16, 19, 48, 0.42);
+}
+
+.tower-remote-social h5 {
+  margin: 0.6rem 0 0.35rem;
+  color: var(--cgn-accent);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tower-remote-list {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tower-remote-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  font-size: 0.84rem;
+}
+
+.tower-remote-list .btn {
+  padding: 0.32rem 0.55rem;
+  font-size: 0.75rem;
+}
+
+.tabs.tabs--chrome:has(#panel-news:not([hidden])) .app-topbar,
+.tabs.tabs--chrome:has(#panel-commune:not([hidden])) .app-topbar {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Keep the tab labels, but remove the fixed empty container entirely. */
+body { padding-top: 0 !important; }
+
+.app-topbar {
+  position: relative !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 0 0.8rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
 }
 .tower-post-likes { display: none; }
 
@@ -7481,10 +7685,12 @@ body.login-gate-open {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
+.tower-private-side .tower-react-face.is-mine,
 .tower-private-side .tower-react-pill.is-mine,
 .tower-private-side .commune-react-pill.is-mine {
-  background: color-mix(in srgb, var(--color-accent, #f4a4c4) 32%, transparent) !important;
-  border-color: color-mix(in srgb, var(--color-accent, #f4a4c4) 45%, transparent) !important;
+  background: linear-gradient(100deg, rgba(139, 237, 255, 0.4), rgba(204, 161, 255, 0.36)) !important;
+  border-color: rgba(183, 246, 255, 0.78) !important;
+  box-shadow: 0 0 16px rgba(142, 234, 255, 0.28) !important;
 }
 .tower-private-side .tower-react-face:hover,
 .tower-private-side .tower-react-face:focus-visible,
@@ -7602,17 +7808,17 @@ body.login-gate-open {
   gap: 0.35rem;
   margin: 0 0 0.65rem;
   padding: 0.25rem;
-  background: rgba(255, 245, 249, 0.7);
-  border: 1px solid rgba(74, 44, 58, 0.12);
+  background: rgba(16, 19, 48, 0.32);
+  border: 1px solid var(--cgn-border, rgba(185, 238, 255, 0.22));
   border-radius: 999px;
   width: fit-content;
   max-width: 100%;
 }
 .tower-kind-btn {
   appearance: none;
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
-  color: #4a2c3a;
+  color: var(--cgn-text-muted, rgba(247, 249, 255, 0.7));
   font: inherit;
   font-size: 0.9rem;
   font-weight: 600;
@@ -7622,9 +7828,11 @@ body.login-gate-open {
 }
 .tower-kind-btn.is-selected,
 .tower-kind-btn[aria-selected="true"] {
-  background: #f4a4c4;
-  color: #4a2c3a;
-  box-shadow: 0 2px 8px rgba(74, 44, 58, 0.12);
+  /* The active page is indicated by a cool outline, not a colored fill. */
+  background: transparent;
+  border-color: rgba(183, 246, 255, 0.72);
+  color: var(--cgn-text, #f7f9ff);
+  box-shadow: inset 0 0 0 1px rgba(183, 246, 255, 0.12), 0 0 16px rgba(123, 220, 255, 0.12);
 }
 .tower-kind-btn:disabled {
   opacity: 0.45;
@@ -7663,15 +7871,14 @@ body.login-gate-open {
 
 /* —— Friends browse (My feed private) —— */
 .tower-friends-browse {
-  position: sticky;
-  top: 0.75rem;
+  position: static;
   background: rgba(255, 245, 249, 0.96);
   border: 1px solid var(--color-border, rgba(74, 44, 58, 0.14));
   border-radius: var(--radius, 12px);
   padding: 0.65rem 0.75rem 0.85rem;
   box-shadow: 0 4px 14px rgba(74, 44, 58, 0.08);
-  max-height: min(70vh, 36rem);
-  overflow: auto;
+  max-height: none;
+  overflow: visible;
 }
 .tower-friends-browse-heading {
   margin: 0 0 0.2rem;
@@ -8283,6 +8490,21 @@ body.login-gate-open {
   box-shadow: none;
 }
 
+.tower-profile-actions {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  margin: 0.15rem auto 0.55rem;
+  order: 2;
+  position: relative;
+  z-index: 8;
+}
+
+.tower-profile-actions .tower-follow-row {
+  margin: 0;
+  padding: 0;
+}
+
 /* ===== CGN-007 Signup mode UX ===== */
 .login-signup-fields {
   display: grid;
@@ -8787,8 +9009,8 @@ body.login-gate-open {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
-  position: sticky;
-  top: 0.65rem;
+  /* Keep the Friends and calendar rail in document flow with the feed. */
+  position: static;
 }
 .tower-feed[data-tower-feed] { min-width: 0; }
 
@@ -8823,8 +9045,8 @@ body.login-gate-open {
   border: 1px solid #c45a5a;
   border-radius: 8px;
   padding: 0.45rem 0.4rem 0.55rem;
-  max-height: min(52vh, 28rem);
-  overflow: auto;
+  max-height: none;
+  overflow: visible;
 }
 .tower-friends-browse-heading {
   margin: 0 0 0.35rem;
@@ -8989,6 +9211,13 @@ body.login-gate-open {
 .tower-go-live-btn[data-go-live]:focus-visible {
   background: #a01830;
   outline: 2px solid #fff;
+}
+
+.tower-profile-actions .tower-go-live-btn[data-go-live] {
+  position: static;
+  left: auto;
+  bottom: auto;
+  transform: none;
 }
 
 /* Live stage */
@@ -9178,7 +9407,7 @@ li, td, th, summary, figcaption {
 }
 button,
 .btn,
-[role="tab"][aria-selected="true"],
+[role="tab"][aria-selected="true"]:not(.tower-kind-btn),
 .tab[aria-selected="true"] {
   background-color: #ED9300 !important;
   color: #000 !important;
@@ -9186,3 +9415,989 @@ button,
 }
 a { color: #000; }
 a:hover { color: #ED9300; }
+
+/* ===== CGN-014 cinematic shimmer layer — visual only, preserves app hooks ===== */
+:root {
+  --cgn-ink: #f5f8ff;
+  --cgn-muted: rgba(239, 244, 255, 0.68);
+  --cgn-line: rgba(218, 244, 255, 0.34);
+  --cgn-glass: rgba(16, 19, 48, 0.36);
+  --cgn-glass-strong: rgba(20, 24, 58, 0.62);
+  --cgn-cyan: #a8f4ff;
+  --cgn-violet: #c5a6ff;
+  --cgn-pink: #ffb2d1;
+  --cgn-glow: 0 0 28px rgba(142, 235, 255, 0.26), inset 0 1px rgba(255, 255, 255, 0.28);
+  --cgn-ui: "Oswald", system-ui, sans-serif;
+}
+
+html { background: #101229 !important; }
+
+body {
+  color: var(--cgn-ink) !important;
+  background:
+    radial-gradient(ellipse at 20% 5%, rgba(67, 207, 234, 0.36), transparent 32%),
+    radial-gradient(ellipse at 82% 14%, rgba(222, 122, 195, 0.29), transparent 29%),
+    radial-gradient(ellipse at 52% 75%, rgba(152, 115, 246, 0.31), transparent 39%),
+    linear-gradient(145deg, #11142d 0%, #171a3a 48%, #291b3a 100%) !important;
+  background-size: 125% 125%, 120% 120%, 135% 135%, 100% 100% !important;
+  background-attachment: fixed !important;
+  font-family: var(--cgn-ui) !important;
+  animation: cognation-aurora 20s ease-in-out infinite alternate;
+}
+
+@keyframes cognation-aurora {
+  from { background-position: 0% 0%, 100% 0%, 50% 100%, 0 0; }
+  to { background-position: 18% 12%, 78% 17%, 58% 78%, 0 0; }
+}
+
+body::after {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  pointer-events: none;
+  opacity: 0.32;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.7) 0 0.7px, transparent 1px),
+    radial-gradient(circle, rgba(156, 240, 255, 0.7) 0 0.65px, transparent 1px);
+  background-position: 24px 48px, 132px 103px;
+  background-size: 174px 191px, 247px 229px;
+}
+
+h1, h2, h3, h4, h5, h6,
+p, a, span, label, button, input, select, textarea,
+li, td, th, summary, figcaption {
+  color: var(--cgn-ink) !important;
+}
+
+.app-topbar {
+  min-height: 4.7rem;
+  padding: 0.85rem clamp(1rem, 4vw, 3.5rem);
+  border: 0 !important;
+  border-bottom: 1px solid var(--cgn-line) !important;
+  background:
+    radial-gradient(ellipse at 50% -55%, rgba(197, 166, 255, 0.62), transparent 79%),
+    linear-gradient(180deg, rgba(20, 23, 57, 0.44), rgba(14, 17, 42, 0.2)) !important;
+  box-shadow: 0 18px 54px rgba(4, 6, 24, 0.25), 0 1px 28px rgba(148, 234, 255, 0.25);
+  backdrop-filter: blur(18px) saturate(125%);
+}
+
+.app-topbar .tablist {
+  gap: clamp(0.5rem, 2vw, 1.7rem);
+}
+
+.app-topbar .tablist [role="tab"] {
+  border: 0 !important;
+  border-bottom: 1px solid transparent !important;
+  border-radius: 0 !important;
+  padding: 0.35rem 0 0.42rem !important;
+  background: transparent !important;
+  color: rgba(245, 248, 255, 0.64) !important;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-shadow: 0 0 12px rgba(164, 237, 255, 0.32);
+}
+
+.app-topbar .tablist [role="tab"][aria-selected="true"] {
+  border-bottom-color: var(--cgn-cyan) !important;
+  background: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px -12px var(--cgn-cyan);
+  text-shadow: 0 0 14px rgba(177, 245, 255, 0.88);
+}
+
+.app-topbar-shortcut {
+  flex: 0 0 auto;
+  border: 0 !important;
+  border-bottom: 1px solid transparent !important;
+  border-radius: 0 !important;
+  padding: 0.35rem 0 0.42rem !important;
+  background: transparent !important;
+  color: rgba(245, 248, 255, 0.64) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-shadow: 0 0 12px rgba(164, 237, 255, 0.32);
+}
+
+.app-topbar-shortcut:hover,
+.app-topbar-shortcut:focus-visible {
+  border-bottom-color: var(--cgn-cyan) !important;
+  color: #fff !important;
+  text-shadow: 0 0 14px rgba(177, 245, 255, 0.88);
+}
+
+.app-topbar-actions .grok-whisper,
+.app-topbar-actions .app-logout-btn {
+  border: 1px solid rgba(197, 240, 255, 0.38) !important;
+  border-radius: 999px !important;
+  padding: 0.36rem 0.7rem !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: var(--cgn-ink) !important;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--cgn-line) !important;
+  background: rgba(17, 19, 48, 0.3) !important;
+  box-shadow: 0 15px 42px rgba(4, 6, 22, 0.18);
+  backdrop-filter: blur(16px) saturate(120%);
+}
+
+.logo,
+.logo:hover {
+  color: #fff !important;
+  font-family: "Rozha One", "Times New Roman", serif !important;
+  letter-spacing: 0.11em;
+  text-shadow: 0 0 18px rgba(186, 243, 255, 0.62), 0 0 55px rgba(196, 150, 255, 0.42);
+}
+
+.people-search input,
+input, select, textarea {
+  border-color: rgba(217, 244, 255, 0.38) !important;
+  background: rgba(7, 9, 29, 0.22) !important;
+  color: #fff !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.13);
+}
+
+input::placeholder,
+textarea::placeholder { color: rgba(242, 246, 255, 0.48) !important; }
+
+.tabs.tabs--chrome .tab-panels,
+.tower-layout,
+.tower-private-side,
+.tower-public-side,
+.tower-compose,
+.tower-private-theme,
+.tower-compact-block,
+.tower-post,
+.tower-left-rail,
+.tower-private-messages,
+.commune-paper,
+.paper-masthead,
+.commune-feed-item,
+.commune-social-card,
+.commune-profile-card,
+.commune-swipe-shell,
+.commune-card,
+.pages-shell,
+.pages-listing,
+.login-gate-panel {
+  border-color: var(--cgn-line) !important;
+  background: var(--cgn-glass) !important;
+  box-shadow: var(--cgn-glow);
+  backdrop-filter: blur(16px) saturate(122%);
+}
+
+.tabs.tabs--chrome .tab-panels {
+  margin-top: clamp(1rem, 3vw, 2.6rem);
+  border: 1px solid var(--cgn-line) !important;
+  border-radius: 1.5rem 1.5rem 0 0;
+  background: rgba(13, 16, 43, 0.24) !important;
+}
+
+.tower-title,
+.commune-swipe-title,
+.pages-title {
+  color: #fff !important;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  text-shadow: 0 0 22px rgba(181, 241, 255, 0.4);
+}
+
+.paper-masthead,
+.paper-title,
+.paper-subtitle,
+.paper-dateline,
+.paper-edition-seg {
+  border-color: rgba(255, 234, 194, 0.4) !important;
+  color: #fff9e9 !important;
+  text-shadow: 0 0 19px rgba(255, 211, 147, 0.28);
+}
+
+.tower-side-btn,
+.paper-index-btn,
+.paper-edition-opt,
+.commune-swipe-btn,
+.pages-chip,
+.pages-az button,
+.btn,
+button {
+  border-color: rgba(200, 242, 255, 0.42) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: var(--cgn-ink) !important;
+  box-shadow: none;
+}
+
+.tower-side-btn.is-selected,
+.paper-index-btn.is-selected,
+.paper-edition-opt.is-selected,
+.commune-swipe-btn:hover,
+.pages-chip.is-selected,
+.pages-az button.is-selected {
+  border-color: var(--cgn-cyan) !important;
+  background: linear-gradient(100deg, rgba(128, 239, 255, 0.22), rgba(203, 158, 255, 0.18)) !important;
+  color: #fff !important;
+  box-shadow: 0 0 18px rgba(147, 238, 255, 0.24);
+}
+
+.tower-post,
+.commune-feed-item,
+.pages-listing-row {
+  border-bottom-color: rgba(222, 244, 255, 0.22) !important;
+}
+
+.login-gate-backdrop,
+.login-gate--splash .login-gate-backdrop {
+  background:
+    radial-gradient(ellipse at 24% 18%, rgba(73, 220, 242, 0.39), transparent 30%),
+    radial-gradient(ellipse at 79% 22%, rgba(249, 148, 202, 0.3), transparent 29%),
+    linear-gradient(145deg, rgba(10, 12, 33, 0.68), rgba(37, 23, 61, 0.66)) !important;
+}
+
+.login-gate-panel {
+  background: rgba(15, 18, 47, 0.52) !important;
+}
+
+.login-gate-brand--splash .login-gate-brand-name,
+.login-gate-tagline {
+  color: #fff !important;
+  text-shadow: 0 0 24px rgba(172, 241, 255, 0.76), 0 0 64px rgba(210, 160, 255, 0.52);
+}
+
+@media (max-width: 720px) {
+  .app-topbar {
+    min-height: 4rem;
+    padding: 0.7rem 1rem;
+  }
+
+  .app-topbar .tablist {
+    gap: 0.85rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .app-topbar .tablist::-webkit-scrollbar { display: none; }
+  .app-topbar .tablist [role="tab"],
+  .app-topbar-shortcut { flex: 0 0 auto; font-size: 0.65rem; }
+  .tabs.tabs--chrome .tab-panels { margin-top: 0.75rem; border-radius: 1rem 1rem 0 0; }
+  .app-topbar-actions .grok-whisper { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body { animation: none; }
+}
+
+/* CGN-014A — sign-in experience shares the app's illuminated glass language. */
+.login-gate {
+  padding: clamp(1rem, 4vw, 3rem);
+}
+
+.login-gate-backdrop,
+.login-gate--splash .login-gate-backdrop {
+  background:
+    radial-gradient(ellipse at 23% 22%, rgba(73, 225, 245, 0.45), transparent 29%),
+    radial-gradient(ellipse at 78% 18%, rgba(243, 142, 207, 0.35), transparent 27%),
+    radial-gradient(ellipse at 50% 88%, rgba(166, 121, 247, 0.34), transparent 38%),
+    linear-gradient(145deg, rgba(7, 10, 28, 0.66), rgba(32, 20, 54, 0.62)) !important;
+  backdrop-filter: blur(15px) saturate(130%);
+}
+
+.login-gate-panel,
+.login-gate--splash .login-gate-panel {
+  width: min(100%, 33rem);
+  max-height: min(90svh, 52rem);
+  overflow-y: auto;
+  border: 1px solid rgba(219, 245, 255, 0.45) !important;
+  border-radius: 1.5rem;
+  padding: clamp(1.5rem, 4vw, 2.65rem);
+  background:
+    linear-gradient(135deg, rgba(240, 253, 255, 0.15), rgba(255, 255, 255, 0.045) 42%, rgba(211, 159, 255, 0.12)),
+    rgba(12, 15, 43, 0.62) !important;
+  box-shadow:
+    0 28px 100px rgba(4, 5, 23, 0.48),
+    0 0 64px rgba(117, 230, 255, 0.2),
+    inset 0 1px rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(23px) saturate(135%);
+}
+
+.login-gate-brand--splash {
+  gap: 0.45rem;
+  margin-bottom: 1.75rem;
+}
+
+.login-gate-brand--splash .login-gate-brand-name {
+  color: #fff !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: clamp(2.6rem, 10vw, 4.7rem);
+  font-weight: 700;
+  letter-spacing: -0.075em;
+  line-height: 0.85;
+  text-shadow: 0 0 22px rgba(182, 245, 255, 0.85), 0 0 64px rgba(202, 152, 255, 0.54);
+}
+
+.login-gate-tagline,
+.login-gate-brand--splash .login-gate-tagline {
+  max-width: none;
+  margin: 0.65rem 0 0;
+  color: rgba(238, 249, 255, 0.78) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  line-height: 1.4;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.login-gate-eyebrow {
+  margin-bottom: 0.55rem;
+  color: var(--cgn-cyan) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.62rem;
+  letter-spacing: 0.17em;
+  text-shadow: 0 0 12px rgba(151, 243, 255, 0.65);
+}
+
+.login-gate-panel h2 {
+  color: #fff !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: clamp(1.85rem, 6vw, 2.55rem);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 0.95;
+}
+
+.login-gate-desc {
+  max-width: 24rem;
+  margin-right: auto;
+  margin-left: auto;
+  color: var(--cgn-muted) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.83rem;
+  line-height: 1.6;
+}
+
+.login-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.login-form label,
+.login-profile-picker-title {
+  color: rgba(232, 248, 255, 0.82) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.login-form input,
+.login-form select {
+  min-height: 2.8rem;
+  border: 1px solid rgba(212, 244, 255, 0.36) !important;
+  border-radius: 0.65rem;
+  padding: 0.7rem 0.8rem;
+  background: rgba(3, 6, 25, 0.28) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.86rem;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.login-form input:focus,
+.login-form select:focus {
+  border-color: var(--cgn-cyan) !important;
+  box-shadow: 0 0 0 3px rgba(156, 240, 255, 0.16), 0 0 22px rgba(156, 240, 255, 0.15);
+}
+
+.login-form .form-hint,
+.login-demo-hint,
+.login-demo-storage-hint,
+.login-profile-picker-desc {
+  color: rgba(234, 244, 255, 0.52) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.64rem;
+  line-height: 1.45;
+}
+
+.login-submit-btn,
+.login-profile-picker-actions .btn-primary {
+  min-height: 2.9rem;
+  border: 1px solid rgba(207, 248, 255, 0.7) !important;
+  border-radius: 999px !important;
+  background: linear-gradient(100deg, rgba(139, 237, 255, 0.7), rgba(204, 161, 255, 0.7)) !important;
+  color: #10132c !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  box-shadow: 0 0 25px rgba(142, 234, 255, 0.28);
+}
+
+.login-mode-toggle {
+  margin: 1.25rem 0 0;
+  text-align: center;
+}
+
+.login-mode-link,
+.login-profile-picker-actions .btn-secondary {
+  border: 0 !important;
+  border-bottom: 1px solid rgba(191, 244, 255, 0.76) !important;
+  border-radius: 0 !important;
+  padding: 0 0 0.25rem !important;
+  background: transparent !important;
+  color: var(--cgn-cyan) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+}
+
+.login-status {
+  border-color: rgba(181, 242, 255, 0.4) !important;
+  border-radius: 0.7rem;
+  background: rgba(150, 235, 255, 0.12) !important;
+  color: #e8fcff !important;
+}
+
+@media (max-width: 480px) {
+  .login-gate { align-items: center; padding: 0.8rem; }
+  .login-gate-panel,
+  .login-gate--splash .login-gate-panel { border-radius: 1.1rem; padding: 1.45rem 1.1rem; }
+  .login-gate-brand--splash .login-gate-brand-name { font-size: clamp(2.5rem, 16vw, 3.65rem); }
+  .login-gate-tagline,
+  .login-gate-brand--splash .login-gate-tagline { font-size: 0.57rem; letter-spacing: 0.16em; }
+}
+
+/* ===== CGN-015 — Cognation Two interface system for V1 features =====
+   This block changes presentation only: all panels, data hooks, and JS remain intact. */
+:root {
+  --cgn-ui: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --cgn-radius: 1.15rem;
+  --cgn-panel: rgba(16, 19, 48, 0.42);
+  --cgn-panel-hover: rgba(29, 33, 75, 0.56);
+}
+
+body,
+body :is(button, input, select, textarea, p, a, label, li, td, th, summary, figcaption, h1, h2, h3, h4, h5, h6) {
+  font-family: var(--cgn-ui) !important;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 24% 18%, rgba(77, 224, 246, 0.42), transparent 25%),
+    radial-gradient(ellipse at 81% 13%, rgba(248, 152, 209, 0.31), transparent 25%),
+    radial-gradient(ellipse at 50% 78%, rgba(160, 113, 255, 0.29), transparent 29%),
+    linear-gradient(145deg, #10122b, #251839) !important;
+  background-attachment: fixed !important;
+}
+
+.app-topbar {
+  min-height: 4.1rem;
+  border-bottom: 1px solid rgba(219, 245, 255, 0.35) !important;
+  background: rgba(15, 18, 46, 0.42) !important;
+  box-shadow: 0 18px 54px rgba(4, 6, 24, 0.22), 0 1px 28px rgba(148, 234, 255, 0.18);
+}
+
+.app-topbar .tablist [role="tab"],
+.app-topbar-shortcut {
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+}
+
+.site-header {
+  background: rgba(17, 19, 48, 0.25) !important;
+  border-bottom-color: rgba(219, 245, 255, 0.28) !important;
+  box-shadow: none;
+}
+
+.header-inner {
+  grid-template-columns: 1fr;
+  min-height: 3.4rem;
+}
+
+.header-inner .people-search {
+  grid-column: 1;
+  justify-self: end;
+}
+
+.logo,
+.logo:hover {
+  font-family: var(--cgn-ui) !important;
+  font-size: clamp(1.05rem, 2.7vw, 1.55rem);
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.tabs.tabs--chrome .tab-panels {
+  max-width: 1240px;
+  margin-top: clamp(1rem, 3vw, 2.4rem);
+  padding: clamp(1.1rem, 3vw, 2.4rem);
+  border-radius: 1.45rem 1.45rem 0 0;
+  background: rgba(14, 17, 44, 0.3) !important;
+  box-shadow: 0 -18px 65px rgba(168, 235, 255, 0.11), inset 0 1px rgba(255, 255, 255, 0.25);
+}
+
+#panel-tower,
+#panel-news,
+#panel-commune,
+#panel-pages,
+[data-tower-app],
+.tower-tab-panel,
+.commune-paper,
+.commune-swipe-shell,
+.pages-shell {
+  background: transparent !important;
+}
+
+.tower-private-side,
+.tower-public-side,
+.tower-layout,
+.tower-left-rail,
+.tower-compose,
+.tower-post,
+.tower-private-theme,
+.tower-compact-block,
+.tower-private-messages,
+.commune-paper,
+.paper-masthead,
+.paper-grid,
+.paper-brief,
+.commune-feed-item,
+.commune-social-card,
+.commune-profile-card,
+.commune-card,
+.pages-listing,
+.pages-listing-row {
+  border: 1px solid rgba(220, 246, 255, 0.24) !important;
+  border-radius: var(--cgn-radius) !important;
+  background: var(--cgn-panel) !important;
+  background-image: none !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.17);
+  backdrop-filter: blur(16px) saturate(120%);
+}
+
+.tower-post:hover,
+.commune-feed-item:hover,
+.commune-card:hover,
+.pages-listing-row:hover {
+  background: var(--cgn-panel-hover) !important;
+}
+
+.tower-title,
+.commune-swipe-title,
+.pages-title,
+.paper-title {
+  color: #fff !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: clamp(1.8rem, 4vw, 3.6rem) !important;
+  font-weight: 720 !important;
+  letter-spacing: -0.075em !important;
+  line-height: 0.93 !important;
+  text-shadow: 0 0 28px rgba(172, 242, 255, 0.31);
+}
+
+.tower-post-body,
+.commune-feed-body,
+.paper-subtitle,
+.paper-dek,
+.pages-intro,
+.pages-dek {
+  color: rgba(244, 247, 255, 0.72) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.82rem !important;
+  line-height: 1.65 !important;
+}
+
+.paper-masthead,
+.paper-edition-seg,
+.paper-index-btn,
+.paper-brief,
+.paper-dateline {
+  color: #eefcff !important;
+  background-image: none !important;
+}
+
+.tower-side-btn,
+.paper-index-btn,
+.paper-edition-opt,
+.commune-swipe-btn,
+.pages-chip,
+.pages-az button,
+.btn,
+.app-logout-btn {
+  border: 1px solid rgba(187, 244, 255, 0.44) !important;
+  border-radius: 999px !important;
+  background: rgba(155, 235, 255, 0.1) !important;
+  color: #edfaff !important;
+  box-shadow: none !important;
+}
+
+.tower-side-btn.is-selected,
+.paper-index-btn.is-selected,
+.paper-edition-opt.is-selected,
+.pages-chip.is-selected,
+.pages-az button.is-selected,
+.btn-primary {
+  border-color: rgba(208, 249, 255, 0.72) !important;
+  background: linear-gradient(100deg, rgba(139, 237, 255, 0.42), rgba(204, 161, 255, 0.38)) !important;
+  color: #fff !important;
+  box-shadow: 0 0 21px rgba(142, 234, 255, 0.2) !important;
+}
+
+.tower-sticker,
+.tower-slogan-card,
+.tower-public-widget,
+.tower-public-section {
+  background: rgba(16, 19, 48, 0.34) !important;
+  background-image: none !important;
+  border-color: rgba(220, 246, 255, 0.24) !important;
+  box-shadow: none !important;
+}
+
+@media (max-width: 720px) {
+  .tabs.tabs--chrome .tab-panels {
+    margin-top: 0.75rem;
+    padding: 1rem;
+    border-radius: 1rem 1rem 0 0;
+  }
+
+  .tower-title,
+  .commune-swipe-title,
+  .pages-title,
+  .paper-title { font-size: clamp(1.8rem, 10vw, 2.75rem) !important; }
+}
+
+/* Load-in identity: the brain is reserved for entry, not the working interface. */
+.login-gate--splash .login-gate-panel {
+  width: min(100%, 34rem);
+}
+
+.login-gate-brand--splash {
+  gap: 0;
+  margin-bottom: 1.3rem;
+}
+
+.login-brain {
+  position: relative;
+  width: min(100%, 25rem);
+  aspect-ratio: 16 / 8.1;
+  margin: 0.3rem auto 0;
+  overflow: hidden;
+  filter: drop-shadow(0 0 20px rgba(125, 239, 255, 0.8)) drop-shadow(0 0 48px rgba(199, 140, 255, 0.52));
+  animation: login-brain-float 7s ease-in-out infinite alternate;
+}
+
+.login-brain::before {
+  position: absolute;
+  z-index: -1;
+  inset: 18% 14%;
+  border-radius: 50%;
+  content: "";
+  background: radial-gradient(ellipse, rgba(116, 235, 255, 0.36), rgba(192, 127, 255, 0.22) 48%, transparent 72%);
+  filter: blur(19px);
+}
+
+.login-brain img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(ellipse 60% 70% at 50% 49%, #000 48%, transparent 88%);
+  mask-image: radial-gradient(ellipse 60% 70% at 50% 49%, #000 48%, transparent 88%);
+}
+
+@keyframes login-brain-float {
+  from { transform: translateY(-3px) scale(0.985); }
+  to { transform: translateY(5px) scale(1.02); }
+}
+
+@media (max-width: 480px) {
+  .login-brain { width: min(100%, 20rem); margin-top: 0.15rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-brain { animation: none; }
+}
+
+/* Persistent home masthead: a large, illuminated route back to Cognation. */
+.cognation-masthead {
+  position: relative;
+  z-index: 0;
+  min-height: clamp(350px, 43vw, 560px);
+  overflow: hidden;
+  border-bottom: 1px solid rgba(219, 245, 255, 0.38);
+  background:
+    radial-gradient(ellipse at 50% 12%, rgba(150, 141, 243, 0.36), transparent 51%),
+    radial-gradient(ellipse at 18% 35%, rgba(74, 221, 243, 0.3), transparent 36%),
+    radial-gradient(ellipse at 83% 30%, rgba(246, 146, 204, 0.25), transparent 34%);
+}
+
+.cognation-masthead::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  opacity: 0.38;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.8) 0 0.7px, transparent 1px),
+    radial-gradient(circle, rgba(165, 241, 255, 0.8) 0 0.65px, transparent 1px);
+  background-position: 22px 42px, 124px 88px;
+  background-size: 165px 186px, 239px 212px;
+}
+
+.cognation-masthead-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  min-height: inherit;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 4.25rem) clamp(1rem, 4vw, 3rem) 1.5rem;
+  justify-items: center;
+  align-content: start;
+}
+
+.cognation-masthead-kicker {
+  margin: 0;
+  color: rgba(235, 250, 255, 0.78) !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: 0.63rem !important;
+  font-weight: 650 !important;
+  letter-spacing: 0.2em !important;
+  text-transform: uppercase;
+  text-shadow: 0 0 16px rgba(170, 243, 255, 0.72);
+}
+
+.cognation-masthead-home {
+  margin-top: clamp(1.1rem, 3vw, 2.25rem);
+  color: #fff !important;
+  font-family: var(--cgn-ui) !important;
+  font-size: clamp(4rem, 13.2vw, 12.2rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.11em !important;
+  line-height: 0.72 !important;
+  text-decoration: none;
+  text-shadow: 0 0 26px rgba(189, 247, 255, 0.92), 0 0 90px rgba(211, 160, 255, 0.7);
+  transition: transform 200ms ease, text-shadow 200ms ease;
+}
+
+.cognation-masthead-home:hover,
+.cognation-masthead-home:focus-visible {
+  color: #fff !important;
+  transform: scale(1.018);
+  text-shadow: 0 0 34px rgba(189, 247, 255, 1), 0 0 108px rgba(211, 160, 255, 0.82);
+}
+
+.cognation-masthead-brain {
+  position: relative;
+  width: min(610px, 67vw);
+  aspect-ratio: 16 / 7.25;
+  margin: clamp(-0.25rem, -1vw, -0.9rem) 0 0;
+  filter: drop-shadow(0 0 19px rgba(125, 239, 255, 0.88)) drop-shadow(0 0 55px rgba(199, 140, 255, 0.62));
+  animation: masthead-brain-float 7s ease-in-out infinite alternate;
+}
+
+.cognation-masthead-brain::before {
+  position: absolute;
+  z-index: -1;
+  inset: 19% 14%;
+  border-radius: 50%;
+  content: "";
+  background: radial-gradient(ellipse, rgba(115, 237, 255, 0.35), rgba(196, 131, 255, 0.2) 50%, transparent 72%);
+  filter: blur(25px);
+}
+
+.cognation-masthead-brain img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(ellipse 60% 70% at 50% 49%, #000 48%, transparent 88%);
+  mask-image: radial-gradient(ellipse 60% 70% at 50% 49%, #000 48%, transparent 88%);
+}
+
+#main .tabs-section {
+  position: relative;
+  z-index: 2;
+  margin-top: clamp(-4rem, -6vw, -5.5rem);
+}
+
+@keyframes masthead-brain-float {
+  from { transform: translateY(-3px) scale(0.985); }
+  to { transform: translateY(6px) scale(1.02); }
+}
+
+@media (max-width: 720px) {
+  .cognation-masthead { min-height: 365px; }
+  .cognation-masthead-inner { padding-top: 2.4rem; }
+  .cognation-masthead-home { font-size: clamp(3.55rem, 17.5vw, 6.3rem) !important; }
+  .cognation-masthead-brain { width: min(100%, 490px); }
+  #main .tabs-section { margin-top: -3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cognation-masthead-brain { animation: none; }
+}
+
+/* ===== CGN-016 — one type and color system across every V1 tab ===== */
+:root {
+  --cgn-text: #f7f9ff;
+  --cgn-text-muted: rgba(232, 240, 255, 0.66);
+  --cgn-text-soft: rgba(232, 240, 255, 0.48);
+  --cgn-accent: #b7f6ff;
+  --cgn-accent-warm: #d8b7ff;
+  --cgn-border: rgba(209, 241, 255, 0.28);
+}
+
+#panel-tower,
+#panel-news,
+#panel-commune,
+#panel-tower :is(button, input, select, textarea, p, a, label, li, td, th, summary, figcaption, h1, h2, h3, h4, h5, h6),
+#panel-news :is(button, input, select, textarea, p, a, label, li, td, th, summary, figcaption, h1, h2, h3, h4, h5, h6),
+#panel-commune :is(button, input, select, textarea, p, a, label, li, td, th, summary, figcaption, h1, h2, h3, h4, h5, h6) {
+  font-family: var(--cgn-ui) !important;
+}
+
+#panel-tower,
+#panel-news,
+#panel-commune {
+  color: var(--cgn-text) !important;
+}
+
+#panel-tower :is(h1, h2, h3, h4, h5, h6),
+#panel-news :is(h1, h2, h3, h4, h5, h6),
+#panel-commune :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--cgn-text) !important;
+  font-weight: 680 !important;
+  letter-spacing: -0.04em !important;
+}
+
+#panel-tower :is(p, li, td, th, small, time, figcaption),
+#panel-news :is(p, li, td, th, small, time, figcaption),
+#panel-commune :is(p, li, td, th, small, time, figcaption) {
+  color: var(--cgn-text-muted) !important;
+}
+
+#panel-tower :is(a, .tower-post-author, .tower-friends-browse-heading, .tower-personal-calendar-heading),
+#panel-news :is(a, .paper-eyebrow, .paper-section-kicker, .commune-feed-author),
+#panel-commune :is(a, .commune-card-kicker, .commune-live-label) {
+  color: var(--cgn-accent) !important;
+}
+
+#panel-tower :is(input, select, textarea),
+#panel-news :is(input, select, textarea),
+#panel-commune :is(input, select, textarea) {
+  border-color: var(--cgn-border) !important;
+  border-radius: 0.65rem !important;
+  background: rgba(5, 8, 28, 0.28) !important;
+  color: var(--cgn-text) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+#panel-tower :is(input, select, textarea)::placeholder,
+#panel-news :is(input, select, textarea)::placeholder,
+#panel-commune :is(input, select, textarea)::placeholder {
+  color: var(--cgn-text-soft) !important;
+}
+
+#panel-tower :is(input, select, textarea):focus,
+#panel-news :is(input, select, textarea):focus,
+#panel-commune :is(input, select, textarea):focus {
+  border-color: var(--cgn-accent) !important;
+  box-shadow: 0 0 0 3px rgba(183, 246, 255, 0.13), 0 0 20px rgba(183, 246, 255, 0.12) !important;
+}
+
+#panel-tower :is(.tower-post, .tower-compact-block, .tower-private-theme, .tower-friends-browse, .tower-personal-calendar, .tower-private-messages),
+#panel-news :is(.paper-brief, .commune-feed-item, .commune-social-card, .commune-profile-card, .paper-col),
+#panel-commune :is(.commune-card, .commune-live-chrome, .commune-dating-toggle-ui) {
+  border-color: var(--cgn-border) !important;
+  background: rgba(16, 19, 48, 0.42) !important;
+  color: var(--cgn-text) !important;
+}
+
+#panel-tower :is(.tower-side-btn, .tower-go-live-btn, .tower-attach, .tower-public-widget-check),
+#panel-news :is(.paper-index-btn, .paper-edition-opt, .paper-refresh-btn, .commune-endless-toggle),
+#panel-commune :is(.commune-swipe-btn, .commune-dating-toggle, .commune-live-btn) {
+  border-color: rgba(183, 246, 255, 0.4) !important;
+  background: rgba(155, 235, 255, 0.1) !important;
+  color: var(--cgn-text) !important;
+}
+
+#panel-tower :is(.tower-side-btn.is-selected, .tower-go-live-btn:hover),
+#panel-news :is(.paper-index-btn.is-active, .paper-index-btn[aria-current="true"], .paper-edition-opt:has(input:checked)),
+#panel-commune :is(.commune-swipe-btn:hover, .commune-dating-toggle.is-on) {
+  border-color: rgba(210, 249, 255, 0.7) !important;
+  background: linear-gradient(100deg, rgba(139, 237, 255, 0.35), rgba(204, 161, 255, 0.3)) !important;
+  color: #fff !important;
+  box-shadow: 0 0 20px rgba(142, 234, 255, 0.18) !important;
+}
+
+#panel-news .paper-title,
+#panel-news .paper-subtitle,
+#panel-news .paper-dateline,
+#panel-news .paper-edition-scope-label,
+#panel-news .paper-col-heading {
+  color: var(--cgn-text) !important;
+  text-shadow: none !important;
+}
+
+#panel-news .paper-rule,
+#panel-news .paper-rule-block {
+  background: var(--cgn-border) !important;
+  border-color: var(--cgn-border) !important;
+}
+
+#panel-commune .commune-card-title,
+#panel-commune .commune-swipe-title {
+  color: var(--cgn-text) !important;
+  font-family: var(--cgn-ui) !important;
+}
+
+/* Tower personal/public page uses the shared blue-violet surface, never a profile color highlight. */
+[data-tower-public-side],
+[data-tower-scrapbook] {
+  --tower-feed-bg: rgba(16, 19, 48, 0.48) !important;
+  --tower-public-text: #f7f9ff !important;
+  --tower-public-btn: #b7f6ff !important;
+}
+
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--identity,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--badges,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--friends,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--html,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--calendar,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--music,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--video,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--social,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--slogan,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--quote,
+.tower-layout--scrapbook.is-sticker-stage .tower-sticker--avatar {
+  border-color: var(--cgn-border) !important;
+  background: rgba(16, 19, 48, 0.42) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.15) !important;
+}
+
+.tower-layout--scrapbook .tower-friend-pin.is-widget-selected,
+.tower-layout--scrapbook .tower-badge-pin.is-widget-selected {
+  outline-color: var(--cgn-accent) !important;
+}
+
+/* The feature panels supply their own surfaces; this wrapper must never render as an empty card. */
+.tabs.tabs--chrome .tab-panels {
+  margin-top: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}

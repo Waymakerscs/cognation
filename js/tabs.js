@@ -9,7 +9,9 @@
     var tablist = root.querySelector('[role="tablist"]');
     if (!tablist) return;
 
-    var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]'));
+    var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]')).filter(function (tab) {
+      return !tab.hidden;
+    });
     var panels = tabs
       .map(function (tab) {
         var id = tab.getAttribute("aria-controls");
@@ -69,9 +71,40 @@
     activate(initial >= 0 ? initial : 0, false);
   }
 
+  function openTowerAnchor(name) {
+    var towerTab = document.getElementById("tab-tower");
+    if (towerTab) towerTab.click();
+
+    if (typeof window.CognationTowerApplySide === "function") {
+      window.CognationTowerApplySide("private");
+    }
+
+    var selector = name === "calendar"
+      ? "[data-tower-calendar-personal]"
+      : "[data-tower-friends-browse]";
+    window.setTimeout(function () {
+      var target = document.querySelector(selector);
+      if (target && target.scrollIntoView) {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 50);
+  }
+
+  function initTowerShortcuts() {
+    document.querySelectorAll("[data-tower-anchor]").forEach(function (shortcut) {
+      shortcut.addEventListener("click", function () {
+        openTowerAnchor(shortcut.getAttribute("data-tower-anchor"));
+      });
+    });
+  }
+
   function activateMainTabFromHash() {
     var hash = (location.hash || "").replace(/^#/, "");
     if (!hash) return;
+    if (hash === "calendar" || hash === "circle") {
+      openTowerAnchor(hash);
+      return;
+    }
     var tabIdMap = {
       news: "tab-news",
       "panel-news": "tab-news",
@@ -88,7 +121,7 @@
     };
     if (tabIdMap[hash]) {
       var mapped = document.getElementById(tabIdMap[hash]);
-      if (mapped) mapped.click();
+      if (mapped && !mapped.hidden) mapped.click();
       return;
     }
     if (hash.indexOf("tower-profile-") !== 0) return;
@@ -117,6 +150,7 @@
 
   function boot() {
     document.querySelectorAll("[data-tabs]").forEach(initTabs);
+    initTowerShortcuts();
     activateMainTabFromHash();
     window.addEventListener("hashchange", activateMainTabFromHash);
   }

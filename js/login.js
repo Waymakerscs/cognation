@@ -34,6 +34,7 @@
   var lastFocus = null;
   var pendingUsername = null;
   var pendingProfiles = null;
+  var pendingAuth = null;
 
   function setStatus(message, isError) {
     if (!statusEl) return;
@@ -66,6 +67,7 @@
     gate.classList.remove("login-gate--picker");
     pendingUsername = null;
     pendingProfiles = null;
+    pendingAuth = null;
   }
 
   function showPickerStep(username, profiles) {
@@ -152,12 +154,13 @@
     document.dispatchEvent(new CustomEvent("cognation:session-started"));
   }
 
-  function buildSession(username, profile) {
+  function buildSession(username, profile, auth) {
     var session = {
       username: username,
-      source: "password",
+      source: (auth && auth.source) || "password",
       startedAt: Date.now(),
     };
+    if (auth && auth.supabaseUserId) session.supabaseUserId = auth.supabaseUserId;
     if (profile) {
       session.activeProfileId = profile.id;
       session.profileKind = profile.kind === "professional" ? "professional" : "personal";
@@ -167,8 +170,8 @@
     return session;
   }
 
-  function establishSession(username, profile) {
-    var session = buildSession(username, profile);
+  function establishSession(username, profile, auth) {
+    var session = buildSession(username, profile, auth);
     writeLocalSession(session);
     closeGate();
     return session;
@@ -199,10 +202,32 @@
     return [];
   }
 
-  function finishWithProfileChoice(username, profiles) {
+  function mapSupabaseProfile(profile) {
+    return {
+      id: profile.id,
+      kind: profile.kind,
+      handle: profile.handle,
+      displayName: profile.display_name || profile.displayName || "",
+      userId: profile.user_id || "",
+    };
+  }
+
+  function loadSupabaseProfiles(user) {
+    if (!window.CognationSupabase || !user || !user.id) return Promise.resolve([]);
+    return window.CognationSupabase.rest("profiles", {
+      query: "select=id,kind,handle,display_name,user_id&user_id=eq." + encodeURIComponent(user.id),
+    }).then(function (profiles) {
+      return Array.isArray(profiles) ? profiles.map(mapSupabaseProfile) : [];
+    });
+  }
+
+  function finishWithProfileChoice(username, profiles, auth) {
     profiles = profiles || [];
     if (profiles.length <= 1) {
-      return establishSession(username, profiles[0] || null);
+      return establishSession(username, profiles[0] || null, auth);
+    }
+    if (auth) {
+      pendingAuth = auth;
     }
     showPickerStep(username, profiles);
     return null;
@@ -211,25 +236,57 @@
   function login(username, password) {
     username = normalizeLoginUser(username);
     password = String(password || "").trim();
-    if (username === EXPECTED_USER.toLowerCase() && password === EXPECTED_PASS) {
-      var profiles = loadProfilesForUser(EXPECTED_USER);
-      return Promise.resolve({ username: EXPECTED_USER, profiles: profiles });
+    if (
+      window.CognationSupabase &&
+      window.CognationSupabase.configured &&
+      window.CognationSupabase.configured()
+    ) {
+      if (username.indexOf("@") <= 0) {
+        return Promise.reject(new Error("Enter the email address for your Cognation account."));
+      }
+      return window.CognationSupabase.signIn(username, password).then(function (result) {
+        var user = result && result.user;
+        if (!user) throw new Error("bad credentials");
+        return loadSupabaseProfiles(user).then(function (profiles) {
+          return {
+            username: user.email || username,
+            profiles: profiles,
+            source: "supabase",
+            supabaseUserId: user.id,
+          };
+        });
+      });
     }
-    return Promise.reject(new Error("bad credentials"));
+    return Promise.reject(new Error("Cognation sign-in is not configured."));
   }
 
   function logout(opts) {
     opts = opts || {};
-    writeLocalSession(null);
-    openGate({
-      message: opts.message || "Signed out. Sign in to continue.",
-      isError: !!opts.isError,
+    var remote =
+      window.CognationSupabase &&
+      window.CognationSupabase.configured &&
+      window.CognationSupabase.configured()
+        ? window.CognationSupabase.signOut().catch(function () {})
+        : Promise.resolve();
+    return remote.then(function () {
+      writeLocalSession(null);
+      openGate({
+        message: opts.message || "Signed out. Sign in to continue.",
+        isError: !!opts.isError,
+      });
     });
-    return Promise.resolve();
   }
 
   function isAuthenticated() {
-    return !!readLocalSession();
+    var current = readLocalSession();
+    if (
+      window.CognationSupabase &&
+      window.CognationSupabase.configured &&
+      window.CognationSupabase.configured()
+    ) {
+      return !!(current && current.source === "supabase" && current.supabaseUserId);
+    }
+    return !!current;
   }
 
   function setActiveProfile(profileId) {
@@ -271,10 +328,13 @@
           window.CognationMemberCountry.set(country || "United States");
         }
         setStatus("");
-        finishWithProfileChoice(result.username, result.profiles);
+        finishWithProfileChoice(result.username, result.profiles, result);
       },
-      function () {
-        setStatus("Wrong username or password.", true);
+      function (error) {
+        setStatus(
+          (error && error.message) || "Wrong email or password.",
+          true
+        );
       }
     );
   });
@@ -293,7 +353,8 @@
         }
       }
       if (!chosen) chosen = pendingProfiles[0];
-      establishSession(pendingUsername, chosen);
+      establishSession(pendingUsername, chosen, pendingAuth || null);
+      pendingAuth = null;
     });
   }
 
@@ -341,7 +402,7 @@
     closeGate: closeGate,
     login: function (u, p) {
       return login(u, p == null ? "" : p).then(function (result) {
-        var session = finishWithProfileChoice(result.username, result.profiles);
+        var session = finishWithProfileChoice(result.username, result.profiles, result);
         return session || readLocalSession();
       });
     },
@@ -401,7 +462,35 @@
       localStorage.removeItem("cognation.session.demo.v1");
     } catch (e) {}
     var session = readLocalSession();
+    var remoteConfigured =
+      window.CognationSupabase &&
+      window.CognationSupabase.configured &&
+      window.CognationSupabase.configured();
+    if (remoteConfigured && (!session || session.source !== "supabase")) {
+      writeLocalSession(null);
+      openGate();
+      return;
+    }
     if (session) {
+      if (remoteConfigured) {
+        window.CognationSupabase
+          .getUser()
+          .then(function (user) {
+            if (!user || !user.id) throw new Error("Session expired.");
+            session.supabaseUserId = user.id;
+            writeLocalSession(session);
+            hydrateSessionProfile(session);
+            closeGate();
+          })
+          .catch(function () {
+            writeLocalSession(null);
+            openGate({
+              message: "Your session ended. Sign in again to continue.",
+              isError: true,
+            });
+          });
+        return;
+      }
       hydrateSessionProfile(session);
       closeGate();
     } else {

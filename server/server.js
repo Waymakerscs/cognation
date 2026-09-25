@@ -15,6 +15,7 @@
 
 const crypto = require("crypto");
 const express = require("express");
+const socialStore = require("./social-store");
 
 const PORT = Number(process.env.PORT) || 3001;
 const SCREEN_LIMIT_MS = Number(process.env.SCREEN_LIMIT_MS) || 20 * 60 * 1000;
@@ -144,6 +145,31 @@ function statusPayload(sess) {
   };
 }
 
+function createAuthenticatedSession(user) {
+  const id = newId();
+  const sess = {
+    id,
+    userId: user.id,
+    username: user.username,
+    createdAt: now(),
+    activeMs: 0,
+    lastBeatAt: now(),
+    breakRequired: false,
+    breakDeadline: null,
+  };
+  sessions.set(id, sess);
+  return sess;
+}
+
+function requireAuthenticatedUser(req, res, next) {
+  const sess = getLiveSession(req, res);
+  if (!sess || !sess.userId) {
+    return res.status(401).json({ error: "authentication_required" });
+  }
+  req.user = { id: sess.userId, username: sess.username };
+  return next();
+}
+
 function applyCors(req, res) {
   const origin = req.headers.origin;
   if (!origin) return; // same-origin / non-browser
@@ -161,7 +187,7 @@ function applyCors(req, res) {
     res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader(
       "Access-Control-Allow-Methods",
-      "GET,POST,OPTIONS"
+      "GET,POST,PATCH,OPTIONS"
     );
     res.setHeader(
       "Access-Control-Allow-Headers",
@@ -196,6 +222,138 @@ app.get("/healthz", (_req, res) => {
     screenLimitMs: SCREEN_LIMIT_MS,
     breakMs: BREAK_MS,
   });
+});
+
+app.post("/api/auth/register", (req, res, next) => {
+  try {
+    const body = req.body || {};
+    const result = socialStore.createUser({
+      username: body.username,
+      password: body.password,
+      displayName: body.displayName,
+      handle: body.handle,
+    });
+    if (!result.ok) return res.status(400).json(result);
+    const user = result.user;
+    const sess = createAuthenticatedSession(user);
+    setSessionCookie(res, sess.id);
+    return res.status(201).json({
+      user,
+      profiles: [result.profile],
+      ...statusPayload(sess),
+    });
+  } catch (error) {
+    return next(error);
+  }
+});
+
+app.post("/api/auth/login", (req, res) => {
+  const body = req.body || {};
+  const user = socialStore.authenticate(body.username, body.password);
+  if (!user) return res.status(401).json({ error: "invalid_credentials" });
+  const sess = createAuthenticatedSession(user);
+  setSessionCookie(res, sess.id);
+  return res.json({
+    user,
+    profiles: socialStore.listProfilesForUser(user.id),
+    ...statusPayload(sess),
+  });
+});
+
+app.post("/api/auth/logout", (req, res) => {
+  destroySession(req, res);
+  return res.json(statusPayload(null));
+});
+
+app.get("/api/auth/me", requireAuthenticatedUser, (req, res) => {
+  return res.json({
+    user: req.user,
+    profiles: socialStore.listProfilesForUser(req.user.id),
+  });
+});
+
+app.post("/api/profiles", requireAuthenticatedUser, (req, res) => {
+  const body = req.body || {};
+  if (body.kind !== "professional") {
+    return res.status(400).json({ error: "unsupported_profile_kind" });
+  }
+  const result = socialStore.createProfessionalProfile({
+    userId: req.user.id,
+    displayName: body.displayName,
+    handle: body.handle,
+    bio: body.bio,
+  });
+  if (!result.ok) return res.status(400).json(result);
+  return res.status(201).json(result);
+});
+
+app.get("/api/profiles/:handle", (req, res) => {
+  const profile = socialStore.getPublicProfileByHandle(req.params.handle);
+  if (!profile) return res.status(404).json({ error: "profile_not_found" });
+  return res.json({ profile });
+});
+
+app.post("/api/profiles/:profileId/follow", requireAuthenticatedUser, (req, res) => {
+  const result = socialStore.toggleFollow({
+    followerUserId: req.user.id,
+    profileId: req.params.profileId,
+  });
+  if (!result.ok) return res.status(400).json(result);
+  return res.json(result);
+});
+
+app.post(
+  "/api/profiles/:profileId/friend-requests",
+  requireAuthenticatedUser,
+  (req, res) => {
+    const result = socialStore.sendFriendRequest({
+      senderUserId: req.user.id,
+      recipientProfileId: req.params.profileId,
+    });
+    if (!result.ok) return res.status(400).json(result);
+    return res.status(201).json(result);
+  }
+);
+
+app.get("/api/friend-requests/incoming", requireAuthenticatedUser, (req, res) => {
+  return res.json({ requests: socialStore.listFriendRequests(req.user.id) });
+});
+
+app.post(
+  "/api/friend-requests/:requestId/accept",
+  requireAuthenticatedUser,
+  (req, res) => {
+    const result = socialStore.acceptFriendRequest({
+      requestId: req.params.requestId,
+      recipientUserId: req.user.id,
+    });
+    if (!result.ok) return res.status(404).json(result);
+    return res.json(result);
+  }
+);
+
+app.get("/api/friends", requireAuthenticatedUser, (req, res) => {
+  return res.json({ friends: socialStore.listFriends(req.user.id) });
+});
+
+app.get("/api/notifications", requireAuthenticatedUser, (req, res) => {
+  return res.json({ notifications: socialStore.listNotifications(req.user.id) });
+});
+
+app.get("/api/tower/feed", requireAuthenticatedUser, (req, res) => {
+  return res.json({ posts: socialStore.listTowerFeed(req.user.id) });
+});
+
+app.post("/api/tower/posts", requireAuthenticatedUser, (req, res) => {
+  const body = req.body || {};
+  const result = socialStore.createPost({
+    authorUserId: req.user.id,
+    authorProfileId: body.authorProfileId,
+    body: body.body,
+    visibility: body.visibility,
+  });
+  if (!result.ok) return res.status(400).json(result);
+  return res.status(201).json(result);
 });
 
 app.post("/api/session/login", (req, res) => {
