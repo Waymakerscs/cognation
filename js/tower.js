@@ -892,12 +892,54 @@
 
   window.CognationTowerStore = TowerStore;
 
+  function attachmentSrc(a) {
+    return String((a && (a.src || a.url || a.dataUrl)) || "");
+  }
+
+  function attachmentIsImage(a) {
+    var src = attachmentSrc(a);
+    var type = String((a && a.type) || "");
+    var name = String((a && (a.name || a.label)) || "");
+    if (/^data:image\//i.test(src)) return true;
+    if (/^image\//i.test(type) && src) return true;
+    if (src && /\.(png|jpe?g|gif|webp|bmp|avif|svg)(\?|#|$)/i.test(src)) return true;
+    if (src && /\.(png|jpe?g|gif|webp|bmp|avif|svg)$/i.test(name)) return true;
+    return false;
+  }
+
   function renderAttachments(list) {
     if (!list || !list.length) return "";
     return (
       '<ul class="tower-attachments">' +
       list
         .map(function (a) {
+          var src = attachmentSrc(a);
+          var name = a.label || a.name || "file";
+          if (attachmentIsImage(a)) {
+            return (
+              '<li class="tower-attach tower-attach--image">' +
+              '<img class="tower-attach-image" src="' +
+              escapeHtml(src) +
+              '" alt="' +
+              escapeHtml(name) +
+              '">' +
+              "</li>"
+            );
+          }
+          if (src) {
+            return (
+              '<li class="tower-attach tower-attach--' +
+              escapeHtml(a.kind || "document") +
+              '">' +
+              '<a class="tower-attach-link" href="' +
+              escapeHtml(src) +
+              '" download="' +
+              escapeHtml(name) +
+              '">' +
+              escapeHtml(name) +
+              "</a></li>"
+            );
+          }
           return (
             '<li class="tower-attach tower-attach--' +
             escapeHtml(a.kind || "document") +
@@ -906,7 +948,7 @@
             escapeHtml(kindLabel(a.kind)) +
             "</span> " +
             '<span class="tower-attach-name">' +
-            escapeHtml(a.label || a.name || "file") +
+            escapeHtml(name) +
             "</span></li>"
           );
         })
@@ -914,6 +956,82 @@
       "</ul>"
     );
   }
+
+  function fileIsImage(file) {
+    if (file && /^image\//i.test(file.type || "")) return true;
+    return /\.(png|jpe?g|gif|webp|bmp|avif|svg)$/i.test((file && file.name) || "");
+  }
+
+  function readFileAsDataUrl(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        resolve(String(reader.result || ""));
+      };
+      reader.onerror = function () {
+        reject(reader.error || new Error("Could not read the file."));
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function compressImageFile(file) {
+    return readFileAsDataUrl(file).then(function (url) {
+      return new Promise(function (resolve) {
+        var img = new Image();
+        img.onload = function () {
+          var maxW = 960;
+          var scale = img.width > maxW ? maxW / img.width : 1;
+          var canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.round(img.width * scale));
+          canvas.height = Math.max(1, Math.round(img.height * scale));
+          var ctx = canvas.getContext("2d");
+          if (!ctx) {
+            resolve(url);
+            return;
+          }
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          try {
+            resolve(canvas.toDataURL("image/jpeg", 0.72) || url);
+          } catch (e) {
+            resolve(url);
+          }
+        };
+        img.onerror = function () {
+          resolve(url);
+        };
+        img.src = url;
+      });
+    });
+  }
+
+  function attachmentFromFile(file, kind) {
+    var image = fileIsImage(file);
+    function finish(src) {
+      return {
+        kind: image ? (kind === "art" ? "art" : "photo") : kind || "document",
+        label: file.name,
+        name: file.name,
+        type: image ? file.type || "image/jpeg" : file.type || "",
+        size: file.size,
+        src: src || "",
+      };
+    }
+    if (!image) {
+      if (file.size > 750000) return Promise.resolve(finish(""));
+      return readFileAsDataUrl(file).then(finish);
+    }
+    if (/gif|svg/i.test(file.type || "") && file.size < 800000) {
+      return readFileAsDataUrl(file).then(finish);
+    }
+    return compressImageFile(file).then(finish);
+  }
+
+  window.CognationFeedMedia = {
+    html: renderAttachments,
+    isImage: attachmentIsImage,
+    fromFile: attachmentFromFile,
+  };
 
   var TOWER_POST_REACTIONS = ["❤️", "👍", "😂", "😮", "😢", "🔥"];
 
@@ -6159,20 +6277,25 @@
     if (form) {
       form.addEventListener("submit", function (e) {
         e.preventDefault();
-        var attachments = [];
         var files = fileInput && fileInput.files ? Array.prototype.slice.call(fileInput.files) : [];
         var kind = (kindSelect && kindSelect.value) || "document";
-        files.forEach(function (f) {
-          attachments.push({
-            kind: kind,
-            label: f.name,
-            name: f.name,
-            /* Demo only — we store metadata, not binary blobs */
-            demoMeta: true,
-            size: f.size,
-            type: f.type || "",
+        var readUploads =
+          window.CognationFeedMedia && window.CognationFeedMedia.fromFile
+            ? Promise.all(
+                files.map(function (f) {
+                  return window.CognationFeedMedia.fromFile(f, kind);
+                })
+              )
+            : Promise.resolve([]);
+        readUploads
+          .then(function (attachments) {
+            return submitTowerPost(attachments);
+          })
+          .catch(function () {
+            setStatus("Could not read that file. Please try again.", true);
           });
-        });
+
+        function submitTowerPost(attachments) {
         if (usingRemoteSocial()) {
           var social = remoteSocial();
           if (!social || !social.createTowerPost) {
@@ -6212,6 +6335,7 @@
         if (fileInput) fileInput.value = "";
         setStatus("Posted to Tower. Local COMMUNE will pick this up.", false);
         renderFeed(root);
+        }
       });
     }
 

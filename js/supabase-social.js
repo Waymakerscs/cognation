@@ -264,10 +264,20 @@
     if (!me || !profileId) {
       return Promise.reject(new Error("Sign in before posting to Tower."));
     }
-    if (!body) {
-      return Promise.reject(
-        new Error("Add a written update before posting. File uploads are not connected yet.")
-      );
+    var attachments = Array.isArray(fields && fields.attachments)
+      ? fields.attachments.map(function (attachment) {
+          var item = {
+            kind: String(attachment.kind || "document"),
+            label: String(attachment.label || attachment.name || "Attachment").slice(0, 160),
+            name: String(attachment.name || attachment.label || "").slice(0, 160),
+            type: String(attachment.type || "").slice(0, 80),
+          };
+          if (attachment.src) item.src = String(attachment.src);
+          return item;
+        })
+      : [];
+    if (!body && !attachments.length) {
+      return Promise.reject(new Error("Add a written update or a picture."));
     }
     return client()
       .rest("tower_posts", {
@@ -276,14 +286,7 @@
           author_profile_id: profileId,
           body: body.slice(0, 2000),
           visibility: "friends",
-          attachments: Array.isArray(fields && fields.attachments)
-            ? fields.attachments.map(function (attachment) {
-                return {
-                  kind: String(attachment.kind || "document"),
-                  label: String(attachment.label || attachment.name || "Attachment").slice(0, 160),
-                };
-              })
-            : [],
+          attachments: attachments,
         },
       })
       .then(function () {

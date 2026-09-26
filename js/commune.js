@@ -1092,6 +1092,9 @@
           return safe;
         })() +
         "</p>" +
+        (window.CognationFeedMedia && post.attachments && post.attachments.length
+          ? window.CognationFeedMedia.html(post.attachments)
+          : "") +
         sourceLine +
         '<footer class="news-report-bar" data-news-report>' +
         '<button type="button" class="btn btn-secondary news-report-btn" data-news-report-toggle>Report</button>' +
@@ -1188,25 +1191,12 @@
         } else if (p.handle) {
           slug = String(p.handle).replace(/^@/, "").toLowerCase();
         }
-        var bits = [];
-        (p.attachments || []).forEach(function (a) {
-          var k = a.kind || "document";
-          bits.push(
-            (k === "photo" && "Photo") ||
-              (k === "video" && "Video") ||
-              (k === "note" && "Notes") ||
-              (k === "art" && "Art") ||
-              "Document"
-          );
-          if (a.label || a.name) bits.push(a.label || a.name);
-        });
-        var attachLine = bits.length ? " [" + bits.join(" · ") + "]" : "";
         var kind = "social";
         var atts = p.attachments || [];
         if (atts.some(function (a) { return a.kind === "note" || a.kind === "document"; })) {
           kind = "news";
         }
-        var body = (p.body || "Shared an update.") + attachLine;
+        var body = p.body || (atts.length ? "" : "Shared an update.");
         var isFof =
           !!(p.shareBeyondFriends || p.audience === "friends_of_friends") ||
           /@friends?\s*of\s*friends\b/i.test(body) ||
@@ -1249,6 +1239,7 @@
           likes: p.likes || 0,
           seeded: true,
           fromTower: true,
+          attachments: atts,
         };
       });
     }
