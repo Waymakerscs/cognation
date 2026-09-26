@@ -10560,3 +10560,92 @@ a.login-entry-btn {
   min-height: 14rem;
   scrollbar-color: rgba(168, 244, 255, 0.75) transparent;
 }
+
+/* Email fields and the personal/professional choice cards: solid background, dark type. */
+.login-form input,
+.login-form select,
+.login-form option {
+  color: #16141c !important;
+  -webkit-text-fill-color: #16141c !important;
+  background: #f4f1ea !important;
+  background-color: #f4f1ea !important;
+}
+
+.login-form input::placeholder {
+  color: #3a3540 !important;
+  -webkit-text-fill-color: #3a3540 !important;
+  opacity: 1 !important;
+}
+
+.login-profile-card {
+  background: #f4f1ea !important;
+  color: #16141c !important;
+  border: 1px solid #16141c !important;
+}
+
+.login-profile-card-kind,
+.login-profile-card-name,
+.login-profile-card-handle,
+.login-profile-card-email {
+  color: #16141c !important;
+  opacity: 1 !important;
+}
+
+/* After signup, the profile step must show Sign in, not only Back. */
+.login-gate--picker .login-brain,
+.login-gate--picker .login-gate-brand--splash {
+  display: none !important;
+}
+
+.login-gate--picker .login-gate-panel {
+  overflow-y: auto !important;
+}
+
+.login-profile-picker-actions.login-form-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  gap: 0.6rem !important;
+  position: static !important;
+  visibility: visible !important;
+}
+
+#login-profile-back {
+  flex: 0 0 6.5rem !important;
+  width: 6.5rem !important;
+  max-width: 34% !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  padding: 0.7rem 0.8rem !important;
+  border: 2px solid #16141c !important;
+  border-radius: 999px !important;
+  background: #f4f1ea !important;
+  color: #16141c !important;
+  -webkit-text-fill-color: #16141c !important;
+  white-space: nowrap;
+}
+
+#login-profile-continue {
+  flex: 1 1 auto !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  min-width: 9rem !important;
+  width: auto !important;
+  padding: 0.7rem 1.2rem !important;
+  border: 2px solid #16141c !important;
+  border-radius: 999px !important;
+  background: #16141c !important;
+  color: #f4f1ea !important;
+  -webkit-text-fill-color: #f4f1ea !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+  white-space: nowrap;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
