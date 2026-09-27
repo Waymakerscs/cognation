@@ -1107,6 +1107,9 @@
       var postId = post.id || ("news-" + String(post.createdAt || Date.now()) + "-" + Math.random().toString(36).slice(2, 7));
       article.setAttribute("data-news-post", "");
       article.setAttribute("data-post-id", postId);
+      if (window.CognationFeedMedia && typeof window.CognationFeedMedia.paint === "function") {
+        window.CognationFeedMedia.paint(article);
+      }
       feedList.appendChild(article);
     }
 
@@ -1454,6 +1457,9 @@
       applyEditionChrome();
       if (editionId === "statewide") loadStatewideNews();
       if (editionId === "local") loadLocalNews();
+    });
+    document.addEventListener("cognation:tower-updated", function () {
+      if (editionId === "local" || editionId === "statewide") renderFeed();
     });
     if (editionId === "statewide") loadStatewideNews();
     if (editionId === "local") loadLocalNews();

@@ -10671,3 +10671,35 @@ a.login-entry-btn {
   visibility: visible !important;
   opacity: 1 !important;
 }
+
+/* Uploaded pictures stay visible in Tower and on the NEWS plate. */
+#panel-tower .tower-attach--image,
+#panel-news .tower-attach--image,
+.commune-feed-item .tower-attach--image,
+.tower-post .tower-attach--image {
+  display: block !important;
+  width: 100% !important;
+  max-width: 36rem !important;
+  height: auto !important;
+  margin: 0.35rem 0 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#panel-tower .tower-attach-image,
+#panel-news .tower-attach-image,
+.commune-feed-item .tower-attach-image,
+.tower-post .tower-attach-image {
+  display: block !important;
+  width: 100% !important;
+  max-width: 36rem !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: transparent !important;
+}

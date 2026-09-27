@@ -815,10 +815,16 @@
       });
     },
     setRemotePosts: function (posts) {
+      var list = Array.isArray(posts) ? posts.slice() : [];
+      list.forEach(function (post) {
+        if (post && Array.isArray(post.attachments)) {
+          post.attachments = hydrateAttachmentList(post.attachments);
+        }
+      });
       var data = {
         version: 2,
         remote: true,
-        posts: Array.isArray(posts) ? posts.slice() : [],
+        posts: list,
       };
       this.save(data);
       document.dispatchEvent(
@@ -900,14 +906,117 @@
     var src = attachmentSrc(a);
     var type = String((a && a.type) || "");
     var name = String((a && (a.name || a.label)) || "");
+    var kind = String((a && a.kind) || "");
     if (/^data:image\//i.test(src)) return true;
+    if (/^blob:/i.test(src) && (kind === "photo" || kind === "art" || /^image\//i.test(type))) return true;
     if (/^image\//i.test(type) && src) return true;
     if (src && /\.(png|jpe?g|gif|webp|bmp|avif|svg)(\?|#|$)/i.test(src)) return true;
-    if (src && /\.(png|jpe?g|gif|webp|bmp|avif|svg)$/i.test(name)) return true;
+    if (src && /\.(png|jpe?g|gif|webp|bmp|avif|svg|heic|heif)$/i.test(name)) return true;
+    if (src && (kind === "photo" || kind === "art")) return true;
     return false;
   }
 
+  var FEED_IMAGE_CACHE_KEY = "cognation.feed.images.v1";
+  var feedImageMemory = {};
+  var feedImageSrcs = {};
+  var feedImageSeq = 0;
+
+  function imageCacheIds(a) {
+    var name = String((a && (a.name || a.label)) || "")
+      .trim()
+      .toLowerCase();
+    var type = String((a && a.type) || "")
+      .trim()
+      .toLowerCase();
+    var ids = [];
+    if (name) ids.push("name:" + name);
+    if (name && type) ids.push("name:" + name + "|" + type);
+    return ids;
+  }
+
+  function readImageCache() {
+    try {
+      var raw = localStorage.getItem(FEED_IMAGE_CACHE_KEY);
+      var data = raw ? JSON.parse(raw) : null;
+      return data && typeof data === "object" ? data : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function rememberImage(a) {
+    var src = attachmentSrc(a);
+    if (!src || !/^data:image\/(png|jpe?g|gif|webp)/i.test(src)) return;
+    var ids = imageCacheIds(a);
+    if (!ids.length) return;
+    ids.forEach(function (id) {
+      feedImageMemory[id] = src;
+    });
+    try {
+      var all = readImageCache();
+      ids.forEach(function (id) {
+        all[id] = src;
+      });
+      var keys = Object.keys(all);
+      while (keys.length > 24) {
+        delete all[keys.shift()];
+      }
+      localStorage.setItem(FEED_IMAGE_CACHE_KEY, JSON.stringify(all));
+    } catch (e) {}
+  }
+
+  function cachedImageSrc(a) {
+    var ids = imageCacheIds(a);
+    var i;
+    for (i = 0; i < ids.length; i++) {
+      if (feedImageMemory[ids[i]]) return feedImageMemory[ids[i]];
+    }
+    var all = readImageCache();
+    for (i = 0; i < ids.length; i++) {
+      if (all[ids[i]]) {
+        feedImageMemory[ids[i]] = all[ids[i]];
+        return all[ids[i]];
+      }
+    }
+    return "";
+  }
+
+  function hydrateAttachmentList(list) {
+    return (list || []).map(function (a) {
+      if (!a || typeof a !== "object") return a;
+      var src = attachmentSrc(a);
+      if (src && attachmentIsImage(a)) {
+        rememberImage(a);
+        return a;
+      }
+      var cached = cachedImageSrc(a);
+      if (!cached) return a;
+      var copy = {};
+      Object.keys(a).forEach(function (k) {
+        copy[k] = a[k];
+      });
+      copy.src = cached;
+      return copy;
+    });
+  }
+
+  function takeFeedImageId(src) {
+    var id = "fi" + String(++feedImageSeq);
+    feedImageSrcs[id] = src;
+    return id;
+  }
+
+  function paintFeedImages(root) {
+    if (!root || !root.querySelectorAll) return;
+    root.querySelectorAll("img[data-feed-img]").forEach(function (img) {
+      var src = feedImageSrcs[img.getAttribute("data-feed-img")];
+      if (!src) return;
+      if (img.getAttribute("src") !== src) img.src = src;
+    });
+  }
+
   function renderAttachments(list) {
+    list = hydrateAttachmentList(list);
     if (!list || !list.length) return "";
     return (
       '<ul class="tower-attachments">' +
@@ -916,13 +1025,14 @@
           var src = attachmentSrc(a);
           var name = a.label || a.name || "file";
           if (attachmentIsImage(a)) {
+            var imgId = takeFeedImageId(src);
             return (
               '<li class="tower-attach tower-attach--image">' +
-              '<img class="tower-attach-image" src="' +
+              '<img class="tower-attach-image" data-feed-img="' +
+              imgId +
+              '" src="' +
               escapeHtml(src) +
-              '" alt="' +
-              escapeHtml(name) +
-              '">' +
+              '" alt="Photo">' +
               "</li>"
             );
           }
@@ -959,7 +1069,7 @@
 
   function fileIsImage(file) {
     if (file && /^image\//i.test(file.type || "")) return true;
-    return /\.(png|jpe?g|gif|webp|bmp|avif|svg)$/i.test((file && file.name) || "");
+    return /\.(png|jpe?g|gif|webp|bmp|avif|svg|heic|heif)$/i.test((file && file.name) || "");
   }
 
   function readFileAsDataUrl(file) {
@@ -998,7 +1108,32 @@
           }
         };
         img.onerror = function () {
-          resolve(url);
+          if (typeof createImageBitmap !== "function") {
+            resolve("");
+            return;
+          }
+          createImageBitmap(file)
+            .then(function (bmp) {
+              var maxW = 960;
+              var scale = bmp.width > maxW ? maxW / bmp.width : 1;
+              var canvas = document.createElement("canvas");
+              canvas.width = Math.max(1, Math.round(bmp.width * scale));
+              canvas.height = Math.max(1, Math.round(bmp.height * scale));
+              var ctx = canvas.getContext("2d");
+              if (!ctx) {
+                resolve("");
+                return;
+              }
+              ctx.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+              try {
+                resolve(canvas.toDataURL("image/jpeg", 0.72) || "");
+              } catch (e) {
+                resolve("");
+              }
+            })
+            .catch(function () {
+              resolve("");
+            });
         };
         img.src = url;
       });
@@ -1008,14 +1143,20 @@
   function attachmentFromFile(file, kind) {
     var image = fileIsImage(file);
     function finish(src) {
-      return {
+      src = src || "";
+      if (image && src && !/^data:image\/(png|jpe?g|gif|webp|bmp|avif|svg\+xml)/i.test(src)) {
+        src = "";
+      }
+      var item = {
         kind: image ? (kind === "art" ? "art" : "photo") : kind || "document",
         label: file.name,
         name: file.name,
-        type: image ? file.type || "image/jpeg" : file.type || "",
+        type: image ? (file.type && /^image\/(png|jpe?g|gif|webp)/i.test(file.type) ? file.type : "image/jpeg") : file.type || "",
         size: file.size,
-        src: src || "",
+        src: src,
       };
+      if (src) rememberImage(item);
+      return item;
     }
     if (!image) {
       if (file.size > 750000) return Promise.resolve(finish(""));
@@ -1029,6 +1170,7 @@
 
   window.CognationFeedMedia = {
     html: renderAttachments,
+    paint: paintFeedImages,
     isImage: attachmentIsImage,
     fromFile: attachmentFromFile,
   };
@@ -1124,6 +1266,7 @@
           ? '<p class="tower-post-body">' + escapeHtml(post.body) + "</p>"
           : "") +
         renderAttachments(post.attachments);
+      paintFeedImages(article);
       article.appendChild(buildTowerPostReactBar(post, root));
       list.appendChild(article);
     });
