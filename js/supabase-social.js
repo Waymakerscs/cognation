@@ -257,6 +257,17 @@
       });
   }
 
+  function attachmentIsPicture(attachment) {
+    var kind = String((attachment && attachment.kind) || "");
+    var type = String((attachment && attachment.type) || "");
+    var name = String((attachment && (attachment.name || attachment.label)) || "");
+    var src = String((attachment && (attachment.src || attachment.url || attachment.dataUrl)) || "");
+    if (kind === "photo" || kind === "art") return true;
+    if (/^image\//i.test(type)) return true;
+    if (/^data:image\//i.test(src)) return true;
+    return /\.(png|jpe?g|gif|webp|bmp|avif|svg|heic|heif)$/i.test(name);
+  }
+
   function createTowerPost(fields) {
     var me = identity();
     var body = String((fields && fields.body) || "").trim();
@@ -272,11 +283,18 @@
             name: String(attachment.name || attachment.label || "").slice(0, 160),
             type: String(attachment.type || "").slice(0, 80),
           };
+          if (attachment.size != null) item.size = attachment.size;
           if (attachment.src) item.src = String(attachment.src);
           return item;
         })
       : [];
-    if (!body && !attachments.length) {
+    /* tower_posts_body_check is char_length(body) between 1 and 2000.
+       A picture does not need a status. One space satisfies the check and
+       is not shown as a caption. The picture stays in attachments. */
+    if (!body && attachments.some(attachmentIsPicture)) body = " ";
+    else if (!body && attachments.length) body = "Shared a file";
+    else body = Array.from(body).slice(0, 2000).join("");
+    if (!body) {
       return Promise.reject(new Error("Add a written update or a picture."));
     }
     return client()
@@ -284,7 +302,7 @@
         method: "POST",
         body: {
           author_profile_id: profileId,
-          body: body.slice(0, 2000),
+          body: body,
           visibility: "friends",
           attachments: attachments,
         },

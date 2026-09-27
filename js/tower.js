@@ -1262,8 +1262,8 @@
         '">' +
         escapeHtml(formatTime(post.createdAt)) +
         "</time></header>" +
-        (post.body
-          ? '<p class="tower-post-body">' + escapeHtml(post.body) + "</p>"
+        (String(post.body || "").trim()
+          ? '<p class="tower-post-body">' + escapeHtml(String(post.body).trim()) + "</p>"
           : "") +
         renderAttachments(post.attachments);
       paintFeedImages(article);

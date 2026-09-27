@@ -1071,9 +1071,10 @@
         escapeHtml(formatTime(post.createdAt)) +
         "</time>" +
         "</header>" +
-        '<p class="commune-feed-body">' +
         (function () {
-          var safe = escapeHtml(post.body);
+          var caption = String(post.body || "").trim();
+          if (!caption) return "";
+          var safe = escapeHtml(caption);
           if (editionId === "statewide" || editionId === "local") {
             safe = safe.replace(/@([a-z0-9_-]+)/gi, function (_, h) {
               var href =
@@ -1089,9 +1090,8 @@
               );
             });
           }
-          return safe;
+          return '<p class="commune-feed-body">' + safe + "</p>";
         })() +
-        "</p>" +
         (window.CognationFeedMedia && post.attachments && post.attachments.length
           ? window.CognationFeedMedia.html(post.attachments)
           : "") +
@@ -1199,7 +1199,8 @@
         if (atts.some(function (a) { return a.kind === "note" || a.kind === "document"; })) {
           kind = "news";
         }
-        var body = p.body || (atts.length ? "" : "Shared an update.");
+        var body = String(p.body || "").trim();
+        if (!body && !atts.length) body = "Shared an update.";
         var isFof =
           !!(p.shareBeyondFriends || p.audience === "friends_of_friends") ||
           /@friends?\s*of\s*friends\b/i.test(body) ||
@@ -1222,12 +1223,14 @@
             " ♥) · @" +
             slug +
             " · @statewide · @friendsoffriends";
-          body =
-            "@statewide · @friendsoffriends · @" +
-            slug +
-            " — " +
-            body +
-            " — FoF reach beyond immediate friends (e.g. 400+500≈900 Local feeds); selected by News.";
+          if (body) {
+            body =
+              "@statewide · @friendsoffriends · @" +
+              slug +
+              " — " +
+              body +
+              " — FoF reach beyond immediate friends (e.g. 400+500≈900 Local feeds); selected by News.";
+          }
         }
         return {
           id: "from-tower-" + scope + "-" + p.id,
