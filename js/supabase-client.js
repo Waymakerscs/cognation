@@ -12,8 +12,17 @@
   var SESSION_KEY = "cognation.supabase.session.v1";
   var EMAIL_BOOK_KEY = "cognation.account.emails.v1";
 
+  function publishableKey(value) {
+    if (/^sb_publishable_/.test(value)) return true;
+    var parts = String(value || "").split(".");
+    if (parts.length !== 3 || !/^eyJ[A-Za-z0-9_-]+$/.test(parts[0])) return false;
+    return parts.every(function (part) {
+      return part.length > 0 && /^[A-Za-z0-9_-]+$/.test(part);
+    });
+  }
+
   function configured() {
-    return /^https:\/\//.test(url) && /^sb_publishable_/.test(key);
+    return /^https:\/\//.test(url) && publishableKey(key);
   }
 
   function readSession() {
