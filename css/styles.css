@@ -3765,7 +3765,7 @@ body.login-gate-open .app-topbar {
   box-shadow:
     0 3px 0 rgba(74, 44, 58, 0.06),
     0 6px 16px rgba(74, 44, 58, 0.12);
-  transform: rotate(var(--sticker-tilt, -2deg));
+  transform: rotate(var(--sticker-tilt, 0deg));
   touch-action: none;
   user-select: none;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
@@ -3838,7 +3838,7 @@ body.login-gate-open .app-topbar {
   box-shadow:
     0 3px 0 rgba(74, 44, 58, 0.06),
     0 6px 16px rgba(74, 44, 58, 0.12);
-  transform: rotate(var(--sticker-tilt, -2deg));
+  transform: rotate(var(--sticker-tilt, 0deg));
   touch-action: none;
   user-select: none;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
@@ -4990,8 +4990,31 @@ body.tower-radio-scroll .tower-radio-side { display: block; }
   min-height: 3.2rem;
 }
 
+.tower-sticker--badges,
+.tower-sticker--friends,
+.tower-sticker--social {
+  display: none !important;
+}
+.tower-layout--scrapbook.is-sticker-stage > .tower-social-pin {
+  position: absolute;
+  left: var(--sticker-x, 8%);
+  top: var(--sticker-y, 24%);
+  z-index: var(--sticker-z, 16);
+  margin: 0;
+  transform: rotate(var(--sticker-tilt, 0deg));
+  touch-action: none;
+  user-select: none;
+  text-decoration: none;
+}
+[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-sticker,
+[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-friend-pin,
+[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-badge-pin,
+[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-social-pin,
+[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-sticker--badge-widget {
+  cursor: grab;
+}
 .tower-sticker-handle {
-  display: none;
+  display: none !important;
   position: absolute;
   top: -0.45rem;
   right: -0.45rem;
@@ -5009,19 +5032,9 @@ body.tower-radio-scroll .tower-radio-side { display: block; }
   box-shadow: 0 2px 6px rgba(74, 44, 58, 0.2);
 }
 /* Owner on public side: always show ⋮⋮ drag handles (no Arrange mode) */
-[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-sticker-handle {
-  display: grid;
-  place-items: center;
-  pointer-events: auto;
-  width: 2rem;
-  height: 2rem;
-  top: -0.55rem;
-  right: -0.55rem;
-  font-size: 0.85rem;
-  z-index: 20;
-}
+[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-sticker-handle,
 [data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-sticker-handle[hidden] {
-  display: grid !important;
+  display: none !important;
 }
 [data-tower-app]:not([data-tower-is-owner="true"]) .tower-sticker-handle,
 [data-tower-app][data-tower-side="private"] .tower-sticker-handle {
@@ -10750,9 +10763,22 @@ a.login-entry-btn {
   display: block;
   object-fit: cover;
 }
-.tower-zodiac-pick span {
-  font-size: 0.68rem;
-  color: #3d2c38;
+.tower-zodiac-pick,
+.tower-zodiac-pick span,
+.tower-zodiac-name {
+  color: #1a1a1a !important;
+}
+.tower-zodiac-pick span,
+.tower-zodiac-name {
+  display: block !important;
+  font-size: 0.72rem !important;
+  font-weight: 650;
+  line-height: 1.15;
+  text-align: center;
+  white-space: normal;
+}
+.tower-badge-widget figcaption {
+  color: #1a1a1a !important;
 }
 .tower-badge-upload {
   display: flex;

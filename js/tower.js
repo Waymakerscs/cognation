@@ -72,15 +72,15 @@
 
   /* Default sticker positions (%) — approximate classic left-rail + feed */
   var DEFAULT_WIDGET_LAYOUT = {
-    avatar: { x: 2, y: 3, z: 5, tilt: -2 },
-    identity: { x: 2, y: 16, z: 4, tilt: 1 },
-    slogan: { x: 22, y: 16, z: 4, tilt: -1 },
+    avatar: { x: 2, y: 3, z: 5, tilt: 0 },
+    identity: { x: 2, y: 16, z: 4, tilt: 0 },
+    slogan: { x: 22, y: 16, z: 4, tilt: 0 },
     social: { x: 2, y: 22, z: 4, tilt: 0 },
-    music: { x: 2, y: 28, z: 6, tilt: -3 },
-    badges: { x: 2, y: 38, z: 5, tilt: 2 },
-    friends: { x: 2, y: 52, z: 4, tilt: -1 },
-    html: { x: 22, y: 3, z: 3, tilt: 2 },
-    calendar: { x: 55, y: 28, z: 5, tilt: -2 },
+    music: { x: 2, y: 28, z: 6, tilt: 0 },
+    badges: { x: 2, y: 38, z: 5, tilt: 0 },
+    friends: { x: 2, y: 52, z: 4, tilt: 0 },
+    html: { x: 22, y: 3, z: 3, tilt: 0 },
+    calendar: { x: 55, y: 28, z: 5, tilt: 0 },
   };
 
   var PUBLIC_WIDGET_IDS = ["identity", "slogan", "social", "music", "badges", "friends", "html", "calendar"];
@@ -2007,7 +2007,7 @@
       x: Math.max(0, Math.min(88, baseX + 22 + col * 10)),
       y: Math.max(0, Math.min(88, baseY + 10 + row * 14)),
       z: 14 + index,
-      tilt: (index % 2 === 0 ? -4 : 3) + (index % 3) - 1,
+      tilt: 0,
     };
   }
 
@@ -2889,7 +2889,73 @@
       a.textContent = net.short;
       box.appendChild(a);
     });
-    box.hidden = !any;
+    box.hidden = true;
+    renderSocialPins(root, p);
+  }
+
+  function getSocialPinLayout(p) {
+    if (!p.socialPinLayout || typeof p.socialPinLayout !== "object") p.socialPinLayout = {};
+    return p.socialPinLayout;
+  }
+
+  function defaultSocialPinPos(index) {
+    return {
+      x: 8 + (index % 3) * 16,
+      y: 24 + Math.floor(index / 3) * 12,
+      z: 16 + index,
+      tilt: 0,
+    };
+  }
+
+  function renderSocialPins(root, p) {
+    var stage = root.querySelector("[data-tower-scrapbook]");
+    if (!stage) return;
+    stage.classList.add("is-sticker-stage");
+    stage.querySelectorAll("[data-tower-social-pin]").forEach(function (el) {
+      el.remove();
+    });
+    p = p || TowerProfileStore.get();
+    var widgets = normalizePublicWidgets(p && p.publicWidgets);
+    if (widgets.social === false) return;
+    var links = (p && p.socialLinks) || {};
+    var layout = getSocialPinLayout(p);
+    var index = 0;
+    var changed = false;
+    SOCIAL_NETWORKS.forEach(function (net) {
+      var href = safeHttpUrl(links[net.id] || "");
+      if (!href) return;
+      if (!layout[net.id] || typeof layout[net.id].x !== "number") {
+        layout[net.id] = defaultSocialPinPos(index);
+        changed = true;
+      }
+      if (typeof layout[net.id].tilt !== "number") layout[net.id].tilt = 0;
+      var pin = document.createElement("a");
+      pin.className = "tower-social-pin tower-social-btn tower-social-btn--" + net.id;
+      pin.href = href;
+      pin.target = "_blank";
+      pin.rel = "noopener noreferrer";
+      pin.title = net.label;
+      pin.setAttribute("aria-label", net.label);
+      pin.setAttribute("data-tower-social-pin", net.id);
+      pin.textContent = net.short;
+      pin.draggable = false;
+      applyFriendPinPosition(pin, layout[net.id]);
+      var owner = isTowerOwner(p);
+      var onPublic = root.getAttribute("data-tower-side") === "public";
+      pin.classList.toggle("is-arrangeable", !!(owner && onPublic));
+      pin.addEventListener("click", function (ev) {
+        if (pin.__cognationDidDrag) {
+          ev.preventDefault();
+          pin.__cognationDidDrag = false;
+        }
+      });
+      stage.appendChild(pin);
+      index += 1;
+    });
+    if (changed) {
+      p.socialPinLayout = layout;
+      TowerProfileStore.save(p);
+    }
   }
 
   function getFriendPinLayout(p) {
@@ -2910,7 +2976,7 @@
       x: Math.max(0, Math.min(88, baseX + 18 + col * 9)),
       y: Math.max(0, Math.min(88, baseY + row * 12)),
       z: 12 + index,
-      tilt: (index % 2 === 0 ? -3 : 2) + (index % 3),
+      tilt: 0,
     };
   }
 
@@ -3143,15 +3209,7 @@
       chips.appendChild(btn);
     });
 
-    if (publicEl) {
-      publicEl.innerHTML = "";
-      var heading = document.createElement("p");
-      heading.className = "tower-friends-public-label";
-      heading.textContent = selected.length
-        ? "Top friends"
-        : "Top friends · set on My feed";
-      publicEl.appendChild(heading);
-    }
+    if (publicEl) publicEl.innerHTML = "";
 
     renderFriendPins(root, p);
   }
@@ -3338,6 +3396,14 @@
       }
       var el = root.querySelector('[data-tower-widget="' + id + '"]');
       if (!el) return;
+      /* Grouped badges, top-friends, and social blocks stay off the scrapbook.
+         Each badge, friend, and social link is its own widget. */
+      if (id === "badges" || id === "friends" || id === "social") {
+        el.hidden = true;
+        el.classList.add("is-widget-off");
+        el.classList.remove("is-widget-selected");
+        return;
+      }
       el.hidden = !on;
       el.classList.toggle("is-widget-off", !on);
       if (!on) el.classList.remove("is-widget-selected");
@@ -3360,6 +3426,15 @@
       });
       stage.querySelectorAll("[data-tower-badge-pin]").forEach(function (pin) {
         if (!widgets.badges) {
+          pin.hidden = true;
+          pin.classList.add("is-widget-off");
+        } else {
+          pin.hidden = false;
+          pin.classList.remove("is-widget-off");
+        }
+      });
+      stage.querySelectorAll("[data-tower-social-pin]").forEach(function (pin) {
+        if (!widgets.social) {
           pin.hidden = true;
           pin.classList.add("is-widget-off");
         } else {
@@ -3420,6 +3495,17 @@
         }
       }
     }
+    if (id === "social") {
+      if (on) renderSocialPins(root, p);
+      else {
+        var socialStage = root.querySelector("[data-tower-scrapbook]");
+        if (socialStage) {
+          socialStage.querySelectorAll("[data-tower-social-pin]").forEach(function (el) {
+            el.remove();
+          });
+        }
+      }
+    }
     if (id === "calendar" && on) {
       try { refreshTowerCalendars(root); } catch (eCal) {}
     }
@@ -3432,7 +3518,7 @@
     var onPublic = root.getAttribute("data-tower-side") === "public";
     var show = owner && onPublic;
     stage.querySelectorAll("[data-tower-sticker-handle]").forEach(function (h) {
-      h.hidden = !show;
+      h.hidden = true;
     });
     stage.querySelectorAll("[data-tower-friend-pin]").forEach(function (pin) {
       pin.classList.toggle("is-arrangeable", show);
@@ -3457,14 +3543,10 @@
   }
 
   function syncRotateToolbar(root) {
-    var bar = root.querySelector("[data-tower-rotate-toolbar]");
-    if (!bar) return;
-    var stage = root.querySelector("[data-tower-scrapbook]");
+    var btn = root.querySelector("[data-tower-rotate]");
+    if (!btn) return;
     var owner = isTowerOwner(TowerProfileStore.get()) && root.getAttribute("data-tower-side") === "public";
-    var selected = getSelectedArrangeable(stage);
-    var show = !!(owner && selected);
-    bar.hidden = !show;
-    bar.setAttribute("aria-hidden", show ? "false" : "true");
+    btn.hidden = !owner;
   }
 
   function readTiltFromElement(el) {
@@ -3485,6 +3567,20 @@
     var p = TowerProfileStore.get();
     tilt = normalizeTiltDegrees(tilt);
     applyTiltToElement(el, tilt);
+    var socialId = el.getAttribute("data-tower-social-pin");
+    if (socialId) {
+      var sl = getSocialPinLayout(p);
+      var prevS = sl[socialId] || {};
+      sl[socialId] = {
+        x: typeof prevS.x === "number" ? prevS.x : parseFloat(el.getAttribute("data-sticker-x") || "0"),
+        y: typeof prevS.y === "number" ? prevS.y : parseFloat(el.getAttribute("data-sticker-y") || "0"),
+        z: typeof prevS.z === "number" ? prevS.z : parseInt(el.getAttribute("data-sticker-z") || "16", 10),
+        tilt: tilt,
+      };
+      p.socialPinLayout = sl;
+      TowerProfileStore.save(p);
+      return;
+    }
     var friendId = el.getAttribute("data-tower-friend-pin");
     if (friendId) {
       var fl = getFriendPinLayout(p);
@@ -3558,15 +3654,17 @@
   function initRotateToolbar(root) {
     if (!root || root.__cognationRotateBound) return;
     root.__cognationRotateBound = true;
-    var bar = root.querySelector("[data-tower-rotate-toolbar]");
-    if (!bar) return;
-    bar.addEventListener("click", function (ev) {
+    root.addEventListener("click", function (ev) {
       var btn = ev.target && ev.target.closest("[data-tower-rotate]");
-      if (!btn || !bar.contains(btn)) return;
+      if (!btn || !root.contains(btn)) return;
       if (!isTowerOwner(TowerProfileStore.get()) || root.getAttribute("data-tower-side") !== "public") return;
-      var mode = btn.getAttribute("data-tower-rotate");
-      if (mode === "straighten") rotateSelectedWidget(root, "straighten");
-      else rotateSelectedWidget(root, parseFloat(mode));
+      ev.preventDefault();
+      var stage = root.querySelector("[data-tower-scrapbook]");
+      if (!getSelectedArrangeable(stage)) {
+        setProfileStatusOn(root, "Select a widget, then Rotate.", false);
+        return;
+      }
+      rotateSelectedWidget(root, 90);
     });
     syncRotateToolbar(root);
   }
@@ -4857,7 +4955,7 @@
       x: layout && typeof layout.x === "number" ? layout.x : 36 + Math.random() * 20,
       y: layout && typeof layout.y === "number" ? layout.y : 30 + Math.random() * 25,
       z: layout && typeof layout.z === "number" ? layout.z : 10,
-      tilt: layout && typeof layout.tilt === "number" ? layout.tilt : (Math.random() * 6 - 3),
+      tilt: layout && typeof layout.tilt === "number" ? layout.tilt : 0,
     };
     var found = false;
     quotes = quotes.map(function (q) {
@@ -4971,7 +5069,7 @@
       x: 56 + Math.round(Math.random() * 22),
       y: 16 + Math.round(Math.random() * 36),
       z: 8,
-      tilt: Math.round(Math.random() * 6 - 3),
+      tilt: 0,
     };
     widgets.push(entry);
     profile.badgeWidgets = widgets;
@@ -5010,7 +5108,7 @@
         x: 48 + Math.round(Math.random() * 24),
         y: 18 + Math.round(Math.random() * 30),
         z: 8,
-        tilt: Math.round(Math.random() * 6 - 3),
+        tilt: 0,
       });
       profile.badgeWidgets = widgets;
       if (!TowerProfileStore.save(profile)) {
@@ -5192,10 +5290,14 @@
         btn.className = "tower-zodiac-pick";
         btn.setAttribute("data-zodiac-pick", badge.id);
         btn.setAttribute("data-zodiac-category", category.id);
+        btn.title = badge.label;
+        btn.setAttribute("aria-label", badge.label);
         var img = document.createElement("img");
         img.src = badge.src;
-        img.alt = badge.label + " badge";
+        img.alt = "";
+        img.draggable = false;
         var name = document.createElement("span");
+        name.className = "tower-zodiac-name";
         name.textContent = badge.label;
         btn.appendChild(img);
         btn.appendChild(name);
@@ -5257,7 +5359,7 @@
     var hint = root.querySelector("[data-tower-scrapbook-bar] .tower-scrapbook-hint");
     if (hint) {
       hint.textContent =
-        "Drag ⋮⋮ to move · click to select · rotate / straighten selected · Backspace removes · Undo restores · Reset brings widgets back";
+        "Drag anywhere on a widget to move it · click to select · Rotate turns the selected one · Backspace removes · Undo restores";
     }
     if (!root.__cognationWidgetUndo) root.__cognationWidgetUndo = [];
 
@@ -5501,16 +5603,74 @@
         return;
       }
 
-      /* Stickers: drag only from ⋮⋮ handle so links/buttons still work */
-      var handle = ev.target.closest("[data-tower-sticker-handle]");
-      if (!handle || !stage.contains(handle)) return;
-      var sticker = handle.closest("[data-tower-widget]");
+      var socialPin = ev.target.closest("[data-tower-social-pin]");
+      if (socialPin && stage.contains(socialPin)) {
+        ev.preventDefault();
+        stickerZCounter += 1;
+        socialPin.style.setProperty("--sticker-z", String(stickerZCounter));
+        socialPin.classList.add("is-dragging");
+        socialPin.__cognationDidDrag = false;
+        var rectSocial = stage.getBoundingClientRect();
+        var startSocial = pointerPos(ev);
+        var startSocialX = parseFloat(socialPin.getAttribute("data-sticker-x") || "0");
+        var startSocialY = parseFloat(socialPin.getAttribute("data-sticker-y") || "0");
+
+        function onMoveSocial(e) {
+          var cur = pointerPos(e);
+          if (e.cancelable) e.preventDefault();
+          var dxPct = ((cur.x - startSocial.x) / rectSocial.width) * 100;
+          var dyPct = ((cur.y - startSocial.y) / rectSocial.height) * 100;
+          if (Math.abs(dxPct) > 0.3 || Math.abs(dyPct) > 0.3) socialPin.__cognationDidDrag = true;
+          var nx = Math.max(0, Math.min(88, startSocialX + dxPct));
+          var ny = Math.max(0, Math.min(88, startSocialY + dyPct));
+          socialPin.style.setProperty("--sticker-x", nx + "%");
+          socialPin.style.setProperty("--sticker-y", ny + "%");
+          socialPin.setAttribute("data-sticker-x", String(Math.round(nx * 10) / 10));
+          socialPin.setAttribute("data-sticker-y", String(Math.round(ny * 10) / 10));
+          socialPin.setAttribute("data-sticker-z", String(stickerZCounter));
+        }
+
+        function onUpSocial() {
+          socialPin.classList.remove("is-dragging");
+          document.removeEventListener("pointermove", onMoveSocial);
+          document.removeEventListener("pointerup", onUpSocial);
+          document.removeEventListener("pointercancel", onUpSocial);
+          document.removeEventListener("touchmove", onMoveSocial);
+          document.removeEventListener("touchend", onUpSocial);
+          if (!socialPin.__cognationDidDrag) return;
+          var sp = TowerProfileStore.get();
+          var socialLayout = getSocialPinLayout(sp);
+          var sid = socialPin.getAttribute("data-tower-social-pin");
+          if (!sid) return;
+          var prevSocial = socialLayout[sid] || { tilt: 0 };
+          socialLayout[sid] = {
+            x: parseFloat(socialPin.getAttribute("data-sticker-x") || "0"),
+            y: parseFloat(socialPin.getAttribute("data-sticker-y") || "0"),
+            z: parseInt(socialPin.getAttribute("data-sticker-z") || "16", 10),
+            tilt: typeof prevSocial.tilt === "number" ? prevSocial.tilt : 0,
+          };
+          sp.socialPinLayout = socialLayout;
+          TowerProfileStore.save(sp);
+        }
+
+        document.addEventListener("pointermove", onMoveSocial);
+        document.addEventListener("pointerup", onUpSocial);
+        document.addEventListener("pointercancel", onUpSocial);
+        document.addEventListener("touchmove", onMoveSocial, { passive: false });
+        document.addEventListener("touchend", onUpSocial);
+        return;
+      }
+
+      /* Pointer-down anywhere on the widget starts the drag, including links inside it. */
+      var sticker = ev.target.closest("[data-tower-widget], [data-tower-badge-widget]");
       if (!sticker || !stage.contains(sticker)) return;
+      if (sticker.hidden || sticker.classList.contains("is-widget-off")) return;
       var wid = sticker.getAttribute("data-tower-widget");
-      if (wid === "feed" || wid === "messages") return;
-      ev.preventDefault();
-      if (ev.pointerId != null && handle.setPointerCapture) {
-        try { handle.setPointerCapture(ev.pointerId); } catch (err) {}
+      if (wid === "feed" || wid === "messages" || wid === "badges" || wid === "friends" || wid === "social") return;
+      if (ev.target.closest("input, textarea, select, option, [contenteditable='true'], [data-tower-name-resize], [data-tower-avatar-resize], [data-tower-video-resize], [data-tower-youtube-resize]")) return;
+      sticker.__cognationDidDrag = false;
+      if (ev.pointerId != null && sticker.setPointerCapture) {
+        try { sticker.setPointerCapture(ev.pointerId); } catch (err) {}
       }
       stickerZCounter += 1;
       sticker.style.setProperty("--sticker-z", String(stickerZCounter));
@@ -5526,6 +5686,8 @@
         if (e.cancelable) e.preventDefault();
         var dxPct = ((cur.x - start.x) / rect.width) * 100;
         var dyPct = ((cur.y - start.y) / rect.height) * 100;
+        if (Math.abs(dxPct) > 0.3 || Math.abs(dyPct) > 0.3) sticker.__cognationDidDrag = true;
+        if (!sticker.__cognationDidDrag) return;
         var nx = Math.max(0, Math.min(88, startX + dxPct));
         var ny = Math.max(0, Math.min(88, startY + dyPct));
         sticker.style.setProperty("--sticker-x", nx + "%");
@@ -5542,6 +5704,7 @@
         document.removeEventListener("pointercancel", onUp);
         document.removeEventListener("touchmove", onMove);
         document.removeEventListener("touchend", onUp);
+        if (!sticker.__cognationDidDrag) return;
         var p = TowerProfileStore.get();
         var layout = getWidgetLayout(p) || JSON.parse(JSON.stringify(DEFAULT_WIDGET_LAYOUT));
         var id = sticker.getAttribute("data-tower-widget");
@@ -5605,6 +5768,12 @@
     /* Click to select a public widget (owner only) */
     stage.addEventListener("click", function (ev) {
       if (!ownerOnPublic()) return;
+      var dragged = ev.target.closest("[data-tower-widget], [data-tower-friend-pin], [data-tower-badge-pin], [data-tower-badge-widget], [data-tower-social-pin]");
+      if (dragged && dragged.__cognationDidDrag) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        return;
+      }
       if (ev.target.closest("[data-tower-profile-edit]")) return;
       var handleClick = ev.target.closest("[data-tower-sticker-handle]");
       if (handleClick) {
@@ -5626,11 +5795,19 @@
         syncRotateToolbar(root);
         return;
       }
-      var badgeSel = ev.target.closest("[data-tower-badge-pin]");
+      var badgeSel = ev.target.closest("[data-tower-badge-pin], [data-tower-badge-widget]");
       if (badgeSel && stage.contains(badgeSel)) {
         ev.preventDefault();
         clearWidgetSelection(stage);
         badgeSel.classList.add("is-widget-selected");
+        syncRotateToolbar(root);
+        return;
+      }
+      var socialSel = ev.target.closest("[data-tower-social-pin]");
+      if (socialSel && stage.contains(socialSel)) {
+        ev.preventDefault();
+        clearWidgetSelection(stage);
+        socialSel.classList.add("is-widget-selected");
         syncRotateToolbar(root);
         return;
       }
@@ -5672,13 +5849,6 @@
           if (t0.isContentEditable) return;
         }
         if (!ownerOnPublic()) return;
-        if (ev.key === "[" || ev.key === "]") {
-          var selRot = stage.querySelector(".is-widget-selected");
-          if (!selRot || !stage.contains(selRot)) return;
-          ev.preventDefault();
-          rotateSelectedWidget(root, ev.key === "]" ? 15 : -15);
-          return;
-        }
         if (ev.key !== "Backspace" && ev.key !== "Delete") return;
         var selected = stage.querySelector(".is-widget-selected");
         if (!selected || !stage.contains(selected)) return;
