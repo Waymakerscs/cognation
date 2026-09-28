@@ -310,6 +310,25 @@
     return ids;
   }
 
+  /* Class Clown, Best Smile, Biggest Heart, and Neighbor pins are not options. */
+  function retiredGeneratedBadge(badgeOrId) {
+    var id = "";
+    var title = "";
+    if (badgeOrId && typeof badgeOrId === "object") {
+      id = String(badgeOrId.id || "");
+      title = String(badgeOrId.title || badgeOrId.label || "");
+    } else {
+      id = String(badgeOrId || "");
+    }
+    var blob = (id + " " + title).toLowerCase();
+    if (!blob.trim()) return false;
+    if (blob.indexOf("class clown") >= 0 || blob.indexOf("class-clown") >= 0) return true;
+    if (blob.indexOf("best smile") >= 0 || blob.indexOf("best-smile") >= 0) return true;
+    if (blob.indexOf("biggest heart") >= 0 || blob.indexOf("biggest-heart") >= 0) return true;
+    if (blob.indexOf("neighbor") >= 0) return true;
+    return false;
+  }
+
   /* Drop badges the app already created: the seeded award pins and any
      yearbook pin that was generated onto a profile. Do not add new ones. */
   function seedAwardedBadgesIfMissing(profile) {
@@ -319,21 +338,21 @@
     var list = Array.isArray(profile.awardedBadges) ? profile.awardedBadges : [];
     if (!Array.isArray(profile.awardedBadges)) changed = true;
     var next = list.filter(function (badge) {
-      return badge && badge.id && !known[badge.id];
+      return badge && badge.id && !known[badge.id] && !retiredGeneratedBadge(badge);
     });
     if (next.length !== list.length) changed = true;
     profile.awardedBadges = next;
     if (profile.badgeVisibility && typeof profile.badgeVisibility === "object") {
-      Object.keys(known).forEach(function (id) {
-        if (Object.prototype.hasOwnProperty.call(profile.badgeVisibility, id)) {
+      Object.keys(profile.badgeVisibility).forEach(function (id) {
+        if (known[id] || retiredGeneratedBadge(id)) {
           delete profile.badgeVisibility[id];
           changed = true;
         }
       });
     }
     if (profile.badgePinLayout && typeof profile.badgePinLayout === "object") {
-      Object.keys(known).forEach(function (id) {
-        if (profile.badgePinLayout[id]) {
+      Object.keys(profile.badgePinLayout).forEach(function (id) {
+        if (known[id] || retiredGeneratedBadge(id)) {
           delete profile.badgePinLayout[id];
           changed = true;
         }
@@ -2025,7 +2044,7 @@
     var list = (profile && profile.awardedBadges) || [];
     list.forEach(function (badge) {
       if (!badge || badge.kind === "founder") return;
-      if (!badge.id || !isBadgeVisible(profile, badge.id)) return;
+      if (!badge.id || retiredGeneratedBadge(badge) || !isBadgeVisible(profile, badge.id)) return;
       var caption = badge.title || "Award";
       items.push({
         id: badge.id,
@@ -2181,61 +2200,36 @@
 
     var list = profile.awardedBadges || [];
     list.forEach(function (badge) {
-      if (!badge || !badge.id || badge.kind === "founder") return;
+      if (!badge || !badge.id || badge.kind === "founder" || retiredGeneratedBadge(badge)) return;
       var label = (badge.title || "Badge") + (badge.fromName ? " · from " + badge.fromName : "");
       addCheck(badge.id, label, isBadgeVisible(profile, badge.id));
     });
 
     var genWrap = document.createElement("div");
     genWrap.className = "tower-badge-generate";
-    var genTitle = document.createElement("p");
-    genTitle.className = "tower-badge-generate-label";
-    genTitle.textContent = "Generate badge";
-    var genHint = document.createElement("span");
-    genHint.className = "form-hint";
-    genHint.textContent = "Add a yearbook-style pin as a public pin widget (does not gift to others).";
-    genWrap.appendChild(genTitle);
-    genWrap.appendChild(genHint);
-    var chips = document.createElement("div");
-    chips.className = "tower-badge-generate-chips";
-    var owned = {};
-    list.forEach(function (b) {
-      if (b && b.id) owned[b.id] = true;
-    });
-    var available = 0;
-    getYearbookDemoDefs().forEach(function (def) {
-      if (!def || !def.id || owned[def.id]) return;
-      available++;
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "tower-badge-generate-chip";
-      btn.setAttribute("data-tower-generate-badge", def.id);
-      btn.textContent = def.title || def.id;
-      btn.title = "Generate " + (def.title || "badge") + " as a public pin widget";
-      chips.appendChild(btn);
-    });
-    if (!available) {
-      var none = document.createElement("span");
-      none.className = "form-hint";
-      none.textContent = "You already own every yearbook template.";
-      chips.appendChild(none);
-    }
-    genWrap.appendChild(chips);
+    var upload = document.createElement("label");
+    upload.className = "tower-badge-upload";
+    upload.innerHTML =
+      '<span class="tower-badge-upload-title">Generate badge</span>' +
+      '<span class="form-hint">Upload an image. It becomes a circle badge on the scrapbook.</span>' +
+      '<input type="file" accept="image/*" data-badge-upload>';
+    genWrap.appendChild(upload);
     box.appendChild(genWrap);
 
     if (!box.__cognationBadgeVisBound) {
       box.__cognationBadgeVisBound = true;
       box.addEventListener("change", function (ev) {
+        var fileInput = ev.target && ev.target.closest("[data-badge-upload]");
+        if (fileInput && box.contains(fileInput)) {
+          var file = fileInput.files && fileInput.files[0];
+          addUploadedBadgeWidget(root, file);
+          try { fileInput.value = ""; } catch (eFile) {}
+          return;
+        }
         var cb = ev.target && ev.target.closest("[data-tower-badge-vis]");
         if (!cb || !box.contains(cb)) return;
         var id = cb.getAttribute("data-tower-badge-vis");
         setBadgeVisibility(root, id, !!cb.checked);
-      });
-      box.addEventListener("click", function (ev) {
-        var btn = ev.target && ev.target.closest("[data-tower-generate-badge]");
-        if (!btn || !box.contains(btn)) return;
-        ev.preventDefault();
-        generateYearbookBadge(root, btn.getAttribute("data-tower-generate-badge"));
       });
     }
   }
@@ -4940,14 +4934,16 @@
     });
     getBadgeWidgets(profile).forEach(function (widget) {
       var def = badgeDefinition(widget.categoryId, widget.badgeId);
-      if (!def) return;
+      var src = widget.src || (def && def.src);
+      var label = widget.label || (def && def.label);
+      if (!src || !label) return;
       var el = document.createElement("div");
       el.className = "tower-sticker tower-sticker--badge-widget";
       el.setAttribute("data-tower-widget", "badge");
       el.setAttribute("data-tower-badge-widget", widget.id);
       el.setAttribute("data-badge-category", widget.categoryId);
       el.setAttribute("data-badge-id", widget.badgeId);
-      el.setAttribute("data-sticker-label", def.label);
+      el.setAttribute("data-sticker-label", label);
       el.setAttribute("data-sticker-x", String(widget.x));
       el.setAttribute("data-sticker-y", String(widget.y));
       el.setAttribute("data-sticker-z", String(widget.z || 8));
@@ -4958,19 +4954,19 @@
       var figure = document.createElement("figure");
       figure.className = "tower-badge-widget";
       var img = document.createElement("img");
-      img.src = def.src;
-      img.alt = def.label + " badge";
+      img.src = src;
+      img.alt = label + " badge";
       img.width = 104;
       img.height = 104;
       var cap = document.createElement("figcaption");
-      cap.textContent = def.label;
+      cap.textContent = label;
       figure.appendChild(img);
       figure.appendChild(cap);
       var handle = document.createElement("button");
       handle.type = "button";
       handle.className = "tower-sticker-handle";
       handle.setAttribute("data-tower-sticker-handle", "");
-      handle.setAttribute("aria-label", "Move " + def.label + " badge");
+      handle.setAttribute("aria-label", "Move " + label + " badge");
       handle.tabIndex = -1;
       handle.textContent = "⋮⋮";
       el.appendChild(handle);
@@ -4999,6 +4995,47 @@
     TowerProfileStore.save(profile);
     renderBadgeWidgets(root, profile);
     return def;
+  }
+
+  function addUploadedBadgeWidget(root, file) {
+    if (!file || !/^image\//.test(file.type || "")) {
+      setProfileStatusOn(root, "Choose an image file.", true);
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      var src = String(reader.result || "");
+      if (!src) {
+        setProfileStatusOn(root, "Could not read that image.", true);
+        return;
+      }
+      var profile = TowerProfileStore.get();
+      var widgets = getBadgeWidgets(profile).slice();
+      var label = String(file.name || "Badge").replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim().slice(0, 40) || "Badge";
+      widgets.push({
+        id: "bw" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+        categoryId: "upload",
+        badgeId: "custom",
+        label: label,
+        src: src,
+        x: 48 + Math.round(Math.random() * 24),
+        y: 18 + Math.round(Math.random() * 30),
+        z: 8,
+        tilt: Math.round(Math.random() * 6 - 3),
+      });
+      profile.badgeWidgets = widgets;
+      if (!TowerProfileStore.save(profile)) {
+        setProfileStatusOn(root, "Could not save badge (storage full). Try a smaller image.", true);
+        return;
+      }
+      renderBadgeWidgets(root, profile);
+      setProfileStatusOn(root, label + " badge added to the scrapbook.", false);
+      closeAddWidgetDialog();
+    };
+    reader.onerror = function () {
+      setProfileStatusOn(root, "Could not read that image.", true);
+    };
+    reader.readAsDataURL(file);
   }
 
   function removeBadgeWidget(root, widgetId) {
@@ -5133,6 +5170,16 @@
       categorySelect.__cognationBound = true;
       categorySelect.addEventListener("change", function () {
         fillBadgeChoice(dlg);
+      });
+    }
+    var uploadInput = dlg.querySelector("[data-badge-upload]");
+    if (uploadInput && !uploadInput.__cognationBound) {
+      uploadInput.__cognationBound = true;
+      uploadInput.addEventListener("change", function () {
+        var file = uploadInput.files && uploadInput.files[0];
+        if (!file) return;
+        addUploadedBadgeWidget(root, file);
+        try { uploadInput.value = ""; } catch (eUp) {}
       });
     }
 
@@ -5472,6 +5519,8 @@
               id: widget.id,
               categoryId: widget.categoryId,
               badgeId: widget.badgeId,
+              label: widget.label,
+              src: widget.src,
               x: parseFloat(sticker.getAttribute("data-sticker-x") || "0"),
               y: parseFloat(sticker.getAttribute("data-sticker-y") || "0"),
               z: parseInt(sticker.getAttribute("data-sticker-z") || "8", 10),

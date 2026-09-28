@@ -10713,6 +10713,25 @@ a.login-entry-btn {
   width: 100%;
   margin: 0.2rem 0 0.7rem;
 }
+.tower-badge-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+  padding: 0.75rem;
+  border: 1.5px dashed #c45a7a;
+  border-radius: 0.75rem;
+  background: #fff7f2;
+  cursor: pointer;
+}
+.tower-badge-upload-title {
+  font-weight: 700;
+  color: #3d2c38;
+}
+.tower-badge-upload input[type="file"] {
+  display: block;
+  width: 100%;
+}
 
 #panel-tower .tower-attach-image,
 #panel-news .tower-attach-image,
