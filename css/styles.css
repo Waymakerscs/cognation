@@ -5012,6 +5012,13 @@ body.tower-radio-scroll .tower-radio-side { display: block; }
 [data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-social-pin,
 [data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-sticker--badge-widget {
   cursor: grab;
+  touch-action: none;
+}
+.tower-sticker--badge-widget img,
+.tower-badge-widget img {
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: auto;
 }
 .tower-sticker-handle {
   display: none !important;

@@ -5039,6 +5039,10 @@
       img.alt = label + " badge";
       img.width = 104;
       img.height = 104;
+      img.draggable = false;
+      img.addEventListener("dragstart", function (dragEv) {
+        dragEv.preventDefault();
+      });
       var cap = document.createElement("figcaption");
       cap.textContent = label;
       figure.appendChild(img);
@@ -5669,6 +5673,7 @@
       var wid = sticker.getAttribute("data-tower-widget");
       if (wid === "feed" || wid === "messages" || wid === "badges" || wid === "friends" || wid === "social") return;
       if (ev.target.closest("input, textarea, select, option, [contenteditable='true'], [data-tower-name-resize], [data-tower-avatar-resize], [data-tower-video-resize], [data-tower-youtube-resize]")) return;
+      if (sticker.hasAttribute("data-tower-badge-widget")) ev.preventDefault();
       sticker.__cognationDidDrag = false;
       if (ev.pointerId != null && sticker.setPointerCapture) {
         try { sticker.setPointerCapture(ev.pointerId); } catch (err) {}
