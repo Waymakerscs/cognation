@@ -339,6 +339,16 @@
         }
       });
     }
+    /* Founder patch is a separate pin from the bottle cap. Drop it from the scrapbook. */
+    if (profile.badgeVisibility && typeof profile.badgeVisibility === "object" &&
+        Object.prototype.hasOwnProperty.call(profile.badgeVisibility, "founder-patch")) {
+      delete profile.badgeVisibility["founder-patch"];
+      changed = true;
+    }
+    if (profile.badgePinLayout && profile.badgePinLayout["founder-patch"]) {
+      delete profile.badgePinLayout["founder-patch"];
+      changed = true;
+    }
     profile._generatedBadgesCleared = changed;
     return profile;
   }
@@ -399,7 +409,7 @@
   function ownedBadgeVisibilityIds(profile) {
     var ids = [];
     if (isFounderOwner(profile)) {
-      ids.push("founder-cap", "founder-patch");
+      ids.push("founder-cap");
     }
     var list = (profile && profile.awardedBadges) || [];
     list.forEach(function (b) {
@@ -1834,7 +1844,6 @@
     if (!stage) return;
     opts = opts || {};
     var showCap = opts.showCap !== false;
-    var showPatch = opts.showPatch !== false;
     if (showCap) {
       var pin = document.createElement("figure");
       pin.className = "tower-bottle-cap tower-bottle-cap--founder";
@@ -1851,23 +1860,6 @@
       pinCap.textContent = "Founder";
       pin.appendChild(pinCap);
       stage.appendChild(pin);
-    }
-    if (showPatch) {
-      var patch = document.createElement("figure");
-      patch.className = "tower-bottle-cap tower-awarded-pin tower-awarded-pin--patch";
-      patch.setAttribute("data-founder-badge", "patch");
-      patch.title = "Founder patch";
-      var patchImg = document.createElement("img");
-      patchImg.src = "assets/badges/founder-patch.png";
-      patchImg.width = 160;
-      patchImg.height = 160;
-      patchImg.alt = "Founder — embroidered vest patch";
-      patch.appendChild(patchImg);
-      var patchCap = document.createElement("figcaption");
-      patchCap.className = "tower-badge-caption";
-      patchCap.textContent = "Founder patch";
-      patch.appendChild(patchCap);
-      stage.appendChild(patch);
     }
   }
 
@@ -2029,15 +2021,6 @@
           alt: "Founder — 1950s soda bottle cap badge",
         });
       }
-      if (isBadgeVisible(profile, "founder-patch")) {
-        items.push({
-          id: "founder-patch",
-          title: "Founder patch",
-          caption: "Founder patch",
-          imageUrl: "assets/badges/founder-patch.png",
-          alt: "Founder — embroidered vest patch",
-        });
-      }
     }
     var list = (profile && profile.awardedBadges) || [];
     list.forEach(function (badge) {
@@ -2194,7 +2177,6 @@
 
     if (isFounderOwner(profile)) {
       addCheck("founder-cap", "Founder", isBadgeVisible(profile, "founder-cap"));
-      addCheck("founder-patch", "Founder patch", isBadgeVisible(profile, "founder-patch"));
     }
 
     var list = profile.awardedBadges || [];
