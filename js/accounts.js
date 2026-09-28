@@ -121,7 +121,7 @@
       videoWidth: 360,
       badges: { role: "", interest: "", status: "" },
       customHtml: "",
-      awardedBadges: null,
+      awardedBadges: [],
       badgeVisibility: null,
       widgetLayout: null,
       publicWidgets: null,

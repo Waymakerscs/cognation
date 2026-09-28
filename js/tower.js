@@ -302,18 +302,44 @@
     },
   ];
 
+  function generatedBadgeIds() {
+    var ids = {};
+    DEMO_AWARDED_BADGES.forEach(function (badge) {
+      if (badge && badge.id) ids[badge.id] = true;
+    });
+    return ids;
+  }
+
+  /* Drop badges the app already created: the seeded award pins and any
+     yearbook pin that was generated onto a profile. Do not add new ones. */
   function seedAwardedBadgesIfMissing(profile) {
     if (!profile) return profile;
-    if (!Array.isArray(profile.awardedBadges)) {
-      /* First-time: seed non-yearbook demos only. Yearbook pins are opt-in via Generate. */
-      profile.awardedBadges = DEMO_AWARDED_BADGES.filter(function (b) {
-        return b && b.kind !== "yearbook";
-      }).map(function (b) {
-        return JSON.parse(JSON.stringify(b));
+    var known = generatedBadgeIds();
+    var changed = false;
+    var list = Array.isArray(profile.awardedBadges) ? profile.awardedBadges : [];
+    if (!Array.isArray(profile.awardedBadges)) changed = true;
+    var next = list.filter(function (badge) {
+      return badge && badge.id && !known[badge.id];
+    });
+    if (next.length !== list.length) changed = true;
+    profile.awardedBadges = next;
+    if (profile.badgeVisibility && typeof profile.badgeVisibility === "object") {
+      Object.keys(known).forEach(function (id) {
+        if (Object.prototype.hasOwnProperty.call(profile.badgeVisibility, id)) {
+          delete profile.badgeVisibility[id];
+          changed = true;
+        }
       });
-      return profile;
     }
-    /* Preserve saved awardedBadges — do NOT auto-merge missing yearbook demos */
+    if (profile.badgePinLayout && typeof profile.badgePinLayout === "object") {
+      Object.keys(known).forEach(function (id) {
+        if (profile.badgePinLayout[id]) {
+          delete profile.badgePinLayout[id];
+          changed = true;
+        }
+      });
+    }
+    profile._generatedBadgesCleared = changed;
     return profile;
   }
 
@@ -447,7 +473,7 @@
       videoWidth: 360,
       badges: { role: "", interest: "", status: "" },
       customHtml: "",
-      awardedBadges: null,
+      awardedBadges: [],
       badgeVisibility: null,
       widgetLayout: null,
       publicWidgets: JSON.parse(JSON.stringify(DEFAULT_PUBLIC_WIDGETS)),
@@ -595,7 +621,7 @@
       var calSeeded = seedCalendarEventsIfMissing(p);
       var visMig = normalizeBadgeVisibility(p);
       var afterLen = Array.isArray(p.awardedBadges) ? p.awardedBadges.length : -1;
-      if (created || before == null || afterLen > beforeLen || beforeVis == null || visMig.migrated || calSeeded) {
+      if (created || before == null || afterLen !== beforeLen || p._generatedBadgesCleared || beforeVis == null || visMig.migrated || calSeeded) {
         try {
           this.save(p);
         } catch (e) {}

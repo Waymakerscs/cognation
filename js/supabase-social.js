@@ -182,7 +182,7 @@
       customHtml: "",
       musicUrl: "",
       musicEnabled: true,
-      awardedBadges: null,
+      awardedBadges: [],
       badgeVisibility: null,
       quoteStickers: [],
       backgroundCollage: { layoutId: "none", cells: [] },
