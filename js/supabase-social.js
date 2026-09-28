@@ -216,11 +216,15 @@
   }
 
   function mapPost(row) {
-    var author = profileForId(row.author_profile_id);
+    var embedded = row && row.profiles;
+    if (Array.isArray(embedded)) embedded = embedded[0];
+    if (embedded && embedded.id) cacheProfile(embedded);
+    var author = profileForId(row.author_profile_id) || (embedded && embedded.id ? embedded : null);
     return {
       id: row.id,
       _remote: true,
       authorProfileId: row.author_profile_id,
+      authorUserId: author ? String(author.user_id || "") : "",
       authorName: author ? author.display_name : "Cognation member",
       handle: author ? author.handle : "",
       body: row.body || "",
@@ -243,23 +247,61 @@
     emit("cognation:remote-feed-loaded", { count: posts.length });
   }
 
-  function myProfileIds() {
+  function sameId(left, right) {
+    var a = String(left || "").trim().toLowerCase();
+    var b = String(right || "").trim().toLowerCase();
+    return !!a && a === b;
+  }
+
+  function addProfileId(ids, id) {
+    id = String(id || "");
+    if (!id) return;
+    if (!ids.some(function (existing) { return sameId(existing, id); })) ids.push(id);
+  }
+
+  function ownedProfileIds() {
     var ids = [];
     var me = identity();
-    if (me && me.activeProfileId) ids.push(String(me.activeProfileId));
     (state.myProfiles || []).forEach(function (profile) {
-      if (!profile || !profile.id) return;
-      var id = String(profile.id);
-      if (ids.indexOf(id) < 0) ids.push(id);
+      if (profile) addProfileId(ids, profile.id);
     });
+    if (me && me.supabaseUserId) {
+      Object.keys(state.profiles).forEach(function (id) {
+        var profile = state.profiles[id];
+        if (profile && sameId(profile.user_id, me.supabaseUserId)) addProfileId(ids, profile.id);
+      });
+    }
+    return ids;
+  }
+
+  function myProfileIds() {
+    var ids = ownedProfileIds();
+    var me = identity();
+    if (me && me.activeProfileId) addProfileId(ids, me.activeProfileId);
     return ids;
   }
 
   function ownsPost(post) {
     if (!post || !active()) return false;
+    var me = identity();
     var authorId = String(post.authorProfileId || post.author_profile_id || "");
-    if (!authorId) return false;
-    return myProfileIds().indexOf(authorId) >= 0;
+    if (authorId && myProfileIds().some(function (id) { return sameId(id, authorId); })) return true;
+    var authorUser = String(post.authorUserId || post.author_user_id || "");
+    if (!authorUser && authorId) {
+      var author = profileForId(authorId);
+      if (author) authorUser = String(author.user_id || "");
+    }
+    if (authorUser) return !!(me && sameId(authorUser, me.supabaseUserId));
+    var handle = normalizeHandle(post.handle || "");
+    if (
+      handle &&
+      (state.myProfiles || []).some(function (profile) {
+        return profile && profile.handle === handle;
+      })
+    ) {
+      return true;
+    }
+    return false;
   }
 
   function deleteTowerPost(postId) {
@@ -287,10 +329,17 @@
 
   function refreshFeed() {
     if (!active()) return Promise.resolve([]);
-    return client()
-      .rest("tower_posts", {
-        query:
-          "select=id,author_profile_id,body,visibility,attachments,created_at&order=created_at.desc&limit=100",
+    var columns =
+      "id,author_profile_id,body,visibility,attachments,created_at,profiles(id,user_id,handle,display_name,kind)";
+    var plain = "id,author_profile_id,body,visibility,attachments,created_at";
+    function load(select) {
+      return client().rest("tower_posts", {
+        query: "select=" + select + "&order=created_at.desc&limit=100",
+      });
+    }
+    return load(columns)
+      .catch(function () {
+        return load(plain);
       })
       .then(function (rows) {
         var posts = (Array.isArray(rows) ? rows : []).map(mapPost);
@@ -652,8 +701,16 @@
       .then(refreshMyProfiles)
       .then(function () {
         var current = session();
-        if (!current.activeProfileId && state.myProfiles[0]) {
-          setActiveProfile(state.myProfiles[0]);
+        var known = ownedProfileIds();
+        var activeIsMine =
+          current &&
+          known.some(function (id) { return sameId(id, current.activeProfileId); });
+        if (!activeIsMine && state.myProfiles[0]) {
+          var prefer =
+            state.myProfiles.filter(function (profile) {
+              return profile && profile.kind === ((current && current.profileKind) || "personal");
+            })[0] || state.myProfiles[0];
+          setActiveProfile(prefer);
         }
         return Promise.all([refreshFeed(), refreshFriends(), refreshNotifications()]);
       })

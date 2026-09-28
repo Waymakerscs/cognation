@@ -474,6 +474,9 @@
 
   function hydrateSessionProfile(session) {
     if (!session || !session.username) return session;
+    /* A Supabase profile id is not in the local demo book. Replacing it
+       makes the news feed treat her own posts as someone else's. */
+    if (session.source === "supabase") return session;
     if (window.CognationAccounts) {
       try {
         window.CognationAccounts.ensureSeeded();

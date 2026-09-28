@@ -1483,6 +1483,12 @@
     document.addEventListener("cognation:tower-updated", function () {
       if (editionId === "local" || editionId === "statewide") renderFeed();
     });
+    document.addEventListener("cognation:session-started", function () {
+      if (editionId === "local" || editionId === "statewide") renderFeed();
+    });
+    document.addEventListener("cognation:active-profile-changed", function () {
+      if (editionId === "local" || editionId === "statewide") renderFeed();
+    });
     root.addEventListener("click", function (ev) {
       var del = ev.target && ev.target.closest("[data-news-delete]");
       if (!del || !root.contains(del)) return;
