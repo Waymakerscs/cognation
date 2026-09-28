@@ -1070,6 +1070,9 @@
         '">' +
         escapeHtml(formatTime(post.createdAt)) +
         "</time>" +
+        (post.mine
+          ? '<button type="button" class="news-delete-btn" data-news-delete aria-label="Delete your post">×</button>'
+          : "") +
         "</header>" +
         (function () {
           var caption = String(post.body || "").trim();
@@ -1097,10 +1100,7 @@
           : "") +
         sourceLine +
         (post.mine
-          ? '<footer class="news-report-bar news-own-actions">' +
-            '<button type="button" class="news-delete-btn" data-news-delete aria-label="Delete your post">×</button>' +
-            '<span class="news-report-status" data-news-delete-status hidden role="status"></span>' +
-            "</footer>"
+          ? '<span class="news-report-status" data-news-delete-status hidden role="status"></span>'
           : '<footer class="news-report-bar" data-news-report>' +
             '<button type="button" class="btn btn-secondary news-report-btn" data-news-report-toggle>Report</button>' +
             '<div class="news-report-menu" data-news-report-menu hidden>' +

@@ -259,6 +259,29 @@
     if (!ids.some(function (existing) { return sameId(existing, id); })) ids.push(id);
   }
 
+  function rememberedProfileIds() {
+    var me = identity();
+    if (!me || !me.supabaseUserId) return [];
+    try {
+      var raw = JSON.parse(localStorage.getItem("cognation.my-profile-ids.v1") || "null");
+      if (!raw || !sameId(raw.userId, me.supabaseUserId) || !Array.isArray(raw.ids)) return [];
+      return raw.ids;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function rememberProfileIds(ids) {
+    var me = identity();
+    if (!me || !me.supabaseUserId) return;
+    try {
+      localStorage.setItem(
+        "cognation.my-profile-ids.v1",
+        JSON.stringify({ userId: me.supabaseUserId, ids: ids || [] })
+      );
+    } catch (e) {}
+  }
+
   function ownedProfileIds() {
     var ids = [];
     var me = identity();
@@ -271,6 +294,9 @@
         if (profile && sameId(profile.user_id, me.supabaseUserId)) addProfileId(ids, profile.id);
       });
     }
+    rememberedProfileIds().forEach(function (id) {
+      addProfileId(ids, id);
+    });
     return ids;
   }
 
@@ -281,26 +307,52 @@
     return ids;
   }
 
+  function namesForSession(me) {
+    var names = [];
+    function add(value) {
+      var text = String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/^@/, "");
+      if (text && names.indexOf(text) < 0) names.push(text);
+    }
+    if (me) {
+      add(me.profileDisplayName);
+      add(me.profileHandle);
+    }
+    (state.myProfiles || []).forEach(function (profile) {
+      if (!profile) return;
+      add(profile.display_name);
+      add(profile.handle);
+    });
+    return names;
+  }
+
   function ownsPost(post) {
     if (!post || !active()) return false;
     var me = identity();
     var authorId = String(post.authorProfileId || post.author_profile_id || "");
-    if (authorId && myProfileIds().some(function (id) { return sameId(id, authorId); })) return true;
+    var knownIds = ownedProfileIds();
     var authorUser = String(post.authorUserId || post.author_user_id || "");
     if (!authorUser && authorId) {
       var author = profileForId(authorId);
       if (author) authorUser = String(author.user_id || "");
     }
+    if (authorId && knownIds.some(function (id) { return sameId(id, authorId); })) return true;
+    if (me && authorId && sameId(me.activeProfileId, authorId)) return true;
     if (authorUser) return !!(me && sameId(authorUser, me.supabaseUserId));
+    /* An author id that is not hers belongs to someone else. Name matching is
+       only for posts that never received an author id. */
+    if (authorId) return false;
     var handle = normalizeHandle(post.handle || "");
-    if (
-      handle &&
-      (state.myProfiles || []).some(function (profile) {
-        return profile && profile.handle === handle;
-      })
-    ) {
-      return true;
-    }
+    var authorName = String(post.authorName || "")
+      .trim()
+      .toLowerCase()
+      .replace(/^@/, "");
+    var names = namesForSession(me);
+    if (handle && names.indexOf(handle) >= 0) return true;
+    if (authorName && authorName !== "cognation member" && names.indexOf(authorName) >= 0) return true;
+    if (authorName === "you") return true;
     return false;
   }
 
@@ -700,6 +752,7 @@
     return selectProfiles()
       .then(refreshMyProfiles)
       .then(function () {
+        rememberProfileIds(ownedProfileIds());
         var current = session();
         var known = ownedProfileIds();
         var activeIsMine =

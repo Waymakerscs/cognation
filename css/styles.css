@@ -10721,3 +10721,27 @@ a.login-entry-btn {
   opacity: 1 !important;
   background: transparent !important;
 }
+
+/* The shared button rule washes the × out. Keep it a dark mark on a light chip. */
+#panel-news .news-delete-btn,
+#panel-tower .news-delete-btn,
+.commune-feed-meta .news-delete-btn,
+.tower-post-meta .news-delete-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+  margin-left: 0.5rem;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  border: 1px solid #c45a5a !important;
+  background: #fff5f9 !important;
+  color: #3a1020 !important;
+  box-shadow: none !important;
+  font-size: 1.15rem !important;
+  line-height: 1 !important;
+  cursor: pointer;
+  visibility: visible !important;
+  opacity: 1 !important;
+}

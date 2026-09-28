@@ -1252,6 +1252,16 @@
       var article = document.createElement("article");
       article.className = "tower-post";
       article.setAttribute("data-tower-post", post.id || "");
+      var mine = false;
+      try {
+        if (
+          window.CognationSupabaseSocial &&
+          typeof window.CognationSupabaseSocial.ownsPost === "function"
+        ) {
+          mine = !!window.CognationSupabaseSocial.ownsPost(post);
+        }
+      } catch (eMine) {}
+      if (mine) article.setAttribute("data-news-own", "true");
       article.innerHTML =
         '<header class="tower-post-meta">' +
         '<span class="tower-author">' +
@@ -1261,7 +1271,11 @@
         escapeHtml(post.createdAt) +
         '">' +
         escapeHtml(formatTime(post.createdAt)) +
-        "</time></header>" +
+        "</time>" +
+        (mine
+          ? '<button type="button" class="news-delete-btn" data-news-delete aria-label="Delete your post">×</button>'
+          : "") +
+        "</header>" +
         (String(post.body || "").trim()
           ? '<p class="tower-post-body">' + escapeHtml(String(post.body).trim()) + "</p>"
           : "") +
@@ -6484,6 +6498,22 @@
 
     document.addEventListener("cognation:tower-updated", function () {
       renderFeed(root);
+    });
+    root.addEventListener("click", function (ev) {
+      var del = ev.target && ev.target.closest("[data-news-delete]");
+      if (!del || !root.contains(del)) return;
+      ev.preventDefault();
+      var article = del.closest("[data-tower-post]");
+      var postId = article && article.getAttribute("data-tower-post");
+      if (!postId || !window.CognationSupabaseSocial || !window.CognationSupabaseSocial.deleteTowerPost) return;
+      del.disabled = true;
+      window.CognationSupabaseSocial.deleteTowerPost(postId)
+        .then(function () {
+          renderFeed(root);
+        })
+        .catch(function () {
+          del.disabled = false;
+        });
     });
     document.addEventListener("cognation:remote-profile-loaded", function () {
       renderProfileChrome(root);
