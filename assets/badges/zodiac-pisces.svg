@@ -1,8 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Pisces">
-  <circle cx="60" cy="60" r="54" fill="#fff7f2" stroke="#3d2c38" stroke-width="1.6"/>
-  <path d="M20 64c0-26 16-42 40-44 26-2 42 14 42 40 0 24-16 42-42 44-24 2-40-16-40-40z" fill="none" stroke="#e7a8bc" stroke-width="1.1" stroke-linecap="round"/>
-  <g fill="none" stroke="#3d2c38" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M26 32c8 4 8 14 0 16-4-6-4-12 0-16z" fill="#e7a8bc"/><path d="M22 40c6 8 2 14-4 10" stroke="#6f8f78"/><path d="M94 78c-8-2-8-12 0-14 4 6 4 12 0 14z" stroke="#6f8f78"/><circle cx="98" cy="70" r="1.5" fill="#e7a8bc" stroke="none"/>
-    <g stroke-width="1.7"><path d="M48 40c-12 10-12 30 0 40"/><path d="M72 40c12 10 12 30 0 40"/><path d="M40 60h40"/></g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Pisces">
+  <circle cx="100" cy="100" r="94" fill="#f6f0e6" stroke="#1a1a1a" stroke-width="2.25"/>
+  <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" transform="translate(149.0 141.1) rotate(40)">
+    <path d="M0 0c10-2 16 6 12 12"/>
+    <path d="M4 2c8-8 16-4 14 4"/>
+    <path d="M8-2c4-8 12-6 12 2"/>
+  </g>
+  <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.7">
+    <path d="M70 64c-26 36-26 36 0 72"/>
+    <path d="M130 64c26 36 26 36 0 72"/>
+    <path d="M54 100h92"/>
   </g>
 </svg>

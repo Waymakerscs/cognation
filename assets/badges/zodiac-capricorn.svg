@@ -1,8 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Capricorn">
-  <circle cx="60" cy="60" r="54" fill="#fff7f2" stroke="#3d2c38" stroke-width="1.6"/>
-  <path d="M22 58c0-22 16-38 38-40 24-2 40 14 40 38 0 26-16 44-42 44-24 0-36-16-36-42z" fill="none" stroke="#e7a8bc" stroke-width="1.1" stroke-linecap="round"/>
-  <g fill="none" stroke="#3d2c38" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M24 44c10 2 12 12 4 14-8-2-10-10-4-14z" fill="#e7a8bc"/><path d="M22 56c8 6 6 12-2 10" stroke="#6f8f78"/><path d="M92 30c2 10-6 14-10 6 4-8 6-10 10-6z" stroke="#6f8f78"/>
-    <g stroke-width="1.7"><path d="M36 50c8-8 20-6 22 6 2 16-8 20-8 28"/><path d="M58 56c10 0 18 8 16 16-4 10 6 14 12 8"/><path d="M78 78c6 6 4 12-2 12"/></g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Capricorn">
+  <circle cx="100" cy="100" r="94" fill="#f6f0e6" stroke="#1a1a1a" stroke-width="2.25"/>
+  <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" transform="translate(160.1 78.1) rotate(-20)">
+    <path d="M0 0c10-2 16 6 12 12"/>
+    <path d="M4 2c8-8 16-4 14 4"/>
+    <path d="M8-2c4-8 12-6 12 2"/>
+  </g>
+  <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.7">
+    <path d="M62 68v46c0 34 48 34 48-8 0-16 20-10 16 8-4 18 22 14 16-4"/>
   </g>
 </svg>

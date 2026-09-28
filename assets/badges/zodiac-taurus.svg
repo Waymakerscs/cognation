@@ -1,8 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Taurus">
-  <circle cx="60" cy="60" r="54" fill="#fff7f2" stroke="#3d2c38" stroke-width="1.6"/>
-  <path d="M16 58c4-20 20-38 44-38 22 0 40 16 42 36 2 24-16 44-40 46-26 2-48-16-46-44z" fill="none" stroke="#e7a8bc" stroke-width="1.1" stroke-linecap="round"/>
-  <g fill="none" stroke="#3d2c38" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M90 34c-8 4-8 14 0 16 6-4 8-10 0-16z" fill="#e7a8bc" stroke="#3d2c38"/><path d="M88 42h8" stroke="#6f8f78"/><path d="M26 78c8-2 12 6 6 10-6 2-10-4-6-10z" stroke="#6f8f78"/><circle cx="30" cy="70" r="1.6" fill="#e7a8bc" stroke="none"/>
-    <g stroke-width="1.7"><circle cx="60" cy="68" r="14"/><path d="M40 48c6-16 34-16 40 0"/><path d="M46 46c-2-10 4-16 8-14"/><path d="M74 46c2-10-4-16-8-14"/></g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Taurus">
+  <circle cx="100" cy="100" r="94" fill="#f6f0e6" stroke="#1a1a1a" stroke-width="2.25"/>
+  <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" transform="translate(149.0 58.9) rotate(-40)">
+    <path d="M0 0c10-2 16 6 12 12"/>
+    <path d="M4 2c8-8 16-4 14 4"/>
+    <path d="M8-2c4-8 12-6 12 2"/>
+  </g>
+  <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.7">
+    <circle cx="100" cy="118" r="22"/>
+    <path d="M78 108c-2-32 14-48 22-32 8-16 24 0 22 32"/>
   </g>
 </svg>

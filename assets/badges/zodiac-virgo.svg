@@ -1,8 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Virgo">
-  <circle cx="60" cy="60" r="54" fill="#fff7f2" stroke="#3d2c38" stroke-width="1.6"/>
-  <path d="M24 66c-2-24 12-42 36-44 26-2 40 12 42 36 2 22-12 40-36 42-26 2-42-12-42-34z" fill="none" stroke="#e7a8bc" stroke-width="1.1" stroke-linecap="round"/>
-  <g fill="none" stroke="#3d2c38" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M92 70c-2-12 8-16 12-8" stroke="#6f8f78"/><path d="M96 62c4-8 10-6 10 2" stroke="#6f8f78"/><path d="M24 34c8 2 10 12 2 14-6-4-8-10-2-14z" fill="#e7a8bc"/><path d="M22 46c6 4 4 10-2 8" stroke="#6f8f78"/>
-    <g stroke-width="1.7"><path d="M36 48v26M48 48v26M60 48c0 18 0 22 8 26 8 2 14-6 12-14"/><path d="M72 78c6 8 16 6 16-2"/></g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Virgo">
+  <circle cx="100" cy="100" r="94" fill="#f6f0e6" stroke="#1a1a1a" stroke-width="2.25"/>
+  <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" transform="translate(132.0 44.6) rotate(-60)">
+    <path d="M0 0c10-2 16 6 12 12"/>
+    <path d="M4 2c8-8 16-4 14 4"/>
+    <path d="M8-2c4-8 12-6 12 2"/>
+  </g>
+  <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.7">
+    <path d="M58 72v58"/>
+    <path d="M58 78c0 48 26 48 26-6V78"/>
+    <path d="M84 78c0 50 28 42 28 16 0-18 16-14 12 4-4 16-20 12-14-2"/>
   </g>
 </svg>
