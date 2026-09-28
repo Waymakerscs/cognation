@@ -57,6 +57,13 @@
   }
   function currentReporter() {
     try {
+      var live = localStorage.getItem("cognation.session.v2");
+      if (live) {
+        var session = JSON.parse(live);
+        if (session && (session.username || session.email)) {
+          return String(session.username || session.email);
+        }
+      }
       var raw = localStorage.getItem("cognation.session.demo.v1");
       if (raw) {
         var s = JSON.parse(raw);
@@ -93,8 +100,10 @@
   function normalizeReport(raw) {
     raw = raw || {};
     var reason = String(raw.reason || raw.reportReason || "").toLowerCase();
-    if (reason !== "harmful" && reason !== "untruthful") {
-      reason = reason.indexOf("truth") >= 0 ? "untruthful" : "harmful";
+    if (reason !== "harmful" && reason !== "untruthful" && reason !== "divisive") {
+      if (reason.indexOf("divis") >= 0) reason = "divisive";
+      else if (reason.indexOf("truth") >= 0) reason = "untruthful";
+      else reason = "harmful";
     }
     var id = String(raw.id || "");
     if (!id || id.indexOf("RPT-") !== 0) id = nextRptId();

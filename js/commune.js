@@ -1096,17 +1096,24 @@
           ? window.CognationFeedMedia.html(post.attachments)
           : "") +
         sourceLine +
-        '<footer class="news-report-bar" data-news-report>' +
-        '<button type="button" class="btn btn-secondary news-report-btn" data-news-report-toggle>Report</button>' +
-        '<div class="news-report-menu" data-news-report-menu hidden>' +
-        '<button type="button" class="news-report-option" data-news-report-reason="harmful">Harmful</button>' +
-        '<button type="button" class="news-report-option" data-news-report-reason="untruthful">Untruthful</button>' +
-        "</div>" +
-        '<span class="news-report-status" data-news-report-status hidden role="status"></span>' +
-        "</footer>";
+        (post.mine
+          ? '<footer class="news-report-bar news-own-actions">' +
+            '<button type="button" class="news-delete-btn" data-news-delete aria-label="Delete your post">×</button>' +
+            '<span class="news-report-status" data-news-delete-status hidden role="status"></span>' +
+            "</footer>"
+          : '<footer class="news-report-bar" data-news-report>' +
+            '<button type="button" class="btn btn-secondary news-report-btn" data-news-report-toggle>Report</button>' +
+            '<div class="news-report-menu" data-news-report-menu hidden>' +
+            '<button type="button" class="news-report-option" data-news-report-reason="untruthful">Untruthful</button>' +
+            '<button type="button" class="news-report-option" data-news-report-reason="harmful">Harmful</button>' +
+            '<button type="button" class="news-report-option" data-news-report-reason="divisive">Divisive</button>' +
+            "</div>" +
+            '<span class="news-report-status" data-news-report-status hidden role="status"></span>' +
+            "</footer>");
       var postId = post.id || ("news-" + String(post.createdAt || Date.now()) + "-" + Math.random().toString(36).slice(2, 7));
       article.setAttribute("data-news-post", "");
-      article.setAttribute("data-post-id", postId);
+      article.setAttribute("data-post-id", post.towerPostId || postId);
+      if (post.mine) article.setAttribute("data-news-own", "true");
       if (window.CognationFeedMedia && typeof window.CognationFeedMedia.paint === "function") {
         window.CognationFeedMedia.paint(article);
       }
@@ -1232,8 +1239,19 @@
               " — FoF reach beyond immediate friends (e.g. 400+500≈900 Local feeds); selected by News.";
           }
         }
+        var owned = false;
+        try {
+          if (
+            window.CognationSupabaseSocial &&
+            typeof window.CognationSupabaseSocial.ownsPost === "function"
+          ) {
+            owned = !!window.CognationSupabaseSocial.ownsPost(p);
+          }
+        } catch (eOwn) {}
         return {
           id: "from-tower-" + scope + "-" + p.id,
+          towerPostId: p.id,
+          authorProfileId: p.authorProfileId || "",
           authorName: author,
           body: body,
           createdAt: p.createdAt,
@@ -1245,6 +1263,7 @@
           likes: p.likes || 0,
           seeded: true,
           fromTower: true,
+          mine: owned,
           attachments: atts,
         };
       });
@@ -1463,6 +1482,32 @@
     });
     document.addEventListener("cognation:tower-updated", function () {
       if (editionId === "local" || editionId === "statewide") renderFeed();
+    });
+    root.addEventListener("click", function (ev) {
+      var del = ev.target && ev.target.closest("[data-news-delete]");
+      if (!del || !root.contains(del)) return;
+      ev.preventDefault();
+      var article = del.closest("[data-news-post]");
+      var postId = article && article.getAttribute("data-post-id");
+      var status = article && article.querySelector("[data-news-delete-status]");
+      if (!postId || !window.CognationSupabaseSocial || !window.CognationSupabaseSocial.deleteTowerPost) {
+        return;
+      }
+      del.disabled = true;
+      window.CognationSupabaseSocial.deleteTowerPost(postId)
+        .then(function () {
+          if (status) {
+            status.hidden = false;
+            status.textContent = "Deleted.";
+          }
+        })
+        .catch(function (error) {
+          del.disabled = false;
+          if (status) {
+            status.hidden = false;
+            status.textContent = (error && error.message) || "Could not delete that post.";
+          }
+        });
     });
     if (editionId === "statewide") loadStatewideNews();
     if (editionId === "local") loadLocalNews();

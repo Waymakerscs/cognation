@@ -9338,6 +9338,24 @@ body { padding-top: 0 !important; }
 .news-report-option:hover,
 .news-report-option:focus-visible { background: #FF907D; outline: none; }
 .news-report-status { font-size: 0.75rem; color: #9a6b7d; }
+.news-delete-btn {
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid #c45a5a;
+  background: #fff5f9;
+  color: #4a2c3a;
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.news-delete-btn:hover,
+.news-delete-btn:focus-visible {
+  background: #ff907d;
+  outline: none;
+}
 
 /* CGN-011 fact cards */
 .commune-card[data-card-type="random-fact"],

@@ -243,6 +243,48 @@
     emit("cognation:remote-feed-loaded", { count: posts.length });
   }
 
+  function myProfileIds() {
+    var ids = [];
+    var me = identity();
+    if (me && me.activeProfileId) ids.push(String(me.activeProfileId));
+    (state.myProfiles || []).forEach(function (profile) {
+      if (!profile || !profile.id) return;
+      var id = String(profile.id);
+      if (ids.indexOf(id) < 0) ids.push(id);
+    });
+    return ids;
+  }
+
+  function ownsPost(post) {
+    if (!post || !active()) return false;
+    var authorId = String(post.authorProfileId || post.author_profile_id || "");
+    if (!authorId) return false;
+    return myProfileIds().indexOf(authorId) >= 0;
+  }
+
+  function deleteTowerPost(postId) {
+    var me = identity();
+    postId = String(postId || "");
+    if (!me) return Promise.reject(new Error("Sign in before deleting a post."));
+    if (!/^[0-9a-f-]{36}$/i.test(postId)) {
+      return Promise.reject(new Error("That post cannot be deleted."));
+    }
+    return client()
+      .rest("tower_posts", {
+        method: "DELETE",
+        query: "id=eq." + encodeURIComponent(postId),
+        prefer: "return=representation",
+      })
+      .then(function (rows) {
+        if (!Array.isArray(rows) || !rows.length) {
+          return Promise.reject(
+            new Error("The post was not deleted. Authors are not allowed to delete posts yet.")
+          );
+        }
+        return refreshFeed();
+      });
+  }
+
   function refreshFeed() {
     if (!active()) return Promise.resolve([]);
     return client()
@@ -641,6 +683,8 @@
     refreshFriends: refreshFriends,
     refreshNotifications: refreshNotifications,
     createTowerPost: createTowerPost,
+    deleteTowerPost: deleteTowerPost,
+    ownsPost: ownsPost,
     updateCurrentProfile: updateCurrentProfile,
     createProfessionalProfile: createProfessionalProfile,
     acceptFriendRequest: acceptFriendRequest,
