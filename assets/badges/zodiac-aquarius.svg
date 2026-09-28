@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Aquarius">
+  <circle cx="100" cy="100" r="94" fill="#f6f0e6" stroke="#1a1a1a" stroke-width="2.25"/>
+  <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" transform="translate(58.9 51.0) rotate(-130)">
+    <path d="M0 0c10-2 16 6 12 12"/>
+    <path d="M4 2c8-8 16-4 14 4"/>
+    <path d="M8-2c4-8 12-6 12 2"/>
+  </g>
+  <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.7">
+    <path d="M52 90l22-16 22 16 22-16 22 16"/>
+    <path d="M52 118l22-16 22 16 22-16 22 16"/>
+  </g>
+</svg>

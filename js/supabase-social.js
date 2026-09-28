@@ -57,6 +57,25 @@
       .slice(0, 40);
   }
 
+  function accountEmailBook() {
+    if (client() && client().readEmailBook) return client().readEmailBook() || {};
+    try {
+      return JSON.parse(localStorage.getItem("cognation.account.emails.v1") || "null") || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function emailForProfile(profile) {
+    var stored = String(profile.email || "").trim().toLowerCase();
+    if (stored) return stored;
+    var book = accountEmailBook();
+    if (!book || !profile.user_id || String(book.userId || "") !== String(profile.user_id)) return "";
+    return profile.kind === "professional"
+      ? String(book.professionalEmail || "").trim().toLowerCase()
+      : String(book.personalEmail || "").trim().toLowerCase();
+  }
+
   function cacheProfile(profile) {
     if (!profile || !profile.id) return null;
     var item = {
@@ -66,6 +85,7 @@
       handle: normalizeHandle(profile.handle),
       display_name: String(profile.display_name || "Member").slice(0, 80),
       bio: String(profile.bio || "").slice(0, 280),
+      email: emailForProfile(profile),
     };
     state.profiles[item.id] = item;
     if (item.handle) state.handles[item.handle] = item.id;
@@ -141,21 +161,31 @@
       displayName: profile.display_name,
       handle: profile.handle,
       slogan: profile.bio,
+      profileEmail: profile.email || "",
       socialLinks: {},
       avatarDataUrl: "",
       badges: { role: "", interest: "", status: "" },
       featuredFriendIds: [],
       friendsDisplayCount: 3,
+      /* Same scrapbook widgets as the demo page, on both profile kinds. */
       publicWidgets: {
         identity: true,
-        slogan: !!profile.bio,
-        social: false,
-        music: false,
-        badges: false,
+        slogan: true,
+        social: true,
+        music: true,
+        badges: true,
         friends: true,
-        html: false,
+        html: true,
         calendar: true,
       },
+      widgetLayout: null,
+      customHtml: "",
+      musicUrl: "",
+      musicEnabled: true,
+      awardedBadges: [],
+      badgeVisibility: null,
+      quoteStickers: [],
+      backgroundCollage: { layoutId: "none", cells: [] },
     };
   }
 
@@ -186,11 +216,15 @@
   }
 
   function mapPost(row) {
-    var author = profileForId(row.author_profile_id);
+    var embedded = row && row.profiles;
+    if (Array.isArray(embedded)) embedded = embedded[0];
+    if (embedded && embedded.id) cacheProfile(embedded);
+    var author = profileForId(row.author_profile_id) || (embedded && embedded.id ? embedded : null);
     return {
       id: row.id,
       _remote: true,
       authorProfileId: row.author_profile_id,
+      authorUserId: author ? String(author.user_id || "") : "",
       authorName: author ? author.display_name : "Cognation member",
       handle: author ? author.handle : "",
       body: row.body || "",
@@ -213,18 +247,168 @@
     emit("cognation:remote-feed-loaded", { count: posts.length });
   }
 
-  function refreshFeed() {
-    if (!active()) return Promise.resolve([]);
+  function sameId(left, right) {
+    var a = String(left || "").trim().toLowerCase();
+    var b = String(right || "").trim().toLowerCase();
+    return !!a && a === b;
+  }
+
+  function addProfileId(ids, id) {
+    id = String(id || "");
+    if (!id) return;
+    if (!ids.some(function (existing) { return sameId(existing, id); })) ids.push(id);
+  }
+
+  function rememberedProfileIds() {
+    var me = identity();
+    if (!me || !me.supabaseUserId) return [];
+    try {
+      var raw = JSON.parse(localStorage.getItem("cognation.my-profile-ids.v1") || "null");
+      if (!raw || !sameId(raw.userId, me.supabaseUserId) || !Array.isArray(raw.ids)) return [];
+      return raw.ids;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function rememberProfileIds(ids) {
+    var me = identity();
+    if (!me || !me.supabaseUserId) return;
+    try {
+      localStorage.setItem(
+        "cognation.my-profile-ids.v1",
+        JSON.stringify({ userId: me.supabaseUserId, ids: ids || [] })
+      );
+    } catch (e) {}
+  }
+
+  function ownedProfileIds() {
+    var ids = [];
+    var me = identity();
+    (state.myProfiles || []).forEach(function (profile) {
+      if (profile) addProfileId(ids, profile.id);
+    });
+    if (me && me.supabaseUserId) {
+      Object.keys(state.profiles).forEach(function (id) {
+        var profile = state.profiles[id];
+        if (profile && sameId(profile.user_id, me.supabaseUserId)) addProfileId(ids, profile.id);
+      });
+    }
+    rememberedProfileIds().forEach(function (id) {
+      addProfileId(ids, id);
+    });
+    return ids;
+  }
+
+  function myProfileIds() {
+    var ids = ownedProfileIds();
+    var me = identity();
+    if (me && me.activeProfileId) addProfileId(ids, me.activeProfileId);
+    return ids;
+  }
+
+  function namesForSession(me) {
+    var names = [];
+    function add(value) {
+      var text = String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/^@/, "");
+      if (text && names.indexOf(text) < 0) names.push(text);
+    }
+    if (me) {
+      add(me.profileDisplayName);
+      add(me.profileHandle);
+    }
+    (state.myProfiles || []).forEach(function (profile) {
+      if (!profile) return;
+      add(profile.display_name);
+      add(profile.handle);
+    });
+    return names;
+  }
+
+  function ownsPost(post) {
+    if (!post || !active()) return false;
+    var me = identity();
+    var authorId = String(post.authorProfileId || post.author_profile_id || "");
+    var knownIds = ownedProfileIds();
+    var authorUser = String(post.authorUserId || post.author_user_id || "");
+    if (!authorUser && authorId) {
+      var author = profileForId(authorId);
+      if (author) authorUser = String(author.user_id || "");
+    }
+    if (authorId && knownIds.some(function (id) { return sameId(id, authorId); })) return true;
+    if (me && authorId && sameId(me.activeProfileId, authorId)) return true;
+    if (authorUser) return !!(me && sameId(authorUser, me.supabaseUserId));
+    /* An author id that is not hers belongs to someone else. Name matching is
+       only for posts that never received an author id. */
+    if (authorId) return false;
+    var handle = normalizeHandle(post.handle || "");
+    var authorName = String(post.authorName || "")
+      .trim()
+      .toLowerCase()
+      .replace(/^@/, "");
+    var names = namesForSession(me);
+    if (handle && names.indexOf(handle) >= 0) return true;
+    if (authorName && authorName !== "cognation member" && names.indexOf(authorName) >= 0) return true;
+    if (authorName === "you") return true;
+    return false;
+  }
+
+  function deleteTowerPost(postId) {
+    var me = identity();
+    postId = String(postId || "");
+    if (!me) return Promise.reject(new Error("Sign in before deleting a post."));
+    if (!/^[0-9a-f-]{36}$/i.test(postId)) {
+      return Promise.reject(new Error("That post cannot be deleted."));
+    }
     return client()
       .rest("tower_posts", {
-        query:
-          "select=id,author_profile_id,body,visibility,attachments,created_at&order=created_at.desc&limit=100",
+        method: "DELETE",
+        query: "id=eq." + encodeURIComponent(postId),
+        prefer: "return=representation",
+      })
+      .then(function (rows) {
+        if (!Array.isArray(rows) || !rows.length) {
+          return Promise.reject(
+            new Error("The post was not deleted. Authors are not allowed to delete posts yet.")
+          );
+        }
+        return refreshFeed();
+      });
+  }
+
+  function refreshFeed() {
+    if (!active()) return Promise.resolve([]);
+    var columns =
+      "id,author_profile_id,body,visibility,attachments,created_at,profiles(id,user_id,handle,display_name,kind)";
+    var plain = "id,author_profile_id,body,visibility,attachments,created_at";
+    function load(select) {
+      return client().rest("tower_posts", {
+        query: "select=" + select + "&order=created_at.desc&limit=100",
+      });
+    }
+    return load(columns)
+      .catch(function () {
+        return load(plain);
       })
       .then(function (rows) {
         var posts = (Array.isArray(rows) ? rows : []).map(mapPost);
         replaceTowerFeed(posts);
         return posts;
       });
+  }
+
+  function attachmentIsPicture(attachment) {
+    var kind = String((attachment && attachment.kind) || "");
+    var type = String((attachment && attachment.type) || "");
+    var name = String((attachment && (attachment.name || attachment.label)) || "");
+    var src = String((attachment && (attachment.src || attachment.url || attachment.dataUrl)) || "");
+    if (kind === "photo" || kind === "art") return true;
+    if (/^image\//i.test(type)) return true;
+    if (/^data:image\//i.test(src)) return true;
+    return /\.(png|jpe?g|gif|webp|bmp|avif|svg|heic|heif)$/i.test(name);
   }
 
   function createTowerPost(fields) {
@@ -234,26 +418,36 @@
     if (!me || !profileId) {
       return Promise.reject(new Error("Sign in before posting to Tower."));
     }
+    var attachments = Array.isArray(fields && fields.attachments)
+      ? fields.attachments.map(function (attachment) {
+          var item = {
+            kind: String(attachment.kind || "document"),
+            label: String(attachment.label || attachment.name || "Attachment").slice(0, 160),
+            name: String(attachment.name || attachment.label || "").slice(0, 160),
+            type: String(attachment.type || "").slice(0, 80),
+          };
+          if (attachment.size != null) item.size = attachment.size;
+          if (attachment.src) item.src = String(attachment.src);
+          return item;
+        })
+      : [];
+    /* tower_posts_body_check is char_length(body) between 1 and 2000.
+       A picture does not need a status. One space satisfies the check and
+       is not shown as a caption. The picture stays in attachments. */
+    if (!body && attachments.some(attachmentIsPicture)) body = " ";
+    else if (!body && attachments.length) body = "Shared a file";
+    else body = Array.from(body).slice(0, 2000).join("");
     if (!body) {
-      return Promise.reject(
-        new Error("Add a written update before posting. File uploads are not connected yet.")
-      );
+      return Promise.reject(new Error("Add a written update or a picture."));
     }
     return client()
       .rest("tower_posts", {
         method: "POST",
         body: {
           author_profile_id: profileId,
-          body: body.slice(0, 2000),
+          body: body,
           visibility: "friends",
-          attachments: Array.isArray(fields && fields.attachments)
-            ? fields.attachments.map(function (attachment) {
-                return {
-                  kind: String(attachment.kind || "document"),
-                  label: String(attachment.label || attachment.name || "Attachment").slice(0, 160),
-                };
-              })
-            : [],
+          attachments: attachments,
         },
       })
       .then(function () {
@@ -469,6 +663,48 @@
       });
   }
 
+  function deliverNotificationEmails(notifications) {
+    var config = window.CognationConfig || {};
+    var book = accountEmailBook();
+    var me = identity();
+    var personal = String(
+      book.personalEmail || (me && me.username) || ""
+    )
+      .trim()
+      .toLowerCase();
+    var professional = String(book.professionalEmail || "")
+      .trim()
+      .toLowerCase();
+    var emails = [];
+    if (personal.indexOf("@") > 0) emails.push(personal);
+    if (professional.indexOf("@") > 0 && emails.indexOf(professional) < 0) {
+      emails.push(professional);
+    }
+    var pending = (notifications || []).filter(function (note) {
+      return note && !note.read_at;
+    });
+    if (!pending.length || !emails.length) {
+      return { ok: true, sent: 0, emails: emails };
+    }
+    /* The app stores notifications in Supabase and renders them in Tower.
+       There is no mail provider in this project to deliver those as email. */
+    if (!config.emailApiUrl || !config.emailApiKey) {
+      return {
+        ok: false,
+        sent: 0,
+        emails: emails,
+        missing:
+          "No email provider or API key. In-app notifications are stored, but they are not emailed to the personal and professional addresses.",
+      };
+    }
+    return {
+      ok: false,
+      sent: 0,
+      emails: emails,
+      missing: "Email settings are present but this project has no mail sender to call.",
+    };
+  }
+
   function refreshNotifications() {
     var me = identity();
     if (!me) return Promise.resolve({ notifications: [], requests: [] });
@@ -496,6 +732,7 @@
           requests: Array.isArray(result[1]) ? result[1] : [],
         };
         renderConnections(payload);
+        state.emailDelivery = deliverNotificationEmails(payload.notifications);
         emit("cognation:remote-notifications-loaded", payload);
         return payload;
       });
@@ -515,9 +752,18 @@
     return selectProfiles()
       .then(refreshMyProfiles)
       .then(function () {
+        rememberProfileIds(ownedProfileIds());
         var current = session();
-        if (!current.activeProfileId && state.myProfiles[0]) {
-          setActiveProfile(state.myProfiles[0]);
+        var known = ownedProfileIds();
+        var activeIsMine =
+          current &&
+          known.some(function (id) { return sameId(id, current.activeProfileId); });
+        if (!activeIsMine && state.myProfiles[0]) {
+          var prefer =
+            state.myProfiles.filter(function (profile) {
+              return profile && profile.kind === ((current && current.profileKind) || "personal");
+            })[0] || state.myProfiles[0];
+          setActiveProfile(prefer);
         }
         return Promise.all([refreshFeed(), refreshFriends(), refreshNotifications()]);
       })
@@ -547,6 +793,8 @@
     refreshFriends: refreshFriends,
     refreshNotifications: refreshNotifications,
     createTowerPost: createTowerPost,
+    deleteTowerPost: deleteTowerPost,
+    ownsPost: ownsPost,
     updateCurrentProfile: updateCurrentProfile,
     createProfessionalProfile: createProfessionalProfile,
     acceptFriendRequest: acceptFriendRequest,

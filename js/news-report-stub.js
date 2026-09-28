@@ -1,6 +1,6 @@
 /**
  * CGN-009 — NEWS report control (demo).
- * Hooks: [data-news-report], [data-news-report-reason="harmful|untruthful"],
+ * Hooks: [data-news-report], [data-news-report-reason="harmful|untruthful|divisive"],
  * [data-news-post] + data-post-id. Queues via window.CognationModeration.enqueue.
  * No user bans.
  */
@@ -53,7 +53,7 @@
       if (!reasonBtn) return;
       ev.preventDefault();
       var reason = reasonBtn.getAttribute("data-news-report-reason");
-      if (reason !== "harmful" && reason !== "untruthful") return;
+      if (reason !== "harmful" && reason !== "untruthful" && reason !== "divisive") return;
       var bar2 = reasonBtn.closest("[data-news-report]");
       var post = closestPost(reasonBtn);
       var postId = post && post.getAttribute("data-post-id");

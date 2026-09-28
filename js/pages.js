@@ -3,7 +3,8 @@
  *
  * Listings are created from local businesses within 15 miles of the person using
  * PAGES. This demo seeds Chicago-area businesses with lat/lng and filters with
- * haversine once browser geolocation is granted (or a downtown fallback).
+ * haversine from the browser location service. A denial leaves the directory
+ * empty. This release does not fall back to a stored State field or a fixed city.
  *
  * Do NOT call paid Google Places / Maps APIs from the client. A free backend can
  * replace fetchPagesListings() later; renderPages() already consumes that Promise.
@@ -78,9 +79,19 @@
   var LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
   var MILES_RADIUS = 15;
-  var DEFAULT_ORIGIN = { lat: 41.8781, lng: -87.6298, label: "downtown Chicago (demo fallback)" };
   var pagesOrigin = null;
   var pagesGeoPromise = null;
+
+  function liveOrigin(place) {
+    if (!place || typeof place.lat !== "number" || typeof place.lng !== "number") return null;
+    var label = [place.locality, place.state || place.region].filter(Boolean).join(", ");
+    return {
+      lat: place.lat,
+      lng: place.lng,
+      label: label || "your location",
+      source: "geo",
+    };
+  }
 
   function toRad(deg) {
     return (deg * Math.PI) / 180;
@@ -121,82 +132,41 @@
 
     pagesGeoPromise = new Promise(function (resolve) {
       function finish(origin) {
-        pagesOrigin = origin;
-        if (origin.source === "geo") {
+        pagesOrigin = origin || { source: "denied" };
+        if (origin && origin.source === "geo") {
           setPagesGeoStatus(
             root,
-            "Showing local businesses within 15 miles of your location.",
+            "Showing listings within 15 miles of " + origin.label + ".",
             "is-geo-ok"
           );
         } else {
           setPagesGeoStatus(
             root,
-            "Location unavailable or denied — showing demo businesses within 15 miles of " +
-              origin.label +
-              ". Enable location for your area.",
+            "Location was not allowed. PAGES uses the location service and does not fall back to a saved state.",
             "is-geo-fallback"
           );
         }
         resolve(origin);
       }
 
-      if (!navigator.geolocation) {
-        finish({
-          lat: DEFAULT_ORIGIN.lat,
-          lng: DEFAULT_ORIGIN.lng,
-          label: DEFAULT_ORIGIN.label,
-          source: "fallback",
-        });
+      var saved =
+        window.CognationLocation && window.CognationLocation.get
+          ? window.CognationLocation.get()
+          : null;
+      var fromSaved = liveOrigin(saved);
+      if (fromSaved) {
+        finish(fromSaved);
         return;
       }
-
-      var settled = false;
-      var timer = window.setTimeout(function () {
-        if (settled) return;
-        settled = true;
-        finish({
-          lat: DEFAULT_ORIGIN.lat,
-          lng: DEFAULT_ORIGIN.lng,
-          label: DEFAULT_ORIGIN.label,
-          source: "fallback",
-        });
-      }, 8000);
-
-      try {
-        navigator.geolocation.getCurrentPosition(
-          function (pos) {
-            if (settled) return;
-            settled = true;
-            window.clearTimeout(timer);
-            finish({
-              lat: pos.coords.latitude,
-              lng: pos.coords.longitude,
-              label: "your location",
-              source: "geo",
-            });
-          },
-          function () {
-            if (settled) return;
-            settled = true;
-            window.clearTimeout(timer);
-            finish({
-              lat: DEFAULT_ORIGIN.lat,
-              lng: DEFAULT_ORIGIN.lng,
-              label: DEFAULT_ORIGIN.label,
-              source: "fallback",
-            });
-          },
-          { enableHighAccuracy: false, maximumAge: 300000, timeout: 7000 }
-        );
-      } catch (err) {
-        window.clearTimeout(timer);
-        finish({
-          lat: DEFAULT_ORIGIN.lat,
-          lng: DEFAULT_ORIGIN.lng,
-          label: DEFAULT_ORIGIN.label,
-          source: "fallback",
-        });
+      if (!window.CognationLocation || !window.CognationLocation.request) {
+        finish(null);
+        return;
       }
+      window.CognationLocation.request().then(function (place) {
+        finish(liveOrigin(place));
+      }, function () {
+        finish(null);
+      });
     });
 
     return pagesGeoPromise;
@@ -208,14 +178,15 @@
    */
   function fetchPagesListings(category, query, origin) {
     return Promise.resolve(
-      filterDemoListings(category, query, origin || pagesOrigin || DEFAULT_ORIGIN)
+      filterDemoListings(category, query, origin || pagesOrigin)
     );
   }
 
   function filterDemoListings(category, query, origin) {
     var cat = (category || "All categories").trim();
     var q = (query || "").trim().toLowerCase();
-    var originPoint = origin || pagesOrigin || DEFAULT_ORIGIN;
+    var originPoint = origin || pagesOrigin;
+    if (!originPoint || originPoint.lat == null || originPoint.lng == null) return [];
     return DEMO_LISTINGS.filter(function (item) {
       if (cat && cat !== "All categories" && item.category !== cat) return false;
       var dist = milesBetween(originPoint, { lat: item.lat, lng: item.lng });
@@ -525,6 +496,12 @@
         window.setTimeout(refresh, 0);
       });
     }
+
+    document.addEventListener("cognation:live-location", function () {
+      pagesOrigin = null;
+      pagesGeoPromise = null;
+      refresh();
+    });
 
     refresh();
   }

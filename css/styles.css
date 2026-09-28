@@ -2159,7 +2159,7 @@ body.screen-break-open {
 }
 
 
-/* Fixed top: centered TOWER / NEWS / COMMUNE / PAGES + whisper Grok link */
+/* Fixed top: centered TOWER / NEWS / COMMUNE / PAGES, log out on the right */
 .app-topbar {
   position: fixed;
   top: 0;
@@ -2192,25 +2192,6 @@ body.screen-break-open {
   letter-spacing: 0.04em;
 }
 
-.grok-whisper {
-  /* sits in .app-topbar-actions */
-  justify-self: end;
-  margin-right: 0.25rem;
-  font-size: 8px;
-  line-height: 1.2;
-  color: var(--color-heading);
-  opacity: 0.18;
-  text-decoration: none;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-
-.grok-whisper:hover,
-.grok-whisper:focus-visible {
-  opacity: 0.55;
-  color: var(--color-accent-hover);
-}
-
 .app-topbar-actions {
   grid-column: 3;
   justify-self: end;
@@ -2219,9 +2200,6 @@ body.screen-break-open {
   gap: 0.65rem 0.85rem;
   flex-wrap: wrap;
   max-width: 100%;
-}
-.app-topbar .grok-whisper {
-  /* keep whisper in the actions cluster (was alone in col 3) */
 }
 .app-logout-btn {
   appearance: none;
@@ -2900,6 +2878,28 @@ body.login-gate-open .app-topbar {
   font-size: 0.65rem;
   margin-right: 0.25rem;
   color: var(--color-heading);
+}
+
+.tower-attachments {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.tower-attach--image {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.tower-attach-image,
+.commune-feed-image {
+  display: block;
+  width: 100%;
+  max-width: 36rem;
+  height: auto;
+  border-radius: 0.45rem;
 }
 
 
@@ -3765,7 +3765,7 @@ body.login-gate-open .app-topbar {
   box-shadow:
     0 3px 0 rgba(74, 44, 58, 0.06),
     0 6px 16px rgba(74, 44, 58, 0.12);
-  transform: rotate(var(--sticker-tilt, -2deg));
+  transform: rotate(var(--sticker-tilt, 0deg));
   touch-action: none;
   user-select: none;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
@@ -3838,7 +3838,7 @@ body.login-gate-open .app-topbar {
   box-shadow:
     0 3px 0 rgba(74, 44, 58, 0.06),
     0 6px 16px rgba(74, 44, 58, 0.12);
-  transform: rotate(var(--sticker-tilt, -2deg));
+  transform: rotate(var(--sticker-tilt, 0deg));
   touch-action: none;
   user-select: none;
   transition: box-shadow 0.15s ease, transform 0.15s ease;
@@ -4990,8 +4990,38 @@ body.tower-radio-scroll .tower-radio-side { display: block; }
   min-height: 3.2rem;
 }
 
+.tower-sticker--badges,
+.tower-sticker--friends,
+.tower-sticker--social {
+  display: none !important;
+}
+.tower-layout--scrapbook.is-sticker-stage > .tower-social-pin {
+  position: absolute;
+  left: var(--sticker-x, 8%);
+  top: var(--sticker-y, 24%);
+  z-index: var(--sticker-z, 16);
+  margin: 0;
+  transform: rotate(var(--sticker-tilt, 0deg));
+  touch-action: none;
+  user-select: none;
+  text-decoration: none;
+}
+[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-sticker,
+[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-friend-pin,
+[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-badge-pin,
+[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-social-pin,
+[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-sticker--badge-widget {
+  cursor: grab;
+  touch-action: none;
+}
+.tower-sticker--badge-widget img,
+.tower-badge-widget img {
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: auto;
+}
 .tower-sticker-handle {
-  display: none;
+  display: none !important;
   position: absolute;
   top: -0.45rem;
   right: -0.45rem;
@@ -5009,19 +5039,9 @@ body.tower-radio-scroll .tower-radio-side { display: block; }
   box-shadow: 0 2px 6px rgba(74, 44, 58, 0.2);
 }
 /* Owner on public side: always show ⋮⋮ drag handles (no Arrange mode) */
-[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-sticker-handle {
-  display: grid;
-  place-items: center;
-  pointer-events: auto;
-  width: 2rem;
-  height: 2rem;
-  top: -0.55rem;
-  right: -0.55rem;
-  font-size: 0.85rem;
-  z-index: 20;
-}
+[data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-sticker-handle,
 [data-tower-app][data-tower-is-owner="true"][data-tower-side="public"] .tower-sticker-handle[hidden] {
-  display: grid !important;
+  display: none !important;
 }
 [data-tower-app]:not([data-tower-is-owner="true"]) .tower-sticker-handle,
 [data-tower-app][data-tower-side="private"] .tower-sticker-handle {
@@ -9316,6 +9336,24 @@ body { padding-top: 0 !important; }
 .news-report-option:hover,
 .news-report-option:focus-visible { background: #FF907D; outline: none; }
 .news-report-status { font-size: 0.75rem; color: #9a6b7d; }
+.news-delete-btn {
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid #c45a5a;
+  background: #fff5f9;
+  color: #4a2c3a;
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.news-delete-btn:hover,
+.news-delete-btn:focus-visible {
+  background: #ff907d;
+  outline: none;
+}
 
 /* CGN-011 fact cards */
 .commune-card[data-card-type="random-fact"],
@@ -9529,7 +9567,6 @@ li, td, th, summary, figcaption {
   text-shadow: 0 0 14px rgba(177, 245, 255, 0.88);
 }
 
-.app-topbar-actions .grok-whisper,
 .app-topbar-actions .app-logout-btn {
   border: 1px solid rgba(197, 240, 255, 0.38) !important;
   border-radius: 999px !important;
@@ -9685,7 +9722,6 @@ button {
   .app-topbar .tablist [role="tab"],
   .app-topbar-shortcut { flex: 0 0 auto; font-size: 0.65rem; }
   .tabs.tabs--chrome .tab-panels { margin-top: 0.75rem; border-radius: 1rem 1rem 0 0; }
-  .app-topbar-actions .grok-whisper { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -10400,4 +10436,455 @@ body {
   background: transparent !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
+}
+
+/* Sign-in / sign-up: full COGNATION wordmark in the header face, and a submit
+   button that stays at the bottom of the panel instead of traveling with scroll. */
+.login-gate {
+  overflow: hidden !important;
+}
+
+.login-gate-panel,
+.login-gate--splash .login-gate-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
+  max-height: min(92svh, 52rem);
+}
+
+.login-gate-brand--splash {
+  container-type: inline-size;
+  flex: 0 0 auto;
+}
+
+.login-gate--splash .login-gate-brand--splash .login-gate-brand-name {
+  /* Same face and glow as .cognation-masthead-home inside the site. */
+  font-family: var(--cgn-ui) !important;
+  font-weight: 800 !important;
+  font-size: clamp(1.85rem, 12cqi, 3.35rem) !important;
+  letter-spacing: -0.11em !important;
+  line-height: 0.95 !important;
+  text-transform: uppercase;
+  color: #fff !important;
+  text-shadow: 0 0 26px rgba(189, 247, 255, 0.92), 0 0 90px rgba(211, 160, 255, 0.7) !important;
+  white-space: nowrap;
+  overflow: visible !important;
+  text-overflow: clip;
+  max-width: 100%;
+}
+
+.login-entry-switch {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.55rem;
+  margin: 0 0 1rem;
+}
+
+.login-entry-btn {
+  flex: 1 1 0;
+  min-height: 2.75rem;
+  border-radius: 999px !important;
+  cursor: pointer;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+}
+
+.login-entry-btn[aria-selected="true"] {
+  border-color: rgba(207, 248, 255, 0.7) !important;
+  background: linear-gradient(100deg, rgba(139, 237, 255, 0.7), rgba(204, 161, 255, 0.7)) !important;
+  color: #10132c !important;
+}
+
+.login-entry-btn[aria-selected="false"] {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fff !important;
+}
+
+a.login-entry-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  text-decoration: none !important;
+  border: 1px solid rgba(207, 248, 255, 0.7) !important;
+  background: linear-gradient(100deg, rgba(139, 237, 255, 0.7), rgba(204, 161, 255, 0.7)) !important;
+  color: #10132c !important;
+}
+
+#login-credentials-step,
+.login-form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.login-form-scroll {
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.login-form-actions {
+  position: static !important;
+  bottom: auto !important;
+  flex: 0 0 auto;
+  margin-top: 0.75rem;
+  background: transparent !important;
+}
+
+.tower-profile-email {
+  margin: 0.2rem 0 0;
+  text-align: center;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  word-break: break-word;
+}
+
+.login-profile-card-email {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  opacity: 0.85;
+  word-break: break-word;
+}
+
+/* Credential pages: keep the glowy wordmark, give the fillable boxes the panel. */
+.login-gate--splash:has(#login-form) .login-brain {
+  width: min(100%, 6.5rem);
+  margin: 0.05rem auto 0;
+}
+
+.login-gate--splash:has(#login-form) .login-gate-brand--splash {
+  margin-bottom: 0.2rem;
+}
+
+.login-gate--splash:has(#login-form) .login-gate-panel {
+  padding-top: 0.85rem;
+}
+
+.login-gate--splash:has(#login-form) .login-gate-desc {
+  margin-bottom: 0.45rem;
+}
+
+.login-form .form-group {
+  margin-bottom: 0.65rem;
+}
+
+.login-form input,
+.login-form select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  color: #fff !important;
+  background: rgba(6, 10, 32, 0.94) !important;
+  border: 1px solid rgba(168, 244, 255, 0.8) !important;
+}
+
+.login-form [hidden],
+.login-form input[hidden],
+.login-form select[hidden] {
+  display: none !important;
+}
+
+.login-form-scroll {
+  min-height: 14rem;
+  scrollbar-color: rgba(168, 244, 255, 0.75) transparent;
+}
+
+/* Email fields and the personal/professional choice cards: solid background, dark type. */
+.login-form input,
+.login-form select,
+.login-form option {
+  color: #16141c !important;
+  -webkit-text-fill-color: #16141c !important;
+  background: #f4f1ea !important;
+  background-color: #f4f1ea !important;
+}
+
+.login-form input::placeholder {
+  color: #3a3540 !important;
+  -webkit-text-fill-color: #3a3540 !important;
+  opacity: 1 !important;
+}
+
+.login-profile-card {
+  background: #f4f1ea !important;
+  color: #16141c !important;
+  border: 1px solid #16141c !important;
+}
+
+.login-profile-card-kind,
+.login-profile-card-name,
+.login-profile-card-handle,
+.login-profile-card-email {
+  color: #16141c !important;
+  opacity: 1 !important;
+}
+
+/* After signup, the profile step must show Sign in, not only Back. */
+.login-gate--picker .login-brain,
+.login-gate--picker .login-gate-brand--splash {
+  display: none !important;
+}
+
+.login-gate--picker .login-gate-panel {
+  overflow-y: auto !important;
+}
+
+.login-profile-picker-actions.login-form-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  gap: 0.6rem !important;
+  position: static !important;
+  visibility: visible !important;
+}
+
+#login-profile-back {
+  flex: 0 0 6.5rem !important;
+  width: 6.5rem !important;
+  max-width: 34% !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  padding: 0.7rem 0.8rem !important;
+  border: 2px solid #16141c !important;
+  border-radius: 999px !important;
+  background: #f4f1ea !important;
+  color: #16141c !important;
+  -webkit-text-fill-color: #16141c !important;
+  white-space: nowrap;
+}
+
+#login-profile-continue {
+  flex: 1 1 auto !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.9rem;
+  min-width: 9rem !important;
+  width: auto !important;
+  padding: 0.7rem 1.2rem !important;
+  border: 2px solid #16141c !important;
+  border-radius: 999px !important;
+  background: #16141c !important;
+  color: #f4f1ea !important;
+  -webkit-text-fill-color: #f4f1ea !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+  white-space: nowrap;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Uploaded pictures stay visible in Tower and on the NEWS plate. */
+#panel-tower .tower-attach--image,
+#panel-news .tower-attach--image,
+.commune-feed-item .tower-attach--image,
+.tower-post .tower-attach--image {
+  display: block !important;
+  width: 100% !important;
+  max-width: 36rem !important;
+  height: auto !important;
+  margin: 0.35rem 0 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.tower-sticker--badge-widget {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  width: 6.6rem;
+  max-width: 6.6rem;
+}
+.tower-badge-widget {
+  margin: 0;
+  text-align: center;
+}
+.tower-badge-widget img {
+  display: block;
+  width: 6.25rem;
+  height: 6.25rem;
+  border-radius: 50%;
+  background: transparent;
+}
+.tower-badge-widget figcaption {
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: #3d2c38;
+}
+.tower-add-widget-dialog select {
+  display: block;
+  width: 100%;
+  margin: 0.2rem 0 0.7rem;
+}
+.tower-zodiac-picker {
+  flex: 1 0 100%;
+  margin: 0.35rem 0 0.75rem;
+  padding: 0.7rem;
+  border: 1px solid #3d2c38;
+  border-radius: 0.8rem;
+  background: #fff7f2;
+}
+.tower-zodiac-picker-title {
+  margin: 0 0 0.45rem;
+  font-weight: 700;
+  color: #3d2c38;
+}
+.tower-zodiac-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(4.2rem, 1fr));
+  gap: 0.45rem;
+}
+.tower-zodiac-pick {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.3rem !important;
+  border: 1px solid #3d2c38 !important;
+  border-radius: 0.7rem !important;
+  background: #fff !important;
+  color: #3d2c38 !important;
+  cursor: pointer;
+}
+.tower-zodiac-pick img {
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  display: block;
+  object-fit: cover;
+}
+#panel-tower .tower-zodiac-pick,
+#panel-tower .tower-zodiac-pick .tower-zodiac-name,
+#panel-tower .tower-zodiac-name,
+#panel-tower .tower-badge-widget figcaption {
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+#panel-tower .tower-zodiac-pick {
+  position: relative;
+  background: #fff !important;
+}
+#panel-tower .tower-zodiac-pick.is-selected {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+#panel-tower .tower-zodiac-pick .tower-zodiac-name,
+#panel-tower .tower-zodiac-name {
+  display: block !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  line-height: 1.15;
+  letter-spacing: 0 !important;
+  text-align: center;
+  white-space: normal;
+}
+#panel-tower .tower-zodiac-pick:hover::after,
+#panel-tower .tower-zodiac-pick:focus-visible::after {
+  content: attr(data-zodiac-name);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.3rem);
+  transform: translateX(-50%);
+  z-index: 8;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid #000;
+  border-radius: 0.3rem;
+  background: #fff !important;
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2;
+  letter-spacing: 0 !important;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+.tower-badge-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.7rem;
+  padding: 0.75rem;
+  border: 1.5px dashed #c45a7a;
+  border-radius: 0.75rem;
+  background: #fff !important;
+  color: #3d2c38 !important;
+  cursor: pointer;
+}
+.tower-badge-upload-title {
+  font-weight: 700;
+  color: #3d2c38;
+}
+.tower-badge-upload input[type="file"] {
+  display: block;
+  width: 100%;
+  color: #3d2c38;
+  background: #fff;
+}
+.tower-badge-upload-preview {
+  width: 6.25rem;
+  height: 6.25rem;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+}
+
+#panel-tower .tower-attach-image,
+#panel-news .tower-attach-image,
+.commune-feed-item .tower-attach-image,
+.tower-post .tower-attach-image {
+  display: block !important;
+  width: 100% !important;
+  max-width: 36rem !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: transparent !important;
+}
+
+/* The shared button rule washes the × out. Keep it a dark mark on a light chip. */
+#panel-news .news-delete-btn,
+#panel-tower .news-delete-btn,
+.commune-feed-meta .news-delete-btn,
+.tower-post-meta .news-delete-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+  margin-left: 0.5rem;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  border: 1px solid #c45a5a !important;
+  background: #fff5f9 !important;
+  color: #3a1020 !important;
+  box-shadow: none !important;
+  font-size: 1.15rem !important;
+  line-height: 1 !important;
+  cursor: pointer;
+  visibility: visible !important;
+  opacity: 1 !important;
 }

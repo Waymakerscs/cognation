@@ -35,6 +35,26 @@
   }
 
   window.CognationMemberCountry = { get: getMemberCountry, set: setMemberCountry };
+  var LIVE_STATE_KEY = "cognation.member.liveState.v1";
+
+  function readLivePlace() {
+    if (window.CognationLocation && window.CognationLocation.get) {
+      return window.CognationLocation.get();
+    }
+    try {
+      var saved = JSON.parse(localStorage.getItem(LIVE_STATE_KEY) || "null");
+      if (saved && saved.source === "geolocation" && (saved.state || saved.region || saved.locality || typeof saved.lat === "number")) {
+        return saved;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function writeLivePlace(place) {
+    try {
+      localStorage.setItem(LIVE_STATE_KEY, JSON.stringify(place || {}));
+    } catch (e) {}
+  }
   var FEED_SEED_REV = 4; /* refresh international broadsheet wire */
 
   var EDITIONS = {
@@ -606,6 +626,40 @@
           getMemberCountry() +
           " — national sources (Google News–style). Same broadsheet as International.";
       }
+      if (editionId === "local" && labelEl) {
+        var localPlace = readLivePlace();
+        var localName = localPlace && (localPlace.locality || localPlace.region || localPlace.state);
+        labelEl.textContent = localName
+          ? "Local · " + localName
+          : "Local · allow location at sign-in";
+      }
+      if (editionId === "local" && dekEl) {
+        var localNow = readLivePlace();
+        var localLabel = localNow && (localNow.locality || localNow.region || localNow.state);
+        dekEl.textContent = localLabel
+          ? "Local news for " +
+            localLabel +
+            (localNow.region && localNow.locality && localNow.region !== localNow.locality
+              ? ", " + localNow.region
+              : "") +
+            ", from the position allowed at signup or sign-in."
+          : "Allow location on the signup or sign-in page. Local news uses that position, not a saved state.";
+      }
+      if (editionId === "statewide" && labelEl) {
+        var livePlace = readLivePlace();
+        labelEl.textContent = livePlace && (livePlace.state || livePlace.region)
+          ? "Statewide · " + (livePlace.state || livePlace.region)
+          : "Statewide · allow location at sign-in";
+      }
+      if (editionId === "statewide" && dekEl) {
+        var liveNow = readLivePlace();
+        dekEl.textContent = liveNow && (liveNow.state || liveNow.region)
+          ? "Statewide news for " +
+            (liveNow.state || liveNow.region) +
+            (liveNow.country ? ", " + liveNow.country : "") +
+            ", from the position allowed at signup or sign-in."
+          : "Allow location on the signup or sign-in page. Statewide news uses that position, not a saved state.";
+      }
       editionInputs.forEach(function (input) {
         input.checked = input.value === editionId;
       });
@@ -634,6 +688,7 @@
     function updateRefreshButton() {
       if (!refreshBtn) return;
       var show =
+        editionId === "local" ||
         editionId === "statewide" ||
         editionId === "nationwide" ||
         editionId === "international";
@@ -659,6 +714,103 @@
       FeedStore.save(state);
       renderFeed();
       setStatus(feedStatus, note || "Plate refreshed with new hot topics.", false);
+    }
+
+    function fetchStatewide(place, sourceNote) {
+      var stateName = place && place.state ? String(place.state) : "";
+      var countryName = (place && place.country) || getMemberCountry();
+      if (!stateName) return Promise.resolve([]);
+      var path =
+        "/api/news/statewide?state=" +
+        encodeURIComponent(stateName) +
+        "&country=" +
+        encodeURIComponent(countryName);
+      return fetch(path, { headers: { Accept: "application/json" } })
+        .then(function (res) {
+          if (!res.ok) throw new Error("api " + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          var posts = (data && data.seedPosts) || [];
+          return posts.map(function (p) {
+            var copy = {};
+            Object.keys(p).forEach(function (k) {
+              copy[k] = p[k];
+            });
+            copy.sourceDetail = (p.source || "Google News") + " · " + sourceNote;
+            copy.body = sourceNote + " — " + (p.body || "");
+            return copy;
+          });
+        })
+        .catch(function () {
+          return [];
+        });
+    }
+
+    function regionOf(place) {
+      if (!place) return "";
+      return String(place.state || place.region || "").trim();
+    }
+
+    function localityOf(place) {
+      if (!place) return "";
+      return String(place.locality || "").trim();
+    }
+
+    function ensureLivePlace() {
+      var place = readLivePlace();
+      if (place && (regionOf(place) || localityOf(place) || typeof place.lat === "number")) {
+        return Promise.resolve(place);
+      }
+      if (window.CognationLocation && window.CognationLocation.request) {
+        return window.CognationLocation.request();
+      }
+      return Promise.resolve(null);
+    }
+
+    function askLivePlace() {
+      return ensureLivePlace();
+    }
+
+    function loadPlaceNews(place, queryName, sourceNote) {
+      if (!queryName) {
+        setStatus(
+          feedStatus,
+          "Location was not allowed. This edition waits for the location service and does not use a saved state.",
+          false
+        );
+        applyEditionChrome();
+        return Promise.resolve([]);
+      }
+      return fetchStatewide(
+        { state: queryName, country: (place && place.country) || getMemberCountry() },
+        sourceNote
+      ).then(function (posts) {
+        if (!posts || !posts.length) {
+          setStatus(
+            feedStatus,
+            "No live headlines yet for " + queryName + ".",
+            false
+          );
+          applyEditionChrome();
+          return [];
+        }
+        applyRefreshedPosts(posts, sourceNote + " for " + queryName + ".");
+        applyEditionChrome();
+        return posts;
+      });
+    }
+
+    function loadStatewideNews() {
+      return ensureLivePlace().then(function (place) {
+        return loadPlaceNews(place, regionOf(place), "Statewide");
+      });
+    }
+
+    function loadLocalNews() {
+      return ensureLivePlace().then(function (place) {
+        return loadPlaceNews(place, localityOf(place) || regionOf(place), "Local");
+      });
     }
 
     function refreshStatewidePlate() {
@@ -733,10 +885,13 @@
     }
 
     function refreshHotTopics() {
-      if (editionId === "local") return;
       setStatus(feedStatus, "Refreshing hot topics…", false);
       if (editionId === "statewide") {
-        refreshStatewidePlate();
+        loadStatewideNews();
+        return;
+      }
+      if (editionId === "local") {
+        loadLocalNews();
         return;
       }
       var apiPath =
@@ -915,10 +1070,14 @@
         '">' +
         escapeHtml(formatTime(post.createdAt)) +
         "</time>" +
+        (post.mine
+          ? '<button type="button" class="news-delete-btn" data-news-delete aria-label="Delete your post">×</button>'
+          : "") +
         "</header>" +
-        '<p class="commune-feed-body">' +
         (function () {
-          var safe = escapeHtml(post.body);
+          var caption = String(post.body || "").trim();
+          if (!caption) return "";
+          var safe = escapeHtml(caption);
           if (editionId === "statewide" || editionId === "local") {
             safe = safe.replace(/@([a-z0-9_-]+)/gi, function (_, h) {
               var href =
@@ -934,21 +1093,30 @@
               );
             });
           }
-          return safe;
+          return '<p class="commune-feed-body">' + safe + "</p>";
         })() +
-        "</p>" +
+        (window.CognationFeedMedia && post.attachments && post.attachments.length
+          ? window.CognationFeedMedia.html(post.attachments)
+          : "") +
         sourceLine +
-        '<footer class="news-report-bar" data-news-report>' +
-        '<button type="button" class="btn btn-secondary news-report-btn" data-news-report-toggle>Report</button>' +
-        '<div class="news-report-menu" data-news-report-menu hidden>' +
-        '<button type="button" class="news-report-option" data-news-report-reason="harmful">Harmful</button>' +
-        '<button type="button" class="news-report-option" data-news-report-reason="untruthful">Untruthful</button>' +
-        "</div>" +
-        '<span class="news-report-status" data-news-report-status hidden role="status"></span>' +
-        "</footer>";
+        (post.mine
+          ? '<span class="news-report-status" data-news-delete-status hidden role="status"></span>'
+          : '<footer class="news-report-bar" data-news-report>' +
+            '<button type="button" class="btn btn-secondary news-report-btn" data-news-report-toggle>Report</button>' +
+            '<div class="news-report-menu" data-news-report-menu hidden>' +
+            '<button type="button" class="news-report-option" data-news-report-reason="untruthful">Untruthful</button>' +
+            '<button type="button" class="news-report-option" data-news-report-reason="harmful">Harmful</button>' +
+            '<button type="button" class="news-report-option" data-news-report-reason="divisive">Divisive</button>' +
+            "</div>" +
+            '<span class="news-report-status" data-news-report-status hidden role="status"></span>' +
+            "</footer>");
       var postId = post.id || ("news-" + String(post.createdAt || Date.now()) + "-" + Math.random().toString(36).slice(2, 7));
       article.setAttribute("data-news-post", "");
-      article.setAttribute("data-post-id", postId);
+      article.setAttribute("data-post-id", post.towerPostId || postId);
+      if (post.mine) article.setAttribute("data-news-own", "true");
+      if (window.CognationFeedMedia && typeof window.CognationFeedMedia.paint === "function") {
+        window.CognationFeedMedia.paint(article);
+      }
       feedList.appendChild(article);
     }
 
@@ -1033,25 +1201,13 @@
         } else if (p.handle) {
           slug = String(p.handle).replace(/^@/, "").toLowerCase();
         }
-        var bits = [];
-        (p.attachments || []).forEach(function (a) {
-          var k = a.kind || "document";
-          bits.push(
-            (k === "photo" && "Photo") ||
-              (k === "video" && "Video") ||
-              (k === "note" && "Notes") ||
-              (k === "art" && "Art") ||
-              "Document"
-          );
-          if (a.label || a.name) bits.push(a.label || a.name);
-        });
-        var attachLine = bits.length ? " [" + bits.join(" · ") + "]" : "";
         var kind = "social";
         var atts = p.attachments || [];
         if (atts.some(function (a) { return a.kind === "note" || a.kind === "document"; })) {
           kind = "news";
         }
-        var body = (p.body || "Shared an update.") + attachLine;
+        var body = String(p.body || "").trim();
+        if (!body && !atts.length) body = "Shared an update.";
         var isFof =
           !!(p.shareBeyondFriends || p.audience === "friends_of_friends") ||
           /@friends?\s*of\s*friends\b/i.test(body) ||
@@ -1074,15 +1230,28 @@
             " ♥) · @" +
             slug +
             " · @statewide · @friendsoffriends";
-          body =
-            "@statewide · @friendsoffriends · @" +
-            slug +
-            " — " +
-            body +
-            " — FoF reach beyond immediate friends (e.g. 400+500≈900 Local feeds); selected by News.";
+          if (body) {
+            body =
+              "@statewide · @friendsoffriends · @" +
+              slug +
+              " — " +
+              body +
+              " — FoF reach beyond immediate friends (e.g. 400+500≈900 Local feeds); selected by News.";
+          }
         }
+        var owned = false;
+        try {
+          if (
+            window.CognationSupabaseSocial &&
+            typeof window.CognationSupabaseSocial.ownsPost === "function"
+          ) {
+            owned = !!window.CognationSupabaseSocial.ownsPost(p);
+          }
+        } catch (eOwn) {}
         return {
           id: "from-tower-" + scope + "-" + p.id,
+          towerPostId: p.id,
+          authorProfileId: p.authorProfileId || "",
           authorName: author,
           body: body,
           createdAt: p.createdAt,
@@ -1094,6 +1263,8 @@
           likes: p.likes || 0,
           seeded: true,
           fromTower: true,
+          mine: owned,
+          attachments: atts,
         };
       });
     }
@@ -1202,6 +1373,8 @@
       editionId = EditionStore.setId(id);
       applyEditionChrome();
       renderFeed();
+      if (editionId === "statewide") loadStatewideNews();
+      if (editionId === "local") loadLocalNews();
       setStatus(feedStatus, "Switched to " + (EDITIONS[editionId].label) + " edition (demo).", false);
     }
 
@@ -1302,6 +1475,48 @@
     showSection("feed");
     renderProfile();
     renderFeed();
+    document.addEventListener("cognation:live-location", function () {
+      applyEditionChrome();
+      if (editionId === "statewide") loadStatewideNews();
+      if (editionId === "local") loadLocalNews();
+    });
+    document.addEventListener("cognation:tower-updated", function () {
+      if (editionId === "local" || editionId === "statewide") renderFeed();
+    });
+    document.addEventListener("cognation:session-started", function () {
+      if (editionId === "local" || editionId === "statewide") renderFeed();
+    });
+    document.addEventListener("cognation:active-profile-changed", function () {
+      if (editionId === "local" || editionId === "statewide") renderFeed();
+    });
+    root.addEventListener("click", function (ev) {
+      var del = ev.target && ev.target.closest("[data-news-delete]");
+      if (!del || !root.contains(del)) return;
+      ev.preventDefault();
+      var article = del.closest("[data-news-post]");
+      var postId = article && article.getAttribute("data-post-id");
+      var status = article && article.querySelector("[data-news-delete-status]");
+      if (!postId || !window.CognationSupabaseSocial || !window.CognationSupabaseSocial.deleteTowerPost) {
+        return;
+      }
+      del.disabled = true;
+      window.CognationSupabaseSocial.deleteTowerPost(postId)
+        .then(function () {
+          if (status) {
+            status.hidden = false;
+            status.textContent = "Deleted.";
+          }
+        })
+        .catch(function (error) {
+          del.disabled = false;
+          if (status) {
+            status.hidden = false;
+            status.textContent = (error && error.message) || "Could not delete that post.";
+          }
+        });
+    });
+    if (editionId === "statewide") loadStatewideNews();
+    if (editionId === "local") loadLocalNews();
   }
 
   function boot() {
