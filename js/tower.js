@@ -1680,6 +1680,7 @@
         applyWidgetLayout(root, cur);
         applyPublicWidgets(root, cur);
         renderBadgePins(root, cur);
+        renderBadgeWidgets(root, cur);
         syncOwnerStickerHandles(root);
         initTowerMusic(root, cur);
         initTowerVideo(root, cur);
@@ -2205,27 +2206,9 @@
       addCheck(badge.id, label, isBadgeVisible(profile, badge.id));
     });
 
-    var genWrap = document.createElement("div");
-    genWrap.className = "tower-badge-generate";
-    var upload = document.createElement("label");
-    upload.className = "tower-badge-upload";
-    upload.innerHTML =
-      '<span class="tower-badge-upload-title">Generate badge</span>' +
-      '<span class="form-hint">Upload an image. It becomes a circle badge on the scrapbook.</span>' +
-      '<input type="file" accept="image/*" data-badge-upload>';
-    genWrap.appendChild(upload);
-    box.appendChild(genWrap);
-
     if (!box.__cognationBadgeVisBound) {
       box.__cognationBadgeVisBound = true;
       box.addEventListener("change", function (ev) {
-        var fileInput = ev.target && ev.target.closest("[data-badge-upload]");
-        if (fileInput && box.contains(fileInput)) {
-          var file = fileInput.files && fileInput.files[0];
-          addUploadedBadgeWidget(root, file);
-          try { fileInput.value = ""; } catch (eFile) {}
-          return;
-        }
         var cb = ev.target && ev.target.closest("[data-tower-badge-vis]");
         if (!cb || !box.contains(cb)) return;
         var id = cb.getAttribute("data-tower-badge-vis");
@@ -4997,9 +4980,10 @@
     return def;
   }
 
-  function addUploadedBadgeWidget(root, file) {
+  function addUploadedBadgeWidget(root, file, previewEl) {
     if (!file || !/^image\//.test(file.type || "")) {
       setProfileStatusOn(root, "Choose an image file.", true);
+      setBadgeDisplayStatus(root, "Choose an image file.");
       return;
     }
     var reader = new FileReader();
@@ -5007,7 +4991,12 @@
       var src = String(reader.result || "");
       if (!src) {
         setProfileStatusOn(root, "Could not read that image.", true);
+        setBadgeDisplayStatus(root, "Could not read that image.");
         return;
+      }
+      if (previewEl) {
+        previewEl.src = src;
+        previewEl.hidden = false;
       }
       var profile = TowerProfileStore.get();
       var widgets = getBadgeWidgets(profile).slice();
@@ -5029,7 +5018,10 @@
         return;
       }
       renderBadgeWidgets(root, profile);
+      applyTowerSide(root, "public");
+      renderBadgeWidgets(root, TowerProfileStore.get());
       setProfileStatusOn(root, label + " badge added to the scrapbook.", false);
+      setBadgeDisplayStatus(root, label + " added to the scrapbook.");
       closeAddWidgetDialog();
     };
     reader.onerror = function () {
@@ -5172,17 +5164,6 @@
         fillBadgeChoice(dlg);
       });
     }
-    var uploadInput = dlg.querySelector("[data-badge-upload]");
-    if (uploadInput && !uploadInput.__cognationBound) {
-      uploadInput.__cognationBound = true;
-      uploadInput.addEventListener("change", function () {
-        var file = uploadInput.files && uploadInput.files[0];
-        if (!file) return;
-        addUploadedBadgeWidget(root, file);
-        try { uploadInput.value = ""; } catch (eUp) {}
-      });
-    }
-
     /* Empty canvas click on personal public page → offer add */
     var stage = root.querySelector("[data-tower-scrapbook]");
     if (stage && !stage.__cognationAddCanvasBound) {
@@ -5198,6 +5179,60 @@
         openAddWidgetDialog(root);
       });
     }
+  }
+
+  function fillZodiacGrids(scope) {
+    var category = badgeCategory("zodiac");
+    if (!category) return;
+    (scope || document).querySelectorAll("[data-zodiac-grid]").forEach(function (grid) {
+      if (grid.childElementCount) return;
+      category.badges.forEach(function (badge) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "tower-zodiac-pick";
+        btn.setAttribute("data-zodiac-pick", badge.id);
+        btn.setAttribute("data-zodiac-category", category.id);
+        var img = document.createElement("img");
+        img.src = badge.src;
+        img.alt = badge.label + " badge";
+        var name = document.createElement("span");
+        name.textContent = badge.label;
+        btn.appendChild(img);
+        btn.appendChild(name);
+        grid.appendChild(btn);
+      });
+    });
+  }
+
+  function initZodiacBadgeUi(root) {
+    fillZodiacGrids(document);
+    if (document.__cognationZodiacBound) return;
+    document.__cognationZodiacBound = true;
+    document.addEventListener("click", function (ev) {
+      var btn = ev.target && ev.target.closest && ev.target.closest("[data-zodiac-pick]");
+      if (!btn) return;
+      ev.preventDefault();
+      var added = addBadgeWidget(root, btn.getAttribute("data-zodiac-category") || "zodiac", btn.getAttribute("data-zodiac-pick"));
+      if (!added) return;
+      applyTowerSide(root, "public");
+      renderBadgeWidgets(root, TowerProfileStore.get());
+      setProfileStatusOn(root, added.label + " badge added to the scrapbook.", false);
+      setBadgeDisplayStatus(root, added.label + " added to the scrapbook.");
+    });
+    document.addEventListener("change", function (ev) {
+      var input = ev.target;
+      if (!input || !input.getAttribute || !input.hasAttribute("data-badge-upload")) return;
+      var file = input.files && input.files[0];
+      if (!file) return;
+      var wrap = input.closest(".tower-badge-upload");
+      var preview = wrap && wrap.querySelector("[data-badge-upload-preview]");
+      if (preview) {
+        preview.src = URL.createObjectURL(file);
+        preview.hidden = false;
+      }
+      addUploadedBadgeWidget(root, file, preview);
+      try { input.value = ""; } catch (eUp) {}
+    });
   }
 
   function setProfileStatusOn(root, msg, isError) {
@@ -6329,6 +6364,7 @@
     syncOwnerStickerHandles(root);
     renderQuoteStickers(root, p);
     renderBadgeWidgets(root, p);
+    initZodiacBadgeUi(root);
     initAddWidgetUi(root);
     syncCollageForm(root, p);
     syncPublicLookForm(root, p);

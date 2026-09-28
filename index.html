@@ -138,9 +138,19 @@
                       </div>
                     </details>
 
-                    <details class="tower-private-theme tower-private-badges tower-compact-block" data-tower-private-badges data-tower-badges>
+                    <details class="tower-private-theme tower-private-badges tower-compact-block" data-tower-private-badges data-tower-badges open>
                       <summary class="tower-private-theme-summary">Badges</summary>
                       <div class="tower-private-theme-body">
+                        <div class="tower-zodiac-picker" data-zodiac-picker>
+                          <p class="tower-zodiac-picker-title">Zodiac</p>
+                          <div class="tower-zodiac-grid" data-zodiac-grid></div>
+                          <label class="tower-badge-upload">
+                            <span class="tower-badge-upload-title">Generate badge</span>
+                            <span class="form-hint">Choose an image. It loads in the circle, then sits on the scrapbook.</span>
+                            <input type="file" accept="image/*" data-badge-upload>
+                            <img class="tower-badge-upload-preview" data-badge-upload-preview alt="" hidden>
+                          </label>
+                        </div>
                         <p class="form-hint">Show as pins on Public</p>
                         <div class="tower-badge-visibility" data-tower-badge-visibility></div>
                         <div class="tower-friends-save-row" style="margin-top:0.65rem;display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem;">
@@ -297,6 +307,16 @@
                     <button type="button" class="btn btn-secondary tower-rotate-btn" data-tower-rotate="15" title="Nudge +15° (])">+15°</button>
                   </div>
                   <span class="form-hint tower-scrapbook-hint">Drag ⋮⋮ to move · click to select · Add content for quotes and badges · Backspace removes · Undo restores</span>
+                  <div class="tower-zodiac-picker" data-zodiac-picker>
+                    <p class="tower-zodiac-picker-title">Zodiac</p>
+                    <div class="tower-zodiac-grid" data-zodiac-grid></div>
+                    <label class="tower-badge-upload">
+                      <span class="tower-badge-upload-title">Generate badge</span>
+                      <span class="form-hint">Choose an image. It loads in the circle, then sits on the scrapbook.</span>
+                      <input type="file" accept="image/*" data-badge-upload>
+                      <img class="tower-badge-upload-preview" data-badge-upload-preview alt="" hidden>
+                    </label>
+                  </div>
                   <div class="tower-public-url-chip" data-tower-public-url-chip>
                     <label class="visually-hidden" for="tower-public-url-preview">Public profile link</label>
                     <input id="tower-public-url-preview" type="text" readonly data-tower-public-url-preview spellcheck="false">

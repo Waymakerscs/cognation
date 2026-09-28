@@ -10713,15 +10713,57 @@ a.login-entry-btn {
   width: 100%;
   margin: 0.2rem 0 0.7rem;
 }
+.tower-zodiac-picker {
+  flex: 1 0 100%;
+  margin: 0.35rem 0 0.75rem;
+  padding: 0.7rem;
+  border: 1px solid #3d2c38;
+  border-radius: 0.8rem;
+  background: #fff7f2;
+}
+.tower-zodiac-picker-title {
+  margin: 0 0 0.45rem;
+  font-weight: 700;
+  color: #3d2c38;
+}
+.tower-zodiac-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(4.2rem, 1fr));
+  gap: 0.45rem;
+}
+.tower-zodiac-pick {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.3rem !important;
+  border: 1px solid #3d2c38 !important;
+  border-radius: 0.7rem !important;
+  background: #fff !important;
+  color: #3d2c38 !important;
+  cursor: pointer;
+}
+.tower-zodiac-pick img {
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  display: block;
+  object-fit: cover;
+}
+.tower-zodiac-pick span {
+  font-size: 0.68rem;
+  color: #3d2c38;
+}
 .tower-badge-upload {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  margin-top: 0.35rem;
+  margin-top: 0.7rem;
   padding: 0.75rem;
   border: 1.5px dashed #c45a7a;
   border-radius: 0.75rem;
-  background: #fff7f2;
+  background: #fff !important;
+  color: #3d2c38 !important;
   cursor: pointer;
 }
 .tower-badge-upload-title {
@@ -10731,6 +10773,15 @@ a.login-entry-btn {
 .tower-badge-upload input[type="file"] {
   display: block;
   width: 100%;
+  color: #3d2c38;
+  background: #fff;
+}
+.tower-badge-upload-preview {
+  width: 6.25rem;
+  height: 6.25rem;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
 }
 
 #panel-tower .tower-attach-image,
