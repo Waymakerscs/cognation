@@ -10763,22 +10763,51 @@ a.login-entry-btn {
   display: block;
   object-fit: cover;
 }
-.tower-zodiac-pick,
-.tower-zodiac-pick span,
-.tower-zodiac-name {
-  color: #1a1a1a !important;
+#panel-tower .tower-zodiac-pick,
+#panel-tower .tower-zodiac-pick .tower-zodiac-name,
+#panel-tower .tower-zodiac-name,
+#panel-tower .tower-badge-widget figcaption {
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
 }
-.tower-zodiac-pick span,
-.tower-zodiac-name {
+#panel-tower .tower-zodiac-pick {
+  position: relative;
+  background: #fff !important;
+}
+#panel-tower .tower-zodiac-pick .tower-zodiac-name,
+#panel-tower .tower-zodiac-name {
   display: block !important;
-  font-size: 0.72rem !important;
-  font-weight: 650;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
   line-height: 1.15;
+  letter-spacing: 0 !important;
   text-align: center;
   white-space: normal;
 }
-.tower-badge-widget figcaption {
-  color: #1a1a1a !important;
+#panel-tower .tower-zodiac-pick:hover::after,
+#panel-tower .tower-zodiac-pick:focus-visible::after {
+  content: attr(data-zodiac-name);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.3rem);
+  transform: translateX(-50%);
+  z-index: 8;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid #000;
+  border-radius: 0.3rem;
+  background: #fff !important;
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2;
+  letter-spacing: 0 !important;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 1 !important;
+  text-shadow: none !important;
 }
 .tower-badge-upload {
   display: flex;

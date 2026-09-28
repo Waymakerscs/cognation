@@ -5291,6 +5291,7 @@
         btn.setAttribute("data-zodiac-pick", badge.id);
         btn.setAttribute("data-zodiac-category", category.id);
         btn.title = badge.label;
+        btn.setAttribute("data-zodiac-name", badge.label);
         btn.setAttribute("aria-label", badge.label);
         var img = document.createElement("img");
         img.src = badge.src;
