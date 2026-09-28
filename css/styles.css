@@ -10783,6 +10783,10 @@ a.login-entry-btn {
   position: relative;
   background: #fff !important;
 }
+#panel-tower .tower-zodiac-pick.is-selected {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
 #panel-tower .tower-zodiac-pick .tower-zodiac-name,
 #panel-tower .tower-zodiac-name {
   display: block !important;

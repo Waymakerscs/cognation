@@ -5120,10 +5120,8 @@
         return;
       }
       renderBadgeWidgets(root, profile);
-      applyTowerSide(root, "public");
-      renderBadgeWidgets(root, TowerProfileStore.get());
-      setProfileStatusOn(root, label + " badge added to the scrapbook.", false);
-      setBadgeDisplayStatus(root, label + " added to the scrapbook.");
+      setProfileStatusOn(root, label + " badge saved.", false);
+      setBadgeDisplayStatus(root, label + " saved.");
       closeAddWidgetDialog();
     };
     reader.onerror = function () {
@@ -5319,25 +5317,57 @@
       var btn = ev.target && ev.target.closest && ev.target.closest("[data-zodiac-pick]");
       if (!btn) return;
       ev.preventDefault();
-      var added = addBadgeWidget(root, btn.getAttribute("data-zodiac-category") || "zodiac", btn.getAttribute("data-zodiac-pick"));
-      if (!added) return;
-      applyTowerSide(root, "public");
-      renderBadgeWidgets(root, TowerProfileStore.get());
-      setProfileStatusOn(root, added.label + " badge added to the scrapbook.", false);
-      setBadgeDisplayStatus(root, added.label + " added to the scrapbook.");
+      var categoryId = btn.getAttribute("data-zodiac-category") || "zodiac";
+      var badgeId = btn.getAttribute("data-zodiac-pick");
+      var def = badgeDefinition(categoryId, badgeId);
+      if (!def) return;
+      var pending = root.__pendingBadgePicks || (root.__pendingBadgePicks = []);
+      var existing = -1;
+      pending.forEach(function (pick, i) {
+        if (pick.categoryId === categoryId && pick.badgeId === badgeId) existing = i;
+      });
+      if (existing >= 0) {
+        pending.splice(existing, 1);
+        btn.classList.remove("is-selected");
+        setBadgeDisplayStatus(root, def.label + " removed. Click Save when you are ready.");
+        return;
+      }
+      pending.push({ categoryId: categoryId, badgeId: badgeId, label: def.label });
+      btn.classList.add("is-selected");
+      setBadgeDisplayStatus(root, def.label + " selected. Click Save to add it.");
     });
     document.addEventListener("change", function (ev) {
       var input = ev.target;
       if (!input || !input.getAttribute || !input.hasAttribute("data-badge-upload")) return;
       var file = input.files && input.files[0];
       if (!file) return;
+      if (!/^image\//.test(file.type || "")) {
+        setBadgeDisplayStatus(root, "Choose an image file.");
+        try { input.value = ""; } catch (eType) {}
+        return;
+      }
       var wrap = input.closest(".tower-badge-upload");
       var preview = wrap && wrap.querySelector("[data-badge-upload-preview]");
-      if (preview) {
-        preview.src = URL.createObjectURL(file);
-        preview.hidden = false;
-      }
-      addUploadedBadgeWidget(root, file, preview);
+      var label = String(file.name || "Badge").replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim().slice(0, 40) || "Badge";
+      var reader = new FileReader();
+      reader.onload = function () {
+        var src = String(reader.result || "");
+        if (!src) {
+          setBadgeDisplayStatus(root, "Could not read that image.");
+          return;
+        }
+        if (preview) {
+          preview.src = src;
+          preview.hidden = false;
+        }
+        var uploads = root.__pendingBadgeUploads || (root.__pendingBadgeUploads = []);
+        uploads.push({ src: src, label: label });
+        setBadgeDisplayStatus(root, label + " selected. Click Save to add it.");
+      };
+      reader.onerror = function () {
+        setBadgeDisplayStatus(root, "Could not read that image.");
+      };
+      reader.readAsDataURL(file);
       try { input.value = ""; } catch (eUp) {}
     });
   }
@@ -6891,6 +6921,36 @@
       saveBadgesBtn.__cognationBadgesSaveBound = true;
       saveBadgesBtn.addEventListener("click", function () {
         var cur = TowerProfileStore.get();
+        var savedLabels = [];
+        var picks = root.__pendingBadgePicks || [];
+        picks.forEach(function (pick) {
+          var added = addBadgeWidget(root, pick.categoryId, pick.badgeId);
+          if (added) savedLabels.push(added.label);
+        });
+        var uploads = root.__pendingBadgeUploads || [];
+        uploads.forEach(function (up) {
+          var profile = TowerProfileStore.get();
+          var widgets = getBadgeWidgets(profile).slice();
+          widgets.push({
+            id: "bw" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+            categoryId: "upload",
+            badgeId: "custom",
+            label: up.label,
+            src: up.src,
+            x: 48 + Math.round(Math.random() * 24),
+            y: 18 + Math.round(Math.random() * 30),
+            z: 8,
+            tilt: 0,
+          });
+          profile.badgeWidgets = widgets;
+          if (TowerProfileStore.save(profile)) savedLabels.push(up.label);
+        });
+        root.__pendingBadgePicks = [];
+        root.__pendingBadgeUploads = [];
+        root.querySelectorAll("[data-zodiac-pick].is-selected").forEach(function (btn) {
+          btn.classList.remove("is-selected");
+        });
+        cur = TowerProfileStore.get();
         if (!cur.badgeVisibility || typeof cur.badgeVisibility !== "object") {
           cur.badgeVisibility = {};
         }
@@ -6910,7 +6970,11 @@
         }
         renderAwardedBadgeShelf(root, cur);
         syncBadgeVisibilityUi(root, cur);
-        setBadgeDisplayStatus(root, "Badge display saved");
+        renderBadgeWidgets(root, cur);
+        setBadgeDisplayStatus(
+          root,
+          savedLabels.length ? savedLabels.join(", ") + " saved." : "Badge display saved"
+        );
       });
     }
 
