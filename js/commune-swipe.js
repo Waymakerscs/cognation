@@ -675,7 +675,7 @@
       if (card.type === TYPE.LIVE) {
         html +=
           '<button type="button" class="btn btn-secondary" data-commune-live-join>Join stub room</button>' +
-          '<p class="cgn-deferral" role="note">Demo / local only — not live backend</p>';
+          '<p class="cgn-deferral" role="note">Demo / local only</p>';
       }
       if (card.type === TYPE.FEATURED) {
         html += '<span class="commune-card-badge">Featured</span>';

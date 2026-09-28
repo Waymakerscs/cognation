@@ -3,7 +3,7 @@
 Source of truth: `/workspace/cognation-site/`  
 Static sync: `/workspace/cognation-pages-deploy/` (excludes `server/`, `docs/`, `node_modules/`, `.wrangler/`)
 
-Login gate uses Cognation account sign-in. Local preview uses “Demo unlock — not real auth” (no shared password in the site files). See `SOURCE-OF-TRUTH.md`.
+Login gate uses Cognation account sign-in. Local preview uses the Demo unlock button or `?demo=1` (no shared password in the site files). See `SOURCE-OF-TRUTH.md`.
 
 ## How to try (Alexa)
 

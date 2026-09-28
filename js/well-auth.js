@@ -2,10 +2,10 @@
  * WELL local preview lock.
  *
  * Not clinical sign-in. No shared password or one-time code ships in this file.
- * Unlock is an explicit "Demo unlock — not real auth" control.
+ * Unlock is the Demo unlock control. A one-time code is generated after unlock.
  * Session: sessionStorage cognation.well.auth.v1 (clears on tab close).
  *
- * Demo only — not a real EHR · not HIPAA-certified · no PHI leaves the browser.
+ * Demo EHR — not HIPAA. Not a real EHR. No PHI leaves the browser.
  */
 (function () {
   "use strict";
@@ -54,6 +54,30 @@
     el.hidden = !message;
     el.textContent = message || "";
     el.classList.toggle("is-error", !!isError);
+  }
+
+  function runtimeCode() {
+    var n = 0;
+    try {
+      var buf = new Uint32Array(1);
+      window.crypto.getRandomValues(buf);
+      n = buf[0] % 900000;
+    } catch (e) {
+      n = Math.floor(Math.random() * 900000);
+    }
+    return String(100000 + n);
+  }
+
+  function showRuntimeCode(root, code) {
+    var el = $("[data-well-runtime-otp]", root);
+    if (!el) return;
+    if (!code) {
+      el.hidden = true;
+      el.textContent = "";
+      return;
+    }
+    el.hidden = false;
+    el.textContent = "Runtime code " + code;
   }
 
   function showDemoChrome(root) {
@@ -115,6 +139,7 @@
 
     if (!locked) showDemoChrome(root);
     if (locked) {
+      showRuntimeCode(root, "");
       window.setTimeout(function () {
         var unlockBtn = $("[data-well-demo-unlock]", root);
         if (unlockBtn) unlockBtn.focus();
@@ -126,13 +151,16 @@
     if (window.CognationDemo && window.CognationDemo.unlock) {
       window.CognationDemo.unlock();
     }
+    var code = runtimeCode();
     writeSession({
       ok: true,
       user: username || "demo",
       at: Date.now(),
       factor: "demo-unlock",
-      note: "Demo — not production auth",
+      runtimeCode: code,
+      note: "Demo EHR — not HIPAA",
     });
+    showRuntimeCode(root, code);
     setLockedUi(root, false);
     document.dispatchEvent(
       new CustomEvent("cognation:well-auth", {
@@ -162,7 +190,9 @@
     root = root || $("[data-well-app]");
     if (!root) return isAuthenticated();
     if (isAuthenticated()) {
+      var existing = readSession();
       setLockedUi(root, false);
+      showRuntimeCode(root, existing && existing.runtimeCode);
       return true;
     }
     setLockedUi(root, true);
@@ -191,7 +221,7 @@
 
     if (lockBtn) {
       lockBtn.addEventListener("click", function () {
-        lock(root, { message: "WELL locked. Use demo unlock to open the local chart preview." });
+        lock(root, { message: "WELL locked. Use Demo unlock to open the local chart preview." });
       });
     }
   }

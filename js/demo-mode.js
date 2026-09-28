@@ -1,56 +1,57 @@
 /**
- * Non-secret local demo flag.
+ * Demo unlock flag. No password or one-time code is stored here.
  *
- * Production default: window.__COGNATION_DEMO__ is unset (false).
- * Do not assign a password or one-time code here.
- *
- * Demo unlock is explicit:
- *   - button sets localStorage cognation.demo.unlock.v1
- *   - ?demo=1 sets a tab session flag
- *   - window.__COGNATION_DEMO__ === true (build-time only; default off)
+ * ?demo=1 or the Demo unlock button sets sessionStorage cognation.demo.unlock.v1.
+ * Production default: the flag is absent. window.__COGNATION_DEMO__ stays unset.
  */
 (function () {
   "use strict";
 
   var STORAGE_KEY = "cognation.demo.unlock.v1";
-  var QUERY_KEY = "cognation.demo.query.v1";
-  var CHROME_TEXT = "Demo — not production auth";
+  var CHROME_TEXT = "Demo — not real auth";
 
   function flagFromWindow() {
     return window.__COGNATION_DEMO__ === true;
   }
 
-  function flagFromQuery() {
+  function readFlag() {
     try {
-      var params = new URLSearchParams(window.location.search || "");
-      if (params.get("demo") === "1") {
-        try {
-          sessionStorage.setItem(QUERY_KEY, "1");
-        } catch (e) {}
-        return true;
-      }
-      return sessionStorage.getItem(QUERY_KEY) === "1";
-    } catch (e2) {
-      return false;
-    }
-  }
-
-  function flagFromStorage() {
-    try {
-      return localStorage.getItem(STORAGE_KEY) === "1";
+      return sessionStorage.getItem(STORAGE_KEY) === "1";
     } catch (e) {
       return false;
     }
   }
 
+  function applyQueryFlag() {
+    try {
+      var params = new URLSearchParams(window.location.search || "");
+      if (params.get("demo") === "1") {
+        sessionStorage.setItem(STORAGE_KEY, "1");
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
   function isUnlocked() {
-    return flagFromWindow() || flagFromQuery() || flagFromStorage();
+    return flagFromWindow() || readFlag();
   }
 
   function ensureChrome() {
-    /* Demo copy stays on the unlock control and on stub surfaces. No site-wide banner. */
     if (!isUnlocked()) return;
     document.documentElement.setAttribute("data-cognation-demo", "1");
+    document.body.classList.add("cognation-demo-on");
+    var el = document.getElementById("cognation-demo-chrome");
+    if (!el) {
+      el = document.createElement("p");
+      el.id = "cognation-demo-chrome";
+      el.className = "cognation-demo-chrome";
+      el.setAttribute("role", "status");
+      el.textContent = CHROME_TEXT;
+      document.body.appendChild(el);
+    }
+    el.hidden = false;
+    el.textContent = CHROME_TEXT;
   }
 
   function hideChrome() {
@@ -59,22 +60,21 @@
     if (el) el.hidden = true;
   }
 
-  function syncChrome(session) {
-    /* Site-wide bar only after an explicit demo session. Stub labels stay on the stub surfaces. */
-    if (session && session.source === "demo") {
-      ensureChrome();
-      return;
-    }
-    hideChrome();
+  function syncChrome() {
+    if (isUnlocked()) ensureChrome();
+    else hideChrome();
   }
 
   function unlock() {
     try {
-      localStorage.setItem(STORAGE_KEY, "1");
+      sessionStorage.setItem(STORAGE_KEY, "1");
+      localStorage.removeItem(STORAGE_KEY);
     } catch (e) {}
     ensureChrome();
     return true;
   }
+
+  applyQueryFlag();
 
   window.CognationDemo = {
     STORAGE_KEY: STORAGE_KEY,
@@ -87,7 +87,7 @@
   };
 
   function boot() {
-    syncChrome(null);
+    syncChrome();
   }
 
   if (document.readyState === "loading") {

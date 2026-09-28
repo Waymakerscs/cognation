@@ -1811,7 +1811,7 @@
         (this.videoOn ? "" : " hidden") +
         "></video>" +
         "</div>" +
-        '<p class="cgn-deferral" role="note">Demo / local only — not live backend</p>' +
+        '<p class="cgn-deferral" role="note">Demo / local only</p>' +
         '<p class="well-muted well-tiny">Demo · open Patient in one tab and Provider in another, then Call. Signaling stays in this browser.</p>' +
         "</section>"
       );

@@ -519,6 +519,17 @@
       closeGate();
       return;
     }
+    if (
+      window.CognationDemo &&
+      window.CognationDemo.isUnlocked &&
+      window.CognationDemo.isUnlocked() &&
+      (!session || session.source !== "supabase")
+    ) {
+      login(session && session.username ? session.username : "demo", "", { demo: true }).then(function (result) {
+        finishWithProfileChoice(result.username, result.profiles, result);
+      });
+      return;
+    }
     var remoteConfigured =
       window.CognationSupabase &&
       window.CognationSupabase.configured &&
