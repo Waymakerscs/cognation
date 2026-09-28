@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Taurus">
+  <circle cx="60" cy="60" r="54" fill="#fff7f2" stroke="#3d2c38" stroke-width="1.6"/>
+  <path d="M16 58c4-20 20-38 44-38 22 0 40 16 42 36 2 24-16 44-40 46-26 2-48-16-46-44z" fill="none" stroke="#e7a8bc" stroke-width="1.1" stroke-linecap="round"/>
+  <g fill="none" stroke="#3d2c38" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M90 34c-8 4-8 14 0 16 6-4 8-10 0-16z" fill="#e7a8bc" stroke="#3d2c38"/><path d="M88 42h8" stroke="#6f8f78"/><path d="M26 78c8-2 12 6 6 10-6 2-10-4-6-10z" stroke="#6f8f78"/><circle cx="30" cy="70" r="1.6" fill="#e7a8bc" stroke="none"/>
+    <g stroke-width="1.7"><circle cx="60" cy="68" r="14"/><path d="M40 48c6-16 34-16 40 0"/><path d="M46 46c-2-10 4-16 8-14"/><path d="M74 46c2-10-4-16-8-14"/></g>
+  </g>
+</svg>

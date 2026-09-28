@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Scorpio">
+  <circle cx="60" cy="60" r="54" fill="#fff7f2" stroke="#3d2c38" stroke-width="1.6"/>
+  <path d="M20 56c2-20 18-36 40-36 24 0 40 16 40 40 0 22-14 40-38 42-26 2-44-16-42-46z" fill="none" stroke="#e7a8bc" stroke-width="1.1" stroke-linecap="round"/>
+  <g fill="none" stroke="#3d2c38" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24 70c6-10 16-8 14 2-6 4-12 2-14-2z" fill="#e7a8bc"/><path d="M20 78c8 4 8 12 0 12" stroke="#6f8f78"/><path d="M96 28c-6 6-14 4-14-2 6-4 12-2 14 2z" stroke="#6f8f78"/><circle cx="90" cy="36" r="1.5" fill="#3d2c38" stroke="none"/>
+    <g stroke-width="1.7"><path d="M34 48v24M46 48v24M58 48v24M70 48c0 16 6 22 14 18"/><path d="M80 62l8-8M80 62l8 4"/></g>
+  </g>
+</svg>

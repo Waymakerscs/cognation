@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Cancer">
+  <circle cx="60" cy="60" r="54" fill="#fff7f2" stroke="#3d2c38" stroke-width="1.6"/>
+  <path d="M22 54c2-22 18-36 40-34 20 2 36 16 36 38 0 24-18 42-42 42-22 0-36-18-34-46z" fill="none" stroke="#e7a8bc" stroke-width="1.1" stroke-linecap="round"/>
+  <g fill="none" stroke="#3d2c38" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 48c10 0 12 10 6 14-8 2-12-8-6-14z" fill="#e7a8bc"/><path d="M18 58c8 6 6 12-2 12" stroke="#6f8f78"/><path d="M96 30c-1 8-8 10-10 4 4-6 8-6 10-4z" stroke="#6f8f78"/><circle cx="92" cy="40" r="1.4" fill="#e7a8bc" stroke="none"/>
+    <g stroke-width="1.7"><path d="M42 52c10-14 22-8 22 4s-12 16-22 6"/><path d="M78 70c-10 14-22 8-22-4s12-16 22-6"/><circle cx="48" cy="64" r="3"/><circle cx="72" cy="56" r="3"/></g>
+  </g>
+</svg>

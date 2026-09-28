@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Sagittarius">
+  <circle cx="60" cy="60" r="54" fill="#fff7f2" stroke="#3d2c38" stroke-width="1.6"/>
+  <path d="M18 62c2-24 18-40 42-42 24-2 40 14 42 38 2 24-14 42-40 44-26 2-46-14-44-40z" fill="none" stroke="#e7a8bc" stroke-width="1.1" stroke-linecap="round"/>
+  <g fill="none" stroke="#3d2c38" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M90 58c-8 2-10 12-2 14 6-4 8-10 2-14z" fill="#e7a8bc"/><path d="M96 64c6 4 4 12-4 10" stroke="#6f8f78"/><path d="M26 34c8 8 4 16-4 12-2-8 0-12 4-12z" stroke="#6f8f78"/><circle cx="34" cy="28" r="1.6" fill="#e7a8bc" stroke="none"/>
+    <g stroke-width="1.7"><path d="M42 78 L82 38M70 38h12v12M58 54l8 8"/></g>
+  </g>
+</svg>

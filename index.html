@@ -285,7 +285,7 @@
                     <button type="button" class="tower-kind-btn" role="tab" data-tower-profile-kind="professional" aria-selected="false" id="tower-kind-professional">Professional page</button>
                   </div>
                   <div class="tower-scrapbook-bar" data-tower-scrapbook-bar>
-                  <button type="button" class="btn btn-secondary" data-tower-add-widget title="Add a quote or text sticker">Add content</button>
+                  <button type="button" class="btn btn-secondary" data-tower-add-widget title="Add a quote, slogan, or badge">Add content</button>
                   <button type="button" class="btn btn-secondary" data-tower-reset-layout>Reset layout</button>
                   <button type="button" class="btn btn-secondary" data-tower-undo-widget disabled title="Restore last removed widget">Undo</button>
                   <div class="tower-rotate-toolbar" data-tower-rotate-toolbar hidden>
@@ -297,7 +297,7 @@
                     <button type="button" class="btn btn-secondary tower-rotate-btn" data-tower-rotate="-15" title="Nudge −15° ([)">−15°</button>
                     <button type="button" class="btn btn-secondary tower-rotate-btn" data-tower-rotate="15" title="Nudge +15° (])">+15°</button>
                   </div>
-                  <span class="form-hint tower-scrapbook-hint">Drag ⋮⋮ to move · click to select · Add content for quotes · Backspace removes · Undo restores</span>
+                  <span class="form-hint tower-scrapbook-hint">Drag ⋮⋮ to move · click to select · Add content for quotes and badges · Backspace removes · Undo restores</span>
                   <div class="tower-public-url-chip" data-tower-public-url-chip>
                     <label class="visually-hidden" for="tower-public-url-preview">Public profile link</label>
                     <input id="tower-public-url-preview" type="text" readonly data-tower-public-url-preview spellcheck="false">
@@ -1397,13 +1397,22 @@
   <div class="tower-add-widget-dialog" data-tower-add-widget-dialog hidden role="dialog" aria-modal="true" aria-labelledby="tower-add-widget-title">
     <div class="tower-add-widget-dialog-card">
       <h3 id="tower-add-widget-title" class="tower-add-widget-title">Add to scrapbook</h3>
-      <p class="form-hint">Personal page: drop a quote or text sticker you can drag around.</p>
+      <p class="form-hint">Add a quote, a slogan, or a badge. Badges start with a category, then a dropdown of that type.</p>
       <div class="tower-add-widget-choices">
         <button type="button" class="btn btn-primary" data-tower-add-choice="quote">Quote / text</button>
         <button type="button" class="btn btn-secondary" data-tower-add-choice="slogan">Slogan card</button>
+        <button type="button" class="btn btn-secondary" data-tower-add-choice="badge">Badge</button>
       </div>
-      <label class="tower-add-widget-label" for="tower-add-quote-text">Quote text</label>
-      <textarea id="tower-add-quote-text" data-tower-add-quote-text rows="3" maxlength="400" placeholder="Type a quote or note…"></textarea>
+      <div data-tower-add-quote-fields>
+        <label class="tower-add-widget-label" for="tower-add-quote-text">Quote text</label>
+        <textarea id="tower-add-quote-text" data-tower-add-quote-text rows="3" maxlength="400" placeholder="Type a quote or note…"></textarea>
+      </div>
+      <div data-tower-add-badge-fields hidden>
+        <label class="tower-add-widget-label" for="tower-badge-category">Category</label>
+        <select id="tower-badge-category" data-badge-category></select>
+        <label class="tower-add-widget-label" for="tower-badge-choice">Badge</label>
+        <select id="tower-badge-choice" data-badge-choice></select>
+      </div>
       <div class="form-actions">
         <button type="button" class="btn btn-primary" data-tower-add-quote-confirm>Add sticker</button>
         <button type="button" class="btn btn-secondary" data-tower-add-widget-cancel>Cancel</button>

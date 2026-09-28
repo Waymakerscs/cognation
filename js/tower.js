@@ -343,6 +343,47 @@
     return profile;
   }
 
+  /* Badge types for the add-widget picker. Zodiac is the first category.
+     Later types append another entry and get their own dropdown. */
+  var BADGE_CATALOG = [
+    {
+      id: "zodiac",
+      label: "Zodiac",
+      badges: [
+        { id: "aries", label: "Aries", src: "assets/badges/zodiac-aries.svg" },
+        { id: "taurus", label: "Taurus", src: "assets/badges/zodiac-taurus.svg" },
+        { id: "gemini", label: "Gemini", src: "assets/badges/zodiac-gemini.svg" },
+        { id: "cancer", label: "Cancer", src: "assets/badges/zodiac-cancer.svg" },
+        { id: "leo", label: "Leo", src: "assets/badges/zodiac-leo.svg" },
+        { id: "virgo", label: "Virgo", src: "assets/badges/zodiac-virgo.svg" },
+        { id: "libra", label: "Libra", src: "assets/badges/zodiac-libra.svg" },
+        { id: "scorpio", label: "Scorpio", src: "assets/badges/zodiac-scorpio.svg" },
+        { id: "sagittarius", label: "Sagittarius", src: "assets/badges/zodiac-sagittarius.svg" },
+        { id: "capricorn", label: "Capricorn", src: "assets/badges/zodiac-capricorn.svg" },
+        { id: "aquarius", label: "Aquarius", src: "assets/badges/zodiac-aquarius.svg" },
+        { id: "pisces", label: "Pisces", src: "assets/badges/zodiac-pisces.svg" },
+      ],
+    },
+  ];
+
+  function badgeCategory(categoryId) {
+    var found = null;
+    BADGE_CATALOG.forEach(function (category) {
+      if (category.id === categoryId) found = category;
+    });
+    return found;
+  }
+
+  function badgeDefinition(categoryId, badgeId) {
+    var category = badgeCategory(categoryId);
+    var found = null;
+    if (!category) return null;
+    category.badges.forEach(function (badge) {
+      if (badge.id === badgeId) found = badge;
+    });
+    return found;
+  }
+
   function getYearbookDemoDefs() {
     return DEMO_AWARDED_BADGES.filter(function (b) {
       return b && b.kind === "yearbook";
@@ -3499,6 +3540,16 @@
       TowerProfileStore.save(p);
       return;
     }
+    var badgeWidgetId = el.getAttribute("data-tower-badge-widget");
+    if (badgeWidgetId) {
+      p.badgeWidgets = getBadgeWidgets(p).map(function (widget) {
+        if (widget.id !== badgeWidgetId) return widget;
+        widget.tilt = tilt;
+        return widget;
+      });
+      TowerProfileStore.save(p);
+      return;
+    }
     var badgeId = el.getAttribute("data-tower-badge-pin");
     if (badgeId) {
       var bl = getBadgePinLayout(p);
@@ -4894,10 +4945,125 @@
     syncOwnerStickerHandles(root);
   }
 
+  function getBadgeWidgets(profile) {
+    var list = profile && profile.badgeWidgets;
+    return Array.isArray(list) ? list : [];
+  }
+
+  function renderBadgeWidgets(root, profile) {
+    var stage = root.querySelector("[data-tower-scrapbook]");
+    if (!stage) return;
+    stage.querySelectorAll("[data-tower-badge-widget]").forEach(function (el) {
+      el.remove();
+    });
+    getBadgeWidgets(profile).forEach(function (widget) {
+      var def = badgeDefinition(widget.categoryId, widget.badgeId);
+      if (!def) return;
+      var el = document.createElement("div");
+      el.className = "tower-sticker tower-sticker--badge-widget";
+      el.setAttribute("data-tower-widget", "badge");
+      el.setAttribute("data-tower-badge-widget", widget.id);
+      el.setAttribute("data-badge-category", widget.categoryId);
+      el.setAttribute("data-badge-id", widget.badgeId);
+      el.setAttribute("data-sticker-label", def.label);
+      el.setAttribute("data-sticker-x", String(widget.x));
+      el.setAttribute("data-sticker-y", String(widget.y));
+      el.setAttribute("data-sticker-z", String(widget.z || 8));
+      el.style.setProperty("--sticker-x", widget.x + "%");
+      el.style.setProperty("--sticker-y", widget.y + "%");
+      el.style.setProperty("--sticker-z", String(widget.z || 8));
+      el.style.setProperty("--sticker-tilt", (widget.tilt || 0) + "deg");
+      var figure = document.createElement("figure");
+      figure.className = "tower-badge-widget";
+      var img = document.createElement("img");
+      img.src = def.src;
+      img.alt = def.label + " badge";
+      img.width = 104;
+      img.height = 104;
+      var cap = document.createElement("figcaption");
+      cap.textContent = def.label;
+      figure.appendChild(img);
+      figure.appendChild(cap);
+      var handle = document.createElement("button");
+      handle.type = "button";
+      handle.className = "tower-sticker-handle";
+      handle.setAttribute("data-tower-sticker-handle", "");
+      handle.setAttribute("aria-label", "Move " + def.label + " badge");
+      handle.tabIndex = -1;
+      handle.textContent = "⋮⋮";
+      el.appendChild(handle);
+      el.appendChild(figure);
+      stage.appendChild(el);
+    });
+    if (typeof syncOwnerStickerHandles === "function") syncOwnerStickerHandles(root);
+  }
+
+  function addBadgeWidget(root, categoryId, badgeId) {
+    var def = badgeDefinition(categoryId, badgeId);
+    if (!def) return null;
+    var profile = TowerProfileStore.get();
+    var widgets = getBadgeWidgets(profile).slice();
+    var entry = {
+      id: "bw" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5),
+      categoryId: categoryId,
+      badgeId: def.id,
+      x: 56 + Math.round(Math.random() * 22),
+      y: 16 + Math.round(Math.random() * 36),
+      z: 8,
+      tilt: Math.round(Math.random() * 6 - 3),
+    };
+    widgets.push(entry);
+    profile.badgeWidgets = widgets;
+    TowerProfileStore.save(profile);
+    renderBadgeWidgets(root, profile);
+    return def;
+  }
+
+  function removeBadgeWidget(root, widgetId) {
+    var profile = TowerProfileStore.get();
+    profile.badgeWidgets = getBadgeWidgets(profile).filter(function (widget) {
+      return widget.id !== widgetId;
+    });
+    TowerProfileStore.save(profile);
+    renderBadgeWidgets(root, profile);
+  }
+
+  function fillBadgeChoice(dlg) {
+    var categorySelect = dlg.querySelector("[data-badge-category]");
+    var badgeSelect = dlg.querySelector("[data-badge-choice]");
+    if (!categorySelect || !badgeSelect) return;
+    if (!categorySelect.options.length) {
+      BADGE_CATALOG.forEach(function (category) {
+        var opt = document.createElement("option");
+        opt.value = category.id;
+        opt.textContent = category.label;
+        categorySelect.appendChild(opt);
+      });
+    }
+    var category = badgeCategory(categorySelect.value) || BADGE_CATALOG[0];
+    badgeSelect.innerHTML = "";
+    (category ? category.badges : []).forEach(function (badge) {
+      var opt = document.createElement("option");
+      opt.value = badge.id;
+      opt.textContent = badge.label;
+      badgeSelect.appendChild(opt);
+    });
+  }
+
+  function syncAddWidgetChoice(dlg) {
+    var choice = dlg.getAttribute("data-add-choice") || "quote";
+    var quoteFields = dlg.querySelector("[data-tower-add-quote-fields]");
+    var badgeFields = dlg.querySelector("[data-tower-add-badge-fields]");
+    if (quoteFields) quoteFields.hidden = choice === "badge";
+    if (badgeFields) badgeFields.hidden = choice !== "badge";
+    if (choice === "badge") fillBadgeChoice(dlg);
+  }
+
   function openAddWidgetDialog(root) {
     var dlg = document.querySelector("[data-tower-add-widget-dialog]");
     if (!dlg) return;
     dlg.hidden = false;
+    syncAddWidgetChoice(dlg);
     var ta = dlg.querySelector("[data-tower-add-quote-text]");
     if (ta) {
       ta.value = "";
@@ -4938,7 +5104,21 @@
         var ta = dlg.querySelector("[data-tower-add-quote-text]");
         var text = ta ? ta.value : "";
         var choice = dlg.getAttribute("data-add-choice") || "quote";
-        if (choice === "slogan") {
+        if (choice === "badge") {
+          var categorySelect = dlg.querySelector("[data-badge-category]");
+          var badgeSelect = dlg.querySelector("[data-badge-choice]");
+          var added = addBadgeWidget(
+            root,
+            categorySelect ? categorySelect.value : "",
+            badgeSelect ? badgeSelect.value : ""
+          );
+          setProfileStatusOn(
+            root,
+            added ? added.label + " badge added to the scrapbook." : "Pick a badge.",
+            !added
+          );
+          if (!added) return;
+        } else if (choice === "slogan") {
           var p = TowerProfileStore.get();
           p.slogan = String(text || "").trim().slice(0, 400);
           p.publicWidgets = normalizePublicWidgets(p.publicWidgets);
@@ -4963,8 +5143,16 @@
         dlg.querySelectorAll("[data-tower-add-choice]").forEach(function (b) {
           b.classList.toggle("is-selected", b === btn);
         });
+        syncAddWidgetChoice(dlg);
       });
     });
+    var categorySelect = dlg.querySelector("[data-badge-category]");
+    if (categorySelect && !categorySelect.__cognationBound) {
+      categorySelect.__cognationBound = true;
+      categorySelect.addEventListener("change", function () {
+        fillBadgeChoice(dlg);
+      });
+    }
 
     /* Empty canvas click on personal public page → offer add */
     var stage = root.querySelector("[data-tower-scrapbook]");
@@ -5294,6 +5482,23 @@
         var layout = getWidgetLayout(p) || JSON.parse(JSON.stringify(DEFAULT_WIDGET_LAYOUT));
         var id = sticker.getAttribute("data-tower-widget");
         if (!id) return;
+        var badgeWidgetId = sticker.getAttribute("data-tower-badge-widget");
+        if (badgeWidgetId) {
+          p.badgeWidgets = getBadgeWidgets(p).map(function (widget) {
+            if (widget.id !== badgeWidgetId) return widget;
+            return {
+              id: widget.id,
+              categoryId: widget.categoryId,
+              badgeId: widget.badgeId,
+              x: parseFloat(sticker.getAttribute("data-sticker-x") || "0"),
+              y: parseFloat(sticker.getAttribute("data-sticker-y") || "0"),
+              z: parseInt(sticker.getAttribute("data-sticker-z") || "8", 10),
+              tilt: parseFloat(sticker.style.getPropertyValue("--sticker-tilt") || "0") || 0,
+            };
+          });
+          TowerProfileStore.save(p);
+          return;
+        }
         if (id === "quote") {
           var qid = sticker.getAttribute("data-tower-quote-id");
           var quotes = getQuoteStickers(p);
@@ -5443,6 +5648,14 @@
           pushWidgetUndo({ type: "badge", id: badgeId });
           setBadgeVisibility(root, badgeId, false);
           setProfileStatusSafe("Badge pin removed — Undo to restore.", false);
+          return;
+        }
+
+        var badgeWidgetId = selected.getAttribute("data-tower-badge-widget");
+        if (badgeWidgetId) {
+          clearWidgetSelection(stage);
+          removeBadgeWidget(root, badgeWidgetId);
+          setProfileStatusSafe("Badge removed — add it again from Badge.", false);
           return;
         }
 
@@ -6084,6 +6297,7 @@
     syncPublicWidgetsForm(root, p);
     syncOwnerStickerHandles(root);
     renderQuoteStickers(root, p);
+    renderBadgeWidgets(root, p);
     initAddWidgetUi(root);
     syncCollageForm(root, p);
     syncPublicLookForm(root, p);

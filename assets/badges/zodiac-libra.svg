@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Libra">
+  <circle cx="60" cy="60" r="54" fill="#fff7f2" stroke="#3d2c38" stroke-width="1.6"/>
+  <path d="M16 60c4-22 20-40 44-40 26 0 42 16 44 40 2 22-16 40-42 42-28 2-48-16-46-42z" fill="none" stroke="#e7a8bc" stroke-width="1.1" stroke-linecap="round"/>
+  <g fill="none" stroke="#3d2c38" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M22 40c8 6 6 14-2 12" stroke="#6f8f78"/><path d="M28 36c6 2 8 10 2 12" fill="#e7a8bc"/><path d="M90 86c-8-4-6-14 2-12 4 6 2 12-2 12z" stroke="#6f8f78"/><circle cx="96" cy="78" r="1.6" fill="#e7a8bc" stroke="none"/>
+    <g stroke-width="1.7"><path d="M36 74h48M40 62h40"/><path d="M44 62c0-14 32-14 32 0"/></g>
+  </g>
+</svg>
