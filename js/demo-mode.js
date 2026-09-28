@@ -48,19 +48,9 @@
   }
 
   function ensureChrome() {
+    /* Demo copy stays on the unlock control and on stub surfaces. No site-wide banner. */
     if (!isUnlocked()) return;
     document.documentElement.setAttribute("data-cognation-demo", "1");
-    document.body.classList.add("cognation-demo-on");
-    var el = document.getElementById("cognation-demo-chrome");
-    if (!el) {
-      el = document.createElement("p");
-      el.id = "cognation-demo-chrome";
-      el.className = "cognation-demo-chrome";
-      el.setAttribute("role", "status");
-      el.textContent = CHROME_TEXT;
-      document.body.appendChild(el);
-    }
-    el.hidden = false;
   }
 
   function hideChrome() {
@@ -70,11 +60,8 @@
   }
 
   function syncChrome(session) {
-    if (session && session.source && session.source !== "demo") {
-      hideChrome();
-      return;
-    }
-    if ((session && session.source === "demo") || isUnlocked()) {
+    /* Site-wide bar only after an explicit demo session. Stub labels stay on the stub surfaces. */
+    if (session && session.source === "demo") {
       ensureChrome();
       return;
     }

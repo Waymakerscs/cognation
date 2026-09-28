@@ -86,7 +86,7 @@
         status.textContent =
           "Reported as " +
           reason +
-          " · saved in this browser only. Demo / local only — not live backend.";
+          " · saved in this browser only. local demo only.";
       }
     });
 

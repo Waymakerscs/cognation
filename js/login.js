@@ -500,7 +500,13 @@
     if (window.CognationDemo && window.CognationDemo.syncChrome) {
       window.CognationDemo.syncChrome(readLocalSession());
     }
-    if (window.CognationDemo && window.CognationDemo.isUnlocked && window.CognationDemo.isUnlocked()) {
+    if (
+      window.CognationDemo &&
+      window.CognationDemo.isUnlocked &&
+      window.CognationDemo.isUnlocked() &&
+      readLocalSession() &&
+      readLocalSession().source === "demo"
+    ) {
       var demoNote = form.querySelector("[data-login-demo-chrome]");
       if (demoNote) demoNote.hidden = false;
     }
