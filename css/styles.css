@@ -2159,7 +2159,7 @@ body.screen-break-open {
 }
 
 
-/* Fixed top: centered TOWER / NEWS / COMMUNE / PAGES + whisper Grok link */
+/* Fixed top: centered TOWER / NEWS / COMMUNE / PAGES, log out on the right */
 .app-topbar {
   position: fixed;
   top: 0;
@@ -2192,25 +2192,6 @@ body.screen-break-open {
   letter-spacing: 0.04em;
 }
 
-.grok-whisper {
-  /* sits in .app-topbar-actions */
-  justify-self: end;
-  margin-right: 0.25rem;
-  font-size: 8px;
-  line-height: 1.2;
-  color: var(--color-heading);
-  opacity: 0.18;
-  text-decoration: none;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-
-.grok-whisper:hover,
-.grok-whisper:focus-visible {
-  opacity: 0.55;
-  color: var(--color-accent-hover);
-}
-
 .app-topbar-actions {
   grid-column: 3;
   justify-self: end;
@@ -2219,9 +2200,6 @@ body.screen-break-open {
   gap: 0.65rem 0.85rem;
   flex-wrap: wrap;
   max-width: 100%;
-}
-.app-topbar .grok-whisper {
-  /* keep whisper in the actions cluster (was alone in col 3) */
 }
 .app-logout-btn {
   appearance: none;
@@ -9569,7 +9547,6 @@ li, td, th, summary, figcaption {
   text-shadow: 0 0 14px rgba(177, 245, 255, 0.88);
 }
 
-.app-topbar-actions .grok-whisper,
 .app-topbar-actions .app-logout-btn {
   border: 1px solid rgba(197, 240, 255, 0.38) !important;
   border-radius: 999px !important;
@@ -9725,7 +9702,6 @@ button {
   .app-topbar .tablist [role="tab"],
   .app-topbar-shortcut { flex: 0 0 auto; font-size: 0.65rem; }
   .tabs.tabs--chrome .tab-panels { margin-top: 0.75rem; border-radius: 1rem 1rem 0 0; }
-  .app-topbar-actions .grok-whisper { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
